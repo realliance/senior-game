@@ -16,8 +16,6 @@ public class GameEntryServerSystem : ComponentSystem {
       var player = EntityManager.Instantiate(spawnData.playerPrefab);
       EntityManager.SetComponentData(player, new GhostOwnerComponent { NetworkId = EntityManager.GetComponentData<NetworkIdComponent>(reqSrc.SourceConnection).Value });
 
-      Debug.Log(player);
-
       PostUpdateCommands.AddBuffer<PlayerInput>(player);
       PostUpdateCommands.SetComponent(reqSrc.SourceConnection, new CommandTargetComponent { targetEntity = player });
       PostUpdateCommands.DestroyEntity(reqEnt);

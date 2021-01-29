@@ -19,7 +19,5 @@ public class SpawnDataAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDe
 
   public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem) {
     dstManager.AddComponentData(entity, new SpawnData { playerPrefab = conversionSystem.GetPrimaryEntity(player) });
-    Debug.Log("Successfully Authored.");
-    Debug.Log(entity);
   }
 }
