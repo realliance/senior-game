@@ -18,7 +18,7 @@
     },
     "com.unity.collections": {
       "version": "0.15.0-preview.21",
-      "depth": 1,
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.test-framework.performance": "2.3.1-preview",
@@ -167,6 +167,15 @@
         "com.unity.properties": "1.6.0-preview",
         "com.unity.serialization": "1.6.1-preview",
         "com.unity.modules.uielements": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.rendering.hybrid": {
+      "version": "0.11.0-preview.42",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.entities": "0.17.0-preview.41"
       },
       "url": "https://packages.unity.com"
     },
