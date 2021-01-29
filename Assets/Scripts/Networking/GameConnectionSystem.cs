@@ -3,15 +3,12 @@ using Unity.NetCode;
 using Unity.Networking.Transport;
 using UnityEngine;
 
+public struct InitGameComponent : IComponentData {}
+
 [UpdateInWorld(UpdateInWorld.TargetWorld.Default)]
 public class GameConnectionSystem : ComponentSystem {
-  public struct InitGameComponent : ICommandData {
-    public uint Tick {get; set;}
-  }
-
   protected override void OnCreate() {
     RequireSingletonForUpdate<InitGameComponent>();
-    EntityManager.CreateEntity(typeof(InitGameComponent));
   }
 
   protected override void OnUpdate() {
