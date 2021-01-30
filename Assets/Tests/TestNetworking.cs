@@ -40,6 +40,39 @@ public class TestNetworking : ECSTestBase {
     Assert.IsTrue(em.HasComponent<NetworkStreamInGame>(e));
 
     // RPC Is Created to Complete Connection
-    Assert.AreEqual(em.CreateEntityQuery(typeof(GameConnectRequest)).CalculateEntityCount(), 1);
+    AssertEntityCount<GameConnectRequest>(1);
+  }
+
+  [Test]
+  public void GameEntryServerSystem_ProcessGameConnection() {
+    GameEntryServerSystem g = new GameEntryServerSystem();
+    w.AddSystem(g);
+
+    // Configure SpawnData Singleton
+    Entity prefab = em.CreateEntity();
+    em.AddComponent<GhostOwnerComponent>(prefab);
+
+    Entity spawnData = em.CreateEntity();
+    em.AddComponentData(spawnData, new SpawnData { playerPrefab = prefab });
+
+    Entity client = em.CreateEntity(typeof(NetworkStreamInGame), typeof(CommandTargetComponent));
+    em.AddComponentData(client, new NetworkIdComponent { Value = 1 });
+    
+    // Send RPC
+    Entity rpc = em.CreateEntity(typeof(GameConnectRequest));
+    em.AddComponentData(rpc, new ReceiveRpcCommandRequestComponent { SourceConnection = client });
+
+    // Take Ghost Component Sample to Verify Instantiation later
+    int numOfGhosts = EntityCount<GhostOwnerComponent>();
+
+    // Run System
+    g.Update();
+
+    // RPC Consumed
+    AssertEntityCount<ReceiveRpcCommandRequestComponent>(0);
+
+    // Ghost Owner (Player) Added
+    AssertEntityCount<GhostOwnerComponent>(numOfGhosts + 1);
+    Assert.AreNotEqual(em.GetComponentData<CommandTargetComponent>(client).targetEntity, Entity.Null);
   }
 }

@@ -20,5 +20,13 @@ public abstract class ECSTestBase {
   public void TearDownBase() {
     w.Dispose();
   }
+
+  public int EntityCount<T>() {
+    return em.CreateEntityQuery(typeof(T)).CalculateEntityCount();
+  }
+
+  public void AssertEntityCount<T>(int i) {
+    Assert.AreEqual(EntityCount<T>(), i);
+  }
 }
  
