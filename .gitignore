@@ -74,3 +74,6 @@ crashlytics-build.properties
 /[Aa]ssets/Sandbox/
 /[Aa]ssets/NetCodeGenerated/
 /[Aa]ssets/NetCodeGenerated.meta
+
+/[Aa]ssets/SceneDependencyCache
+/[Aa]ssets/SceneDependencyCache.meta
