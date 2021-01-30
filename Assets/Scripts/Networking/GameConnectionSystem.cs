@@ -7,11 +7,14 @@ public struct InitGameComponent : IComponentData {}
 
 [UpdateInWorld(UpdateInWorld.TargetWorld.Default)]
 public class GameConnectionSystem : ComponentSystem {
+  public bool networkStarted = false;
+
   protected override void OnCreate() {
     RequireSingletonForUpdate<InitGameComponent>();
   }
 
   protected override void OnUpdate() {
+    networkStarted = true;
     EntityManager.DestroyEntity(GetSingletonEntity<InitGameComponent>());
 
     foreach (var world in World.All) {
