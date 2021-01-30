@@ -3,11 +3,11 @@ using Unity.NetCode;
 using Unity.Networking.Transport;
 using UnityEngine;
 
-public struct InitGameComponent : IComponentData {}
-
 [UpdateInWorld(UpdateInWorld.TargetWorld.Default)]
 public class GameConnectionSystem : ComponentSystem {
   public bool networkStarted = false;
+
+  public struct InitGameComponent : IComponentData {}
 
   protected override void OnCreate() {
     RequireSingletonForUpdate<InitGameComponent>();
