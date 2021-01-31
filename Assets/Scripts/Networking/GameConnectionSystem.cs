@@ -7,15 +7,13 @@ using UnityEngine;
 public class GameConnectionSystem : ComponentSystem {
   public bool networkStarted = false;
 
-  public struct InitGameComponent : IComponentData {}
-
   protected override void OnCreate() {
-    RequireSingletonForUpdate<InitGameComponent>();
+    RequireSingletonForUpdate<InitGameNetworkingComponent>();
   }
 
   protected override void OnUpdate() {
     networkStarted = true;
-    EntityManager.DestroyEntity(GetSingletonEntity<InitGameComponent>());
+    EntityManager.DestroyEntity(GetSingletonEntity<InitGameNetworkingComponent>());
 
     foreach (var world in World.All) {
       var network = world.GetExistingSystem<NetworkStreamReceiveSystem>();
@@ -40,5 +38,7 @@ public class GameConnectionSystem : ComponentSystem {
     }
   }
 }
+
+public struct InitGameNetworkingComponent : IComponentData {}
 
 public struct GameConnectRequest : IRpcCommand {}

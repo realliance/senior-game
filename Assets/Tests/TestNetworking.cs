@@ -21,7 +21,7 @@ public class TestNetworking : ECSTestBase {
   public void GameConnectionSystem_StartsWithComponentTrigger() {
     GameConnectionSystem g = new GameConnectionSystem();
     w.AddSystem(g);
-    em.CreateEntity(typeof(GameConnectionSystem.InitGameComponent));
+    em.CreateEntity(typeof(InitGameNetworkingComponent));
     g.Update();
 
     Assert.IsTrue(g.networkStarted);
