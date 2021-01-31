@@ -1,0 +1,100 @@
+---
+resource_types:
+  - name: pull-request
+    type: registry-image
+    source:
+      repository: docker.io/teliaoss/github-pr-resource
+  - name: rss-resource
+    type: registry-image
+    source:
+      repository: suhlig/concourse-rss-resource
+      tag: latest
+resources:
+  #- name: pull-request
+  #  type: pull-request
+  #  icon: source-branch
+  #  check_every: 1m
+  #  source:
+  #    repository: realliance/senior-game
+  #    access_token: ((github-access-token))
+  #    disable_ci_skip: true
+  - name: unity-beta-releases
+    type: rss-resource
+    icon: rss
+    source:
+      url: https://unity3d.com/unity/beta/latest.xml
+  - name: game-ci-docker
+    type: git
+    icon: git
+    source:
+      uri: https://github.com/game-ci/docker
+      branch: main
+  - name: oci-build-task
+    type: registry-image
+    icon: docker
+    source:
+      repository: docker.io/vito/oci-build-task
+  - name: quay
+    type: registry-image
+    icon: docker
+    source:
+      repository: quay.io/realliance/unity-editor
+      username: ((quay-ci-account.username))
+      password: ((quay-ci-account.token))
+  - name: busybox
+    type: registry-image
+    icon: docker
+    source:
+      repository: busybox
+
+jobs:
+  - name: unity-image-build
+    plan:
+      - get: unity-beta-releases
+        trigger: true
+      - get: busybox
+      - get: oci-build-task
+      - get: game-ci-docker
+      - task: get-variables-from-feed
+        image: busybox
+        config:
+          platform: linux
+          inputs:
+            - name: unity-beta-releases
+          outputs:
+            - name: version
+            - name: changeset
+          run:
+            path: /bin/sh
+            args:
+              - -exc
+              - |
+                cat unity-beta-releases/guid > changeset/changeset
+                sed 's/Release //' unity-beta-releases/title > version/version
+      - load_var: version
+        file: version/version
+      - load_var: changeset
+        file: changeset/changeset
+      - task: build
+        privileged: true
+        image: oci-build-task
+        config:
+          platform: linux
+          inputs:
+            - name: game-ci-docker
+              path: .
+          outputs:
+            - name: image
+          caches:
+            - path: cache
+          params:
+            BUILD_ARG_version: ((.:version))
+            BUILD_ARG_changeSet: ((.:changeset))
+            BUILD_ARG_module: linux-il2cpp
+            CONTEXT: ./editor
+          run:
+            path: build
+      - put: quay
+        params:
+          image: image/image.tar
+          additional_tags: version/version
