@@ -1,3 +1,0 @@
-# Ignored as Convert is a method called only from the UnityEngine
-R: Gendarme.Rules.Correctness.CheckParametersNullityInVisibleMethodsRule
-M: System.Void SpawnDataAuthoring::Convert(Unity.Entities.Entity,Unity.Entities.EntityManager,GameObjectConversionSystem)
