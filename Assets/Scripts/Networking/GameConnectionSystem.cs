@@ -24,7 +24,7 @@ public class GameConnectionSystem : ComponentSystem {
         ep.Port = 7979;
         network.Connect(ep);
       }
-      #if UNITY_EDITOR
+#if UNITY_EDITOR
       else if (world.GetExistingSystem<ServerSimulationSystemGroup>() != null) {
         // Server localhost listen
         NetworkEndPoint ep = NetworkEndPoint.AnyIpv4;
@@ -34,11 +34,11 @@ public class GameConnectionSystem : ComponentSystem {
 
         network.Listen(ep);
       }
-      #endif
+#endif
     }
   }
 }
 
-public struct InitGameNetworkingComponent : IComponentData {}
+public struct InitGameNetworkingComponent : IComponentData { }
 
-public struct GameConnectRequest : IRpcCommand {}
+public struct GameConnectRequest : IRpcCommand { }

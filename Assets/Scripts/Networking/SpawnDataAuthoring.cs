@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
-using UnityEngine;
 using Unity.Entities;
 using Unity.NetCode;
+using UnityEngine;
 
 public struct SpawnData : IComponentData {
   public Entity playerPrefab;
 }
 
-public class SpawnDataAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
-{
+public class SpawnDataAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs {
   public GhostAuthoringComponent player;
 
   public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs) {
