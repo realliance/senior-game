@@ -77,3 +77,5 @@ crashlytics-build.properties
 
 /[Aa]ssets/SceneDependencyCache
 /[Aa]ssets/SceneDependencyCache.meta
+
+*.ulf
