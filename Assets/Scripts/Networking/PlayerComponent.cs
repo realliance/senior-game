@@ -2,4 +2,4 @@ using Unity.Entities;
 using Unity.NetCode;
 
 [GenerateAuthoringComponent]
-public struct PlayerComponent : IComponentData {}
+public struct PlayerComponent : IComponentData { }

@@ -1,6 +1,6 @@
-using UnityEngine;
 using Unity.Entities;
 using Unity.NetCode;
+using UnityEngine;
 
 [UpdateInGroup(typeof(ClientSimulationSystemGroup))]
 public class PlayerInputSystem : ComponentSystem {
@@ -17,7 +17,7 @@ public class PlayerInputSystem : ComponentSystem {
       Entities.WithAll<PlayerComponent>().WithNone<PlayerInput>().ForEach((Entity ent, ref GhostOwnerComponent ghostOwner) => {
         if (ghostOwner.NetworkId == localPlayerID) {
           PostUpdateCommands.AddBuffer<PlayerInput>(ent);
-          PostUpdateCommands.SetComponent(GetSingletonEntity<CommandTargetComponent>(), new CommandTargetComponent {targetEntity = ent});
+          PostUpdateCommands.SetComponent(GetSingletonEntity<CommandTargetComponent>(), new CommandTargetComponent { targetEntity = ent });
         }
       });
 
@@ -34,7 +34,7 @@ public class PlayerInputSystem : ComponentSystem {
       input.vertical -= 1;
     if (Input.GetKey("w"))
       input.vertical += 1;
-    
+
     var inputBuffer = EntityManager.GetBuffer<PlayerInput>(localInput);
     inputBuffer.AddCommandData<PlayerInput>(input);
   }

@@ -3,8 +3,7 @@ using Unity.NetCode;
 using Unity.Transforms;
 
 [UpdateInGroup(typeof(GhostPredictionSystemGroup))]
-public class MovePlayerSystem : ComponentSystem
-{
+public class MovePlayerSystem : ComponentSystem {
   protected override void OnUpdate() {
     var group = World.GetExistingSystem<GhostPredictionSystemGroup>();
 

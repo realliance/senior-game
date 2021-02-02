@@ -7,15 +7,13 @@ using UnityEngine;
 public class GameConnectionSystem : ComponentSystem {
   public bool networkStarted = false;
 
-  public struct InitGameComponent : IComponentData {}
-
   protected override void OnCreate() {
-    RequireSingletonForUpdate<InitGameComponent>();
+    RequireSingletonForUpdate<InitGameNetworkingComponent>();
   }
 
   protected override void OnUpdate() {
     networkStarted = true;
-    EntityManager.DestroyEntity(GetSingletonEntity<InitGameComponent>());
+    EntityManager.DestroyEntity(GetSingletonEntity<InitGameNetworkingComponent>());
 
     foreach (var world in World.All) {
       var network = world.GetExistingSystem<NetworkStreamReceiveSystem>();
@@ -26,7 +24,7 @@ public class GameConnectionSystem : ComponentSystem {
         ep.Port = 7979;
         network.Connect(ep);
       }
-      #if UNITY_EDITOR
+#if UNITY_EDITOR
       else if (world.GetExistingSystem<ServerSimulationSystemGroup>() != null) {
         // Server localhost listen
         NetworkEndPoint ep = NetworkEndPoint.AnyIpv4;
@@ -36,9 +34,11 @@ public class GameConnectionSystem : ComponentSystem {
 
         network.Listen(ep);
       }
-      #endif
+#endif
     }
   }
 }
 
-public struct GameConnectRequest : IRpcCommand {}
+public struct InitGameNetworkingComponent : IComponentData { }
+
+public struct GameConnectRequest : IRpcCommand { }
