@@ -6,48 +6,94 @@ using Unity.Entities;
 using Unity.Collections;
 using TMPro;
 
-public struct UIFormBufferLockComponent : IComponentData { }
+public struct FormErrorBuffer : IBufferElementData {
+  public int Index;
+  public FixedString64 Message;
+}
 
-public struct UIFormBuffer : IBufferElementData {
+public struct FormValueBuffer : IBufferElementData {
   public FixedString64 Value;
 
-  public static implicit operator string(UIFormBuffer e) {
-    return e.Value.ToString();
-  }
-
-  public static implicit operator UIFormBuffer(string e) {
-    return new UIFormBuffer { Value = new FixedString64(e) };
+  public static implicit operator FormValueBuffer(string e) {
+    return new FormValueBuffer { Value = new FixedString64(e) };
   }
 }
 
+[System.Serializable]
+public struct FormInput {
+  public GameObject inputObject;
+  public GameObject errorMessageObject;
+}
+
 public abstract class FormUIAuthoring : MonoBehaviour, IConvertGameObjectToEntity {
+  [SerializeField]
+  public List<FormInput> formInputs;
 
-
-  public List<TMP_InputField> formInputs;
+  private List<TMP_InputField> inputFields = new List<TMP_InputField>();
+  private List<TMP_Text> errorMessages = new List<TMP_Text>();
 
   private Entity referencedEntity;
   private EntityManager entityManager;
 
-  protected abstract void AddSubmitTag(Entity entity, EntityManager dstManager);
+  private bool interactable = false;
+  private bool configured = false;
 
-  public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem) {
-    referencedEntity = entity;
-    dstManager.AddBuffer<UIFormBuffer>(referencedEntity);
-    entityManager = dstManager;
+  protected abstract void AddSubmitTag(Entity entity, EntityManager dstManager);
+  protected abstract bool HasSubmitted(Entity entity, EntityManager dstManager);
+  protected abstract void InitSystemInWorld(World world);
+
+  public void Convert(Entity _e, EntityManager _dst, GameObjectConversionSystem conversionSystem) {
+    entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+    referencedEntity = entityManager.CreateEntity();
+
+    entityManager.AddBuffer<FormValueBuffer>(referencedEntity);
+    entityManager.AddBuffer<FormErrorBuffer>(referencedEntity);
+    foreach (var input in formInputs) {
+      var inputField = input.inputObject.GetComponent<TMP_InputField>();
+      inputFields.Add(inputField);
+      errorMessages.Add(input.errorMessageObject.GetComponent<TMP_Text>());
+    }
+
+    configured = true;
   }
 
   public void OnSubmit() {
-    var hasLock = entityManager.HasComponent<UIFormBufferLockComponent>(referencedEntity);
+    if (!HasSubmitted(referencedEntity, entityManager)) {
+      DynamicBuffer<FormErrorBuffer> errors = entityManager.GetBuffer<FormErrorBuffer>(referencedEntity);
+      errors.Clear();
 
-    if (!hasLock) {
-      DynamicBuffer<UIFormBuffer> form = entityManager.GetBuffer<UIFormBuffer>(referencedEntity);
+      DynamicBuffer<FormValueBuffer> form = entityManager.GetBuffer<FormValueBuffer>(referencedEntity);
       form.Clear();
 
-      foreach (var input in formInputs) {
+      foreach(var input in inputFields) {
         form.Add(input.text);
       }
 
       AddSubmitTag(referencedEntity, entityManager);
+    }
+  }
+
+  void Update() {
+    if (!configured) {
+      return;
+    }
+
+    bool isInteractable = !HasSubmitted(referencedEntity, entityManager);
+
+    if (interactable != isInteractable) {
+      interactable = isInteractable;
+
+      foreach (var field in inputFields) {
+        field.interactable = interactable;
+      }
+
+      foreach(var errorField in errorMessages) {
+        errorField.text = "";
+      }
+
+      foreach (var error in entityManager.GetBuffer<FormErrorBuffer>(referencedEntity)) {
+        errorMessages[error.Index].text = error.Message.ToString();
+      }
     }
   }
 }
