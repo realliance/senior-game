@@ -134,6 +134,8 @@ GameObject:
   - component: {fileID: 25355149}
   - component: {fileID: 25355148}
   - component: {fileID: 25355147}
+  - component: {fileID: 25355150}
+  - component: {fileID: 25355151}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -199,13 +201,37 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 25355146}
-  m_LocalRotation: {x: 0.26562366, y: -0.15205029, z: 0.042466313, w: 0.95106333}
-  m_LocalPosition: {x: 2.5, y: 2.93, z: -8.55}
+  m_LocalRotation: {x: 0.26562372, y: -0.15205029, z: 0.042466298, w: 0.95106333}
+  m_LocalPosition: {x: 2.4999998, y: 2.93, z: -8.549999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 31.209, y: -18.166, z: 0}
+--- !u!114 &25355150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 25355146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 350a2d1e2be3819d0bd2eb7867e5633b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &25355151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 25355146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8df5ca06d3ab57a8ba273f12eeb6249, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &427651023
 GameObject:
   m_ObjectHideFlags: 0
@@ -430,7 +456,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1094775109
 GameObject:
@@ -474,7 +500,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1215082114
 GameObject:
@@ -511,7 +537,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 0
+    m_Type: 1
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -567,5 +593,5 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 76.122, y: -49.606, z: -49.081}

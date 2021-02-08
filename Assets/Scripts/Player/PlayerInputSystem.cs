@@ -5,24 +5,12 @@ using UnityEngine;
 [UpdateInGroup(typeof(ClientSimulationSystemGroup))]
 public class PlayerInputSystem : ComponentSystem {
   protected override void OnCreate() {
-    RequireSingletonForUpdate<NetworkIdComponent>();
+    RequireSingletonForUpdate<LocalPlayerComponent>();
   }
 
   protected override void OnUpdate() {
-    var localInput = GetSingleton<CommandTargetComponent>().targetEntity;
+    var localInput = GetSingletonEntity<LocalPlayerComponent>();
 
-    if (localInput == Entity.Null) {
-      var localPlayerID = GetSingleton<NetworkIdComponent>().Value;
-
-      Entities.WithAll<PlayerComponent>().WithNone<PlayerInput>().ForEach((Entity ent, ref GhostOwnerComponent ghostOwner) => {
-        if (ghostOwner.NetworkId == localPlayerID) {
-          PostUpdateCommands.AddBuffer<PlayerInput>(ent);
-          PostUpdateCommands.SetComponent(GetSingletonEntity<CommandTargetComponent>(), new CommandTargetComponent { targetEntity = ent });
-        }
-      });
-
-      return;
-    }
 
     var input = default(PlayerInput);
     input.Tick = World.GetExistingSystem<ClientSimulationSystemGroup>().ServerTick;
@@ -39,4 +27,3 @@ public class PlayerInputSystem : ComponentSystem {
     inputBuffer.AddCommandData<PlayerInput>(input);
   }
 }
-
