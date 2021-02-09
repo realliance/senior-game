@@ -139,42 +139,6 @@ jobs:
       - get: editor-image
       - get: dotnet-sdk
       - in_parallel:
-          - task: unit-test
-            image: editor-image
-            config:
-              platform: linux
-              inputs:
-                - name: pull-request
-                  path: .
-              run:
-                path: /bin/sh
-                args:
-                  - -exc
-                  - |
-                    mkdir -p /root/.local/share/unity3d/Unity/
-                    echo '((unity-license))' > '/root/.local/share/unity3d/Unity/Unity_lic.ulf'
-                    unity-editor -nographics -runTests -batchmode -projectPath '.' -testResults /dev/stdout -testPlatform PlayMode
-          - task: static-code-analysis
-            image: editor-image
-            config:
-              platform: linux
-              inputs:
-                - name: pull-request
-                  path: .
-              run:
-                path: /bin/sh
-                args:
-                  - -exc
-                  - |
-                    wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb 
-                    dpkg -i packages-microsoft-prod.deb 
-                    apt-get update && apt-get install -y apt-transport-https dotnet-sdk-5.0
-                    mkdir -p /root/.local/share/unity3d/Unity/
-                    echo '((unity-license))' > '/root/.local/share/unity3d/Unity/Unity_lic.ulf'
-                    unity-editor -nographics -batchmode -projectPath '.' -quit
-                    dotnet tool restore
-                    dotnet gendarme --config rules.xml --set default Library/ScriptAssemblies/Networking.dll
-                    dotnet gendarme --config rules.xml --set unit-test Library/ScriptAssemblies/Tests.dll
           - task: linting
             image: dotnet-sdk
             config:
@@ -189,6 +153,55 @@ jobs:
                   - |
                     dotnet tool restore
                     dotnet format --check Assets/Scripts -f
+          - do:
+            - task: build
+              image: editor-image
+              config:
+                platform: linux
+                inputs:
+                  - name: pull-request
+                    path: .
+                outputs:
+                  - name: Library
+                run:
+                  path: /bin/sh
+                  args:
+                    - -xc
+                    - |
+                      mkdir -p /root/.local/share/unity3d/Unity/
+                      echo '((unity-license))' > '/root/.local/share/unity3d/Unity/Unity_lic.ulf'
+                      unity-editor -nographics -batchmode -projectPath '.' -quit
+            - in_parallel:
+                - task: unit-test
+                  image: editor-image
+                  config:
+                    platform: linux
+                    inputs:
+                      - name: pull-request
+                        path: .
+                      - name: Library
+                    run:
+                      path: /bin/sh
+                      args:
+                        - -exc
+                        - |
+                          unity-editor -nographics -runTests -batchmode -projectPath '.' -testResults /dev/stdout -testPlatform PlayMode
+                - task: static-code-analysis
+                  image: dotnet-sdk
+                  config:
+                    platform: linux
+                    inputs:
+                      - name: pull-request
+                        path: .
+                      - name: Library
+                    run:
+                      path: /bin/sh
+                      args:
+                        - -exc
+                        - |
+                          dotnet tool restore
+                          dotnet gendarme --config rules.xml --set default Library/ScriptAssemblies/Networking.dll
+                          dotnet gendarme --config rules.xml --set unit-test Library/ScriptAssemblies/Tests.dll
         on_failure:
           put: pull-request
           params:
