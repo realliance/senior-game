@@ -18,6 +18,7 @@ resources:
       repository: realliance/senior-game
       access_token: ((github-access-token))
       disable_ci_skip: true
+      disable_forks: true
   - name: unity-beta-releases
     type: rss-resource
     icon: rss
