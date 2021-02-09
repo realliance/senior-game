@@ -5,13 +5,11 @@ using UnityEngine;
 [UpdateInGroup(typeof(ClientSimulationSystemGroup))]
 public class PlayerInputSystem : ComponentSystem {
   protected override void OnCreate() {
-    RequireSingletonForUpdate<LocalPlayerComponent>();
+    RequireForUpdate(Entities.WithAll<LocalComponent,PlayerComponent>().ToEntityQuery());
   }
 
   protected override void OnUpdate() {
-    var localInput = GetSingletonEntity<LocalPlayerComponent>();
-
-
+    
     var input = default(PlayerInput);
     input.Tick = World.GetExistingSystem<ClientSimulationSystemGroup>().ServerTick;
     if (Input.GetKey("a"))
@@ -23,7 +21,8 @@ public class PlayerInputSystem : ComponentSystem {
     if (Input.GetKey("w"))
       input.vertical += 1;
 
-    var inputBuffer = EntityManager.GetBuffer<PlayerInput>(localInput);
-    inputBuffer.AddCommandData<PlayerInput>(input);
+    Entities.WithAll<LocalComponent,PlayerComponent>().ForEach((Entity ent) => {
+      EntityManager.GetBuffer<PlayerInput>(ent).AddCommandData<PlayerInput>(input);
+    });
   }
 }

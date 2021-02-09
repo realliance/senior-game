@@ -1,13 +1,9 @@
 {
-    "name": "Camera",
+    "name": "Shared",
     "rootNamespace": "main",
     "references": [
         "GUID:734d92eba21c94caba915361bd5ac177",
-        "GUID:953adc2a6b8b4e3c8df5b728bcd546e9",
-        "GUID:a5baed0c9693541a5bd947d336ec7659",
-        "GUID:d8b63aba1907145bea998dd612889d6b",
-        "GUID:8819f35a0fc84499b990e90a4ca1911f",
-        "GUID:ef84a140c54aec4a996328329656c04a"
+        "GUID:953adc2a6b8b4e3c8df5b728bcd546e9"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

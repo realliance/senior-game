@@ -53,7 +53,7 @@ public class TestNetworking : ECSTestBase {
     em.AddComponent<GhostOwnerComponent>(prefab);
 
     Entity spawnData = em.CreateEntity();
-    em.AddComponentData(spawnData, new SpawnData { playerPrefab = prefab });
+    em.AddComponentData(spawnData, new PlayerSpawnData { playerPrefab = prefab });
 
     Entity client = em.CreateEntity(typeof(NetworkStreamInGame), typeof(CommandTargetComponent));
     em.AddComponentData(client, new NetworkIdComponent { Value = 1 });

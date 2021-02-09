@@ -5,11 +5,11 @@ using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
-public struct SpawnData : IComponentData {
+public struct PlayerSpawnData : IComponentData {
   public Entity playerPrefab;
 }
 
-public class SpawnDataAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs {
+public class PlayerSpawnDataAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs {
   public GhostAuthoringComponent player;
 
   public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs) {
@@ -17,6 +17,6 @@ public class SpawnDataAuthoring : MonoBehaviour, IConvertGameObjectToEntity, IDe
   }
 
   public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem) {
-    dstManager.AddComponentData(entity, new SpawnData { playerPrefab = conversionSystem.GetPrimaryEntity(player) });
+    dstManager.AddComponentData(entity, new PlayerSpawnData { playerPrefab = conversionSystem.GetPrimaryEntity(player) });
   }
 }
