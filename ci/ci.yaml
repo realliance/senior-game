@@ -156,7 +156,7 @@ jobs:
             config:
               platform: linux
               caches:
-                - path: ./cache
+                - path: cache
               inputs:
                 - name: pull-request
                   path: .
@@ -208,7 +208,7 @@ jobs:
                   config:
                     platform: linux
                     caches:
-                      - path: ./cache
+                      - path: cache
                     inputs:
                       - name: pull-request
                         path: .
