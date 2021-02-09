@@ -160,12 +160,13 @@ jobs:
               inputs:
                 - name: pull-request
                   path: .
+              params:
+                NUGET_PACKAGES: ./cache
               run:
                 path: /bin/sh
                 args:
                   - -exc
                   - |
-                    dotnet nuget config -set globalPackagesFolder=./cache
                     dotnet tool restore
                     dotnet format --check Assets/Scripts -f
           - do:
@@ -213,12 +214,13 @@ jobs:
                       - name: pull-request
                         path: .
                       - name: Library
+                    params:
+                      NUGET_PACKAGES: ./cache
                     run:
                       path: /bin/sh
                       args:
                         - -exc
                         - |
-                          dotnet nuget config -set globalPackagesFolder=./cache
                           dotnet tool restore
                           dotnet gendarme --config rules.xml --set default Library/ScriptAssemblies/Networking.dll
                           dotnet gendarme --config rules.xml --set unit-test Library/ScriptAssemblies/Tests.dll
