@@ -155,6 +155,8 @@ jobs:
             image: dotnet-sdk
             config:
               platform: linux
+              caches:
+                - path: ~/.nuget/packages
               inputs:
                 - name: pull-request
                   path: .
@@ -188,6 +190,8 @@ jobs:
                   image: editor-image
                   config:
                     platform: linux
+                    caches:
+                      - path: ~/.nuget/packages
                     inputs:
                       - name: pull-request
                         path: .
@@ -204,6 +208,8 @@ jobs:
                   image: dotnet-sdk
                   config:
                     platform: linux
+                    caches:
+                      - path: ~/.nuget/packages
                     inputs:
                       - name: pull-request
                         path: .
