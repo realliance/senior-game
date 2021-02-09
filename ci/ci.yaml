@@ -191,8 +191,6 @@ jobs:
                   image: editor-image
                   config:
                     platform: linux
-                    caches:
-                      - path: ./cache
                     inputs:
                       - name: pull-request
                         path: .
