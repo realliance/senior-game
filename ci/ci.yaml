@@ -30,6 +30,12 @@ resources:
     source:
       uri: https://github.com/game-ci/docker
       branch: main
+  - name: senior-game-main
+    type: git
+    icon: git
+    source:
+      uri: https://github.com/realliance/senior-game
+      branch: main
   - name: oci-build-task
     type: registry-image
     icon: docker
@@ -127,6 +133,12 @@ jobs:
                 -username ((unity-account.username)) -password ((unity-account.password)) \
                 | grep 'LICENSE SYSTEM .* Posting *' \
                 | sed 's/.*Posting *//'
+  - name: set-pipeline
+    plan:
+      - get: senior-game-main
+        trigger: true
+      - set_pipeline: self
+        file: senior-game-main/ci/ci.yaml
   - name: pr-validation
     plan:
       - get: pull-request
@@ -185,6 +197,8 @@ jobs:
                       args:
                         - -exc
                         - |
+                          mkdir -p /root/.local/share/unity3d/Unity/
+                          echo '((unity-license))' > '/root/.local/share/unity3d/Unity/Unity_lic.ulf'
                           unity-editor -nographics -runTests -batchmode -projectPath '.' -testResults /dev/stdout -testPlatform PlayMode
                 - task: static-code-analysis
                   image: dotnet-sdk
