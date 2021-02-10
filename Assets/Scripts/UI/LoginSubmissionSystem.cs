@@ -3,13 +3,35 @@ using Unity.Entities;
 using UnityEngine;
 using Unity.NetCode;
 
-
 [UpdateInWorld(UpdateInWorld.TargetWorld.Default)]
 public class LoginSubmissionSystem : ComponentSystem {
   protected override void OnUpdate() {
-    Entities.ForEach((Entity reqEnt, DynamicBuffer<FormValueBuffer> fields, ref LoginUISubmissionComponent req) => {
-      DynamicBuffer<FormErrorBuffer> errorBuffers = EntityManager.GetBuffer<FormErrorBuffer>(reqEnt);
-      errorBuffers.Add(new FormErrorBuffer { Index = 1, Message = "Test Message!" });
+    Entities.WithNone<WebRequestComponent>().WithNone<WebResponse>().ForEach((Entity reqEnt, ref LoginUISubmissionComponent req) => {
+      DynamicBuffer<FormValueBuffer> fields = EntityManager.GetBuffer<FormValueBuffer>(reqEnt);
+      string usernameValue = fields[0].Value.ToString();
+      string passwordValue = fields[1].Value.ToString();
+
+      EntityManager.AddComponentData<WebRequestComponent>(reqEnt, new WebRequestComponent {
+        requestURL = "https://accounts.senior.realliance.net/session",
+        verb = WebVerb.POST
+      });
+
+      DynamicBuffer<WebRequestParameter> parameters = EntityManager.GetBuffer<WebRequestParameter>(reqEnt);
+
+      parameters.Add(new WebRequestParameter {
+        name = "username",
+        value = usernameValue
+      });
+
+      parameters.Add(new WebRequestParameter {
+        name = "password",
+        value = passwordValue
+      });
+
+
+      AccountServiceController.Instance.MakeWebRequest(EntityManager, reqEnt);
+
+
       PostUpdateCommands.RemoveComponent<LoginUISubmissionComponent>(reqEnt);
     });
   }

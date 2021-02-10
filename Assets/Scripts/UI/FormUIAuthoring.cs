@@ -25,7 +25,7 @@ public struct FormInput {
   public GameObject errorMessageObject;
 }
 
-public abstract class FormUIAuthoring : MonoBehaviour, IConvertGameObjectToEntity {
+public abstract class FormUIAuthoring<T> : MonoBehaviour {
   [SerializeField]
   public List<FormInput> formInputs;
 
@@ -38,11 +38,16 @@ public abstract class FormUIAuthoring : MonoBehaviour, IConvertGameObjectToEntit
   private bool interactable = false;
   private bool configured = false;
 
-  protected abstract void AddSubmitTag(Entity entity, EntityManager dstManager);
-  protected abstract bool HasSubmitted(Entity entity, EntityManager dstManager);
-  protected abstract void InitSystemInWorld(World world);
+  private void AddSubmitTag() {
+    entityManager.AddComponent<T>(referencedEntity);
+    entityManager.AddBuffer<WebRequestParameter>(referencedEntity);
+  }
 
-  public void Convert(Entity _e, EntityManager _dst, GameObjectConversionSystem conversionSystem) {
+  private bool HasSubmitted() {
+    return entityManager.HasComponent<WebRequestComponent>(referencedEntity);
+  }
+
+  void Start() {
     entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
     referencedEntity = entityManager.CreateEntity();
 
@@ -53,12 +58,10 @@ public abstract class FormUIAuthoring : MonoBehaviour, IConvertGameObjectToEntit
       inputFields.Add(inputField);
       errorMessages.Add(input.errorMessageObject.GetComponent<TMP_Text>());
     }
-
-    configured = true;
   }
 
   public void OnSubmit() {
-    if (!HasSubmitted(referencedEntity, entityManager)) {
+    if (!HasSubmitted()) {
       DynamicBuffer<FormErrorBuffer> errors = entityManager.GetBuffer<FormErrorBuffer>(referencedEntity);
       errors.Clear();
 
@@ -69,16 +72,12 @@ public abstract class FormUIAuthoring : MonoBehaviour, IConvertGameObjectToEntit
         form.Add(input.text);
       }
 
-      AddSubmitTag(referencedEntity, entityManager);
+      AddSubmitTag();
     }
   }
 
   void Update() {
-    if (!configured) {
-      return;
-    }
-
-    bool isInteractable = !HasSubmitted(referencedEntity, entityManager);
+    bool isInteractable = !HasSubmitted();
 
     if (interactable != isInteractable) {
       interactable = isInteractable;
