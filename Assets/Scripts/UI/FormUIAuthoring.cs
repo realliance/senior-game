@@ -90,7 +90,7 @@ public abstract class FormUIAuthoring<T> : MonoBehaviour {
       }
 
       foreach(var errorField in errorMessages) {
-        errorField.text = "";
+        errorField.text = string.Empty;
       }
 
       foreach (var error in entityManager.GetBuffer<FormErrorBuffer>(referencedEntity)) {

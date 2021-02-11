@@ -21,10 +21,10 @@ public class AccountServiceController : MonoBehaviour {
 
   private static AccountServiceController CreateSingleton() {
     var ownerObject = new GameObject($"{typeof(AccountServiceController).Name} (singleton)");
-    var instance = ownerObject.AddComponent<AccountServiceController>();
+    var singletonInstance = ownerObject.AddComponent<AccountServiceController>();
 
     DontDestroyOnLoad(ownerObject);
-    return instance;
+    return singletonInstance;
   }
 
   public void MakeWebRequest(EntityManager manager, Entity requestEntity) {
