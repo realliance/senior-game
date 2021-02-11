@@ -32,11 +32,10 @@ public abstract class FormUIAuthoring<T> : MonoBehaviour {
   private List<TMP_InputField> inputFields = new List<TMP_InputField>();
   private List<TMP_Text> errorMessages = new List<TMP_Text>();
 
-  private Entity referencedEntity;
+  public Entity referencedEntity;
   private EntityManager entityManager;
 
   private bool interactable = false;
-  private bool configured = false;
 
   private void AddSubmitTag() {
     entityManager.AddComponent<T>(referencedEntity);
@@ -48,6 +47,10 @@ public abstract class FormUIAuthoring<T> : MonoBehaviour {
   }
 
   void Start() {
+    InitAuthoring();
+  }
+
+  public void InitAuthoring() {
     entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
     referencedEntity = entityManager.CreateEntity();
 

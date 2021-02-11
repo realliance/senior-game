@@ -14,7 +14,11 @@
         "Unity.Mathematics",
         "Unity.Transforms",
         "Unity.Networking.Transport",
-        "Unity.NetCode.Authoring.Hybrid"
+        "Unity.NetCode.Authoring.Hybrid",
+        "Global",
+        "UI",
+        "WWW",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

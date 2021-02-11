@@ -12,7 +12,7 @@ public class LoginSubmissionSystem : ComponentSystem {
       string passwordValue = fields[1].Value.ToString();
 
       EntityManager.AddComponentData<WebRequestComponent>(reqEnt, new WebRequestComponent {
-        requestURL = "https://accounts.senior.realliance.net/session",
+        requestURL = AccountServiceController.LOGIN_ROUTE,
         verb = WebVerb.POST
       });
 

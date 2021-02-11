@@ -11,7 +11,7 @@ public class TokenPayload {
 [UpdateInWorld(UpdateInWorld.TargetWorld.Default)]
 public class LoginUIResponseSystem : ComponentSystem {
   protected override void OnUpdate() {
-    Entities.ForEach((Entity reqEnt, DynamicBuffer<FormErrorBuffer> errorBuffer, ref WebResponse webResponse, ref WebRequestComponent webRequestComponent) => {
+    Entities.WithAll<LoginUISubmissionComponent, WebRequestParameter, WebRequestComponent>().ForEach((Entity reqEnt, DynamicBuffer<FormErrorBuffer> errorBuffer, ref WebResponse webResponse) => {
       if (webResponse.status == 400) {
         errorBuffer.Add(new FormErrorBuffer {
           Index = 0,

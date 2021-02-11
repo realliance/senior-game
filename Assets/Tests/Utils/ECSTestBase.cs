@@ -13,6 +13,7 @@ public abstract class ECSTestBase {
   [SetUp]
   public void SetUpBase() {
     w = new World("Default");
+    World.DefaultGameObjectInjectionWorld = w;
     em = w.EntityManager;
   }
 
@@ -26,7 +27,6 @@ public abstract class ECSTestBase {
   }
 
   public void AssertEntityCount<T>(int i) {
-    Assert.AreEqual(EntityCount<T>(), i);
+    Assert.AreEqual(i, EntityCount<T>());
   }
 }
- 

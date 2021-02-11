@@ -14,7 +14,7 @@ public class TestNetworking : ECSTestBase {
     w.AddSystem(g);
     w.Update();
 
-    Assert.IsFalse(g.networkStarted);;
+    Assert.IsFalse(g.networkStarted);
   }
 
   [Test]
@@ -57,7 +57,7 @@ public class TestNetworking : ECSTestBase {
 
     Entity client = em.CreateEntity(typeof(NetworkStreamInGame), typeof(CommandTargetComponent));
     em.AddComponentData(client, new NetworkIdComponent { Value = 1 });
-    
+
     // Send RPC
     Entity rpc = em.CreateEntity(typeof(GameConnectRequest));
     em.AddComponentData(rpc, new ReceiveRpcCommandRequestComponent { SourceConnection = client });
