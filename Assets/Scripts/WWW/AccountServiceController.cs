@@ -1,9 +1,9 @@
-using UnityEngine;
 using System;
-using System.Text;
 using System.Collections;
-using Unity.Entities;
+using System.Text;
 using Unity.Collections;
+using Unity.Entities;
+using UnityEngine;
 using UnityEngine.Networking;
 
 [Serializable]

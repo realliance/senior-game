@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.Collections;
+using Unity.Entities;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.Entities;
-using Unity.Collections;
-using TMPro;
 
 public struct FormErrorBuffer : IBufferElementData {
   public int Index;
@@ -71,7 +71,7 @@ public abstract class FormUIAuthoring<T> : MonoBehaviour {
       DynamicBuffer<FormValueBuffer> form = entityManager.GetBuffer<FormValueBuffer>(referencedEntity);
       form.Clear();
 
-      foreach(var input in inputFields) {
+      foreach (var input in inputFields) {
         form.Add(input.text);
       }
 
@@ -89,7 +89,7 @@ public abstract class FormUIAuthoring<T> : MonoBehaviour {
         field.interactable = interactable;
       }
 
-      foreach(var errorField in errorMessages) {
+      foreach (var errorField in errorMessages) {
         errorField.text = string.Empty;
       }
 

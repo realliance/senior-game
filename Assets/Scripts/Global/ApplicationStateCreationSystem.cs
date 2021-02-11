@@ -3,7 +3,7 @@ using Unity.NetCode;
 
 [UpdateInWorld(UpdateInWorld.TargetWorld.Default)]
 public class ApplicationStateCreationSystem : SystemBase {
-  internal struct CreateApplicationStateSingleton : IComponentData {}
+  internal struct CreateApplicationStateSingleton : IComponentData { }
 
   protected override void OnCreate() {
     base.OnCreate();

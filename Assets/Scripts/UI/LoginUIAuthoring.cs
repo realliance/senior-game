@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using Unity.Entities;
+using UnityEngine;
 
 [System.Serializable]
 public struct LoginUISubmissionComponent : IComponentData { }

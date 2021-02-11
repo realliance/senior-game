@@ -1,7 +1,7 @@
 using System;
 using Unity.Entities;
-using UnityEngine;
 using Unity.NetCode;
+using UnityEngine;
 
 [UpdateInWorld(UpdateInWorld.TargetWorld.Default)]
 public class LoginSubmissionSystem : ComponentSystem {
