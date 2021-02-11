@@ -30,9 +30,6 @@ public class LoginSubmissionSystem : ComponentSystem {
 
 
       AccountServiceController.Instance.MakeWebRequest(EntityManager, reqEnt);
-
-
-      PostUpdateCommands.RemoveComponent<LoginUISubmissionComponent>(reqEnt);
     });
   }
 }
