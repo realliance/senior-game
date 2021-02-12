@@ -11,7 +11,7 @@ public class TestLoginResponse : ECSTestBase {
 
   [Test]
   public void LoginUIResponseSystem_400Response() {
-    var system = w.GetOrCreateSystem<LoginUIResponseSystem>();
+    var system = world.GetOrCreateSystem<LoginUIResponseSystem>();
 
     var entity = em.CreateEntity(typeof(LoginUISubmissionComponent), typeof(WebRequestComponent), typeof(WebRequestParameter));
 
@@ -22,7 +22,7 @@ public class TestLoginResponse : ECSTestBase {
 
     em.AddBuffer<FormErrorBuffer>(entity);
 
-    w.Update();
+    world.Update();
     system.Update();
 
     // Cleans up Request Components
@@ -39,8 +39,8 @@ public class TestLoginResponse : ECSTestBase {
 
   [Test]
   public void LoginUIResponseSystem_200Response() {
-    var system = w.GetOrCreateSystem<LoginUIResponseSystem>();
-    var globalSingleton = w.GetOrCreateSystem<ApplicationStateCreationSystem>();
+    var system = world.GetOrCreateSystem<LoginUIResponseSystem>();
+    var globalSingleton = world.GetOrCreateSystem<ApplicationStateCreationSystem>();
 
     var entity = em.CreateEntity(typeof(LoginUISubmissionComponent), typeof(WebRequestComponent), typeof(WebRequestParameter));
 
@@ -53,7 +53,7 @@ public class TestLoginResponse : ECSTestBase {
 
     em.AddBuffer<FormErrorBuffer>(entity);
 
-    w.Update();
+    world.Update();
     globalSingleton.Update();
     system.Update();
 

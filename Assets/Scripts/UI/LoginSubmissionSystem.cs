@@ -13,7 +13,7 @@ public class LoginSubmissionSystem : ComponentSystem {
 
       EntityManager.AddComponentData<WebRequestComponent>(reqEnt, new WebRequestComponent {
         requestURL = AccountServiceController.LOGIN_ROUTE,
-        verb = WebVerb.POST
+        verb = WebAction.POST
       });
 
       DynamicBuffer<WebRequestParameter> parameters = EntityManager.GetBuffer<WebRequestParameter>(reqEnt);

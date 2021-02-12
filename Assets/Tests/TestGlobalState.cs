@@ -9,7 +9,7 @@ using Unity.NetCode;
 public class TestGlobalState : ECSTestBase {
   [Test]
   public void ApplicationStateCreationSystem_CreatesSingleton() {
-    var system = w.GetOrCreateSystem<ApplicationStateCreationSystem>();
+    var system = world.GetOrCreateSystem<ApplicationStateCreationSystem>();
     system.Update();
 
     AssertEntityCount<UserAccountStateComponent>(1);

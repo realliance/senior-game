@@ -37,7 +37,7 @@ public class AccountServiceController : MonoBehaviour {
 
     UnityWebRequest request;
 
-    if (requestComponent.verb == WebVerb.GET) {
+    if (requestComponent.verb == WebAction.GET) {
       request = UnityWebRequest.Get(requestComponent.requestURL.ToString());
     } else {
       string postData = JsonUtility.ToJson(new LoginRequestParameters {

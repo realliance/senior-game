@@ -1,14 +1,14 @@
 using Unity.Collections;
 using Unity.Entities;
 
-public enum WebVerb {
+public enum WebAction {
   GET = 0,
   POST = 1
 }
 
 public struct WebRequestComponent : IComponentData {
   public FixedString128 requestURL;
-  public WebVerb verb;
+  public WebAction verb;
 }
 
 public struct WebRequestParameter : IBufferElementData {
