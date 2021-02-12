@@ -11,16 +11,16 @@ public class TestNetworking : ECSTestBase {
   [Test]
   public void GameConnectionSystem_DoesNotStartAutomatically() {
     GameConnectionSystem g = new GameConnectionSystem();
-    w.AddSystem(g);
-    w.Update();
+    world.AddSystem(g);
+    world.Update();
 
-    Assert.IsFalse(g.networkStarted);;
+    Assert.IsFalse(g.networkStarted);
   }
 
   [Test]
   public void GameConnectionSystem_StartsWithComponentTrigger() {
     GameConnectionSystem g = new GameConnectionSystem();
-    w.AddSystem(g);
+    world.AddSystem(g);
     em.CreateEntity(typeof(InitGameNetworkingComponent));
     g.Update();
 
@@ -30,7 +30,7 @@ public class TestNetworking : ECSTestBase {
   [Test]
   public void GameEntryClientSystem_OnClientConnected() {
     GameEntryClientSystem g = new GameEntryClientSystem();
-    w.AddSystem(g);
+    world.AddSystem(g);
 
     // Client has successfully connected to server
     Entity e = em.CreateEntity(typeof(NetworkIdComponent));
@@ -46,7 +46,7 @@ public class TestNetworking : ECSTestBase {
   [Test]
   public void GameEntryServerSystem_ProcessGameConnection() {
     GameEntryServerSystem g = new GameEntryServerSystem();
-    w.AddSystem(g);
+    world.AddSystem(g);
 
     // Configure SpawnData Singleton
     Entity prefab = em.CreateEntity();
@@ -57,7 +57,7 @@ public class TestNetworking : ECSTestBase {
 
     Entity client = em.CreateEntity(typeof(NetworkStreamInGame), typeof(CommandTargetComponent));
     em.AddComponentData(client, new NetworkIdComponent { Value = 1 });
-    
+
     // Send RPC
     Entity rpc = em.CreateEntity(typeof(GameConnectRequest));
     em.AddComponentData(rpc, new ReceiveRpcCommandRequestComponent { SourceConnection = client });

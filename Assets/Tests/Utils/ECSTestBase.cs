@@ -7,18 +7,19 @@ using Unity.Entities;
 // Basic ECS Test Fixture
 // https://forum.unity.com/threads/how-to-unit-test-where-is-the-unity-entities-tests-namespace.540251/#post-5289744
 public abstract class ECSTestBase {
-  protected World w;
+  protected World world;
   protected EntityManager em;
 
   [SetUp]
   public void SetUpBase() {
-    w = new World("Default");
-    em = w.EntityManager;
+    world = new World("Default");
+    World.DefaultGameObjectInjectionWorld = world;
+    em = world.EntityManager;
   }
 
   [TearDown]
   public void TearDownBase() {
-    w.Dispose();
+    world.Dispose();
   }
 
   public int EntityCount<T>() {
@@ -26,7 +27,6 @@ public abstract class ECSTestBase {
   }
 
   public void AssertEntityCount<T>(int i) {
-    Assert.AreEqual(EntityCount<T>(), i);
+    Assert.AreEqual(i, EntityCount<T>());
   }
 }
- 
