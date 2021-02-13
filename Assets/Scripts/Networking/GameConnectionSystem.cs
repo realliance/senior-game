@@ -9,6 +9,10 @@ public class GameConnectionSystem : ComponentSystem {
 
   protected override void OnCreate() {
     RequireSingletonForUpdate<InitGameNetworkingComponent>();
+
+    #if UNITY_SERVER
+      Debug.Log("Server Build Detected");
+    #endif
   }
 
   protected override void OnUpdate() {
@@ -17,15 +21,18 @@ public class GameConnectionSystem : ComponentSystem {
 
     foreach (var world in World.All) {
       var network = world.GetExistingSystem<NetworkStreamReceiveSystem>();
+#if UNITY_EDITOR || UNITY_CLIENT
       if (world.GetExistingSystem<ClientSimulationSystemGroup>() != null) {
         UnityEngine.Debug.Log("Starting up Client");
         // Client localhost Connection
         NetworkEndPoint ep = NetworkEndPoint.LoopbackIpv4;
         ep.Port = 7979;
         network.Connect(ep);
+        continue;
       }
-#if UNITY_EDITOR
-      else if (world.GetExistingSystem<ServerSimulationSystemGroup>() != null) {
+#endif
+#if UNITY_EDITOR || UNITY_SERVER
+      if (world.GetExistingSystem<ServerSimulationSystemGroup>() != null) {
         // Server localhost listen
         NetworkEndPoint ep = NetworkEndPoint.AnyIpv4;
         ep.Port = 7979;

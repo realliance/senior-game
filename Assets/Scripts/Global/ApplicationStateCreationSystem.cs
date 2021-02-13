@@ -16,6 +16,9 @@ public class ApplicationStateCreationSystem : SystemBase {
     EntityManager.DestroyEntity(GetSingletonEntity<SystemActivation>());
 
     var entity = EntityManager.CreateEntity(typeof(UserAccountStateComponent));
+
+    #if UNITY_EDITOR
     EntityManager.SetName(entity, "Global Application State");
+    #endif
   }
 }

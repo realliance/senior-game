@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/NetworkingBase.unity
     guid: 9bacf591d32f47cee808c6a89ce022de
+  - enabled: 1
+    path: Assets/Scenes/NetworkingBase/SharedData.unity
+    guid: c4d1de643e968457fb1a61813c8a9117
   m_configObjects: {}
