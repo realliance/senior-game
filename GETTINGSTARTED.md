@@ -145,6 +145,6 @@ There have been a few gems of forum users that usually ask good questions and gi
 
 ## Further Reads and Examples
 
-[HelloCube ECS Project](https://github.com/Unity-Technologies/EntityComponentSystemSamples/tree/master/ECSSamples/Assets/HelloCube). Somewhat out of date but still a good example to get yourself situated
+[HelloCube ECS Project](https://github.com/Unity-Technologies/EntityComponentSystemSamples/tree/master/ECSSamples/Assets/HelloCube). Somewhat out of date but still a good example to get yourself situated.
 
 [5argon's Entire Blog is a Treasure Trove](https://gametorrahod.com/tag/unity-ecs/)
