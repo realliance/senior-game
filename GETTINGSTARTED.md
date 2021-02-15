@@ -10,7 +10,7 @@ This document assumes you understand Unity Development circa 2016. If you have n
 
 [Monobehaviour Execution Lifecycle](https://docs.unity3d.com/2021.1/Documentation/Manual/ExecutionOrder.html)
 
-Between these two, you should now have a general idea that Unity usually uses the Monobehaviour System, which is attached to GameObjects in the Scene and have have an event based lifecycle that you use to produce gameplay.
+Between these two, you should now have a general idea that Unity usually uses the Monobehaviour System, which is attached to GameObjects in the Scene and have an event based lifecycle that you use to produce gameplay.
 
 # Unity's Entity Component System
 
