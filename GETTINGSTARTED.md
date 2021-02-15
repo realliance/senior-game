@@ -56,7 +56,7 @@ Types of Components **must be [Blittable](https://docs.microsoft.com/en-us/dotne
 
 [System Introduction](https://docs.unity3d.com/Packages/com.unity.entities@0.17/manual/ecs_systems.html)
 
-Systems is where work is actually done. Systems query for a list of entities and do things with those entities. System creation is generally handled by the Bootstrapping process (see the Worlds Section)
+Systems is where work is actually done. Systems query for a list of entities and do things with those entities. System creation is generally handled by the Bootstrapping process (see the Worlds Section).
 
 Systems in Unity ECS are in a weird spot. There is currently **4** supported methods to finding and mutating entities and their components and a ton of extended system types with helpful features. However, from the System Introduction Page, note the "important notice" on the bottom that states that most of them will be phased out "eventually". This is curious, as the Unity Netcode package still highly recommends usage of expanded system classes such as ComponentSystem. This message reads to me as "this package is so early in it's development we may make new helper system classes and deprecate old ones but until then use the most base class, SystemBase". It's probably best to stick to creating SystemBase systems when possible, but if an extended class has something you really want it's probably fine to use. If leerily about systems being deprecated "eventually", make your own equivalents and the rest of us will swap to using it.
 
