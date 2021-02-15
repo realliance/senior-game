@@ -14,7 +14,7 @@ Between these two, you should now have a general idea that Unity usually uses th
 
 # Unity's Entity Component System
 
-Unity's Entity Component System (ECS) is the *new* way of creating gameplay within the Unity Engine. It's idealistic goal is to completely replace Monobehaviour.
+Unity's Entity Component System (ECS) is the *new* way of creating gameplay within the Unity Engine. Its idealistic goal is to completely replace Monobehaviour.
 
 Due to the complexity of the package, ECS will be introduced first. The Unity NetCode library and Physics library will be mentioned where it makes sense, and then fully discussed at the end.
 
@@ -58,7 +58,7 @@ Types of Components **must be [Blittable](https://docs.microsoft.com/en-us/dotne
 
 Systems is where work is actually done. Systems query for a list of entities and do things with those entities. System creation is generally handled by the Bootstrapping process (see the Worlds Section).
 
-Systems in Unity ECS are in a weird spot. There is currently **4** supported methods to finding and mutating entities and their components and a ton of extended system types with helpful features. However, from the System Introduction Page, note the "important notice" on the bottom that states that most of them will be phased out "eventually". This is curious, as the Unity Netcode package still highly recommends usage of expanded system classes such as ComponentSystem. This message reads to me as "this package is so early in it's development we may make new helper system classes and deprecate old ones but until then use the most base class, SystemBase". It's probably best to stick to creating SystemBase systems when possible, but if an extended class has something you really want it's probably fine to use. If leerily about systems being deprecated "eventually", make your own equivalents and the rest of us will swap to using it.
+Systems in Unity ECS are in a weird spot. There is currently **4** supported methods to finding and mutating entities and their components and a ton of extended system types with helpful features. However, from the System Introduction Page, note the "important notice" on the bottom that states that most of them will be phased out "eventually". This is curious, as the Unity Netcode package still highly recommends usage of expanded system classes such as ComponentSystem. This message reads to me as "this package is so early in its development we may make new helper system classes and deprecate old ones but until then use the most base class, SystemBase". It's probably best to stick to creating SystemBase systems when possible, but if an extended class has something you really want it's probably fine to use. If leerily about systems being deprecated "eventually", make your own equivalents and the rest of us will swap to using it.
 
 [Information on Entities.ForEach, the "recommended" way to modify entities and components.](https://docs.unity3d.com/Packages/com.unity.entities@0.17/manual/ecs_lookup_data.html)
 
@@ -68,11 +68,11 @@ Systems in Unity ECS are in a weird spot. There is currently **4** supported met
 
 ## Gameobject Entity Workflow
 
-So, how to actually set things up in scene? All the scenes contain GameObjects, so now we need ways to convert them to entities that exist in a world.
+So, how to actually set things up in a scene? All the scenes contain GameObjects, so now we need ways to convert them to entities that exist in a world.
 
 [GameObject Conversion Workflow](https://docs.unity3d.com/Packages/com.unity.entities@0.16/manual/conversion.html)
 
-The Unity Netcode simiarly takes advantage of one of these workflows, allowing shared entites between client and server worlds to exist in a subscene.
+The Unity Netcode similarly takes advantage of one of these workflows, allowing shared entities between client and server worlds to exist in a subscene.
 
 ## Hybrid Components
 
@@ -80,7 +80,7 @@ Now that both Systems and Components are covered: Hybrid Components. Hybrid Comp
 
 An example of the conversion step can be seen [here](https://github.com/ChristopherJMiller/temple/blob/main/Assets/Scripts/Player/PlayerCameraComponentAuthoring.cs) with the line `conversionSystem.AddHybridComponent(camera);`.
 
-An example of use in a system can be seen [here](https://github.com/ChristopherJMiller/temple/blob/main/Assets/Scripts/Player/PlayerCameraSystem.cs). Note the reference to a `Camera` component in the Entites ForEach, which is a Monobehaviour Component.
+An example of use in a system can be seen [here](https://github.com/ChristopherJMiller/temple/blob/main/Assets/Scripts/Player/PlayerCameraSystem.cs). Note the reference to a `Camera` component in the Entities ForEach, which is a Monobehaviour Component.
 
 # ECS-Based Packages
 
@@ -108,7 +108,7 @@ A note for old Unity users, the mention of layers in the filtering documentation
 
 [The NetCode library adds RPCs to the list of common components.](https://docs.unity3d.com/Packages/com.unity.netcode@0.6/manual/rpcs.html)
 
-The Physics library is [complicated in it's list of generated components per entity but handles most of them for you via authoring](https://docs.unity3d.com/Packages/com.unity.physics@0.6/manual/core_components.html). The component you will mostly be interacting with in your own Systems is [PhysicsVelocity](https://docs.unity3d.com/Packages/com.unity.physics@0.6/manual/interacting_with_bodies.html). 
+The Physics library is [complicated in its list of generated components per entity but handles most of them for you via authoring](https://docs.unity3d.com/Packages/com.unity.physics@0.6/manual/core_components.html). The component you will mostly be interacting with in your own Systems is [PhysicsVelocity](https://docs.unity3d.com/Packages/com.unity.physics@0.6/manual/interacting_with_bodies.html). 
 
 ## Additions to Systems
 
@@ -130,7 +130,7 @@ Be mindful when researching that if what you are reading looks strange, it might
 
 Make sure you have the Entity Debugger Window Ready when working with ECS (Windows -> Analysis -> Entity Debugger).
 
-The Hierarchy does not properly update with Entities. Use the Entity Debugger in it's place when in PlayMode.
+The Hierarchy does not properly update with Entities. Use the Entity Debugger in its place when in PlayMode.
 
 While with normal Unity usage you can watch GameObjects move around in the Scene window when PlayMode is active, this is not the case with ECS.
 
