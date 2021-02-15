@@ -14,9 +14,9 @@ Between these two, you should now have a general idea that Unity usually uses th
 
 # Unity's Entity Component System
 
-Unity's Entity Component System (ECS) is the *new* way of creating gameplay within the Unity Engine. It's idealisitic goal is to completely replace Monobehaviour.
+Unity's Entity Component System (ECS) is the *new* way of creating gameplay within the Unity Engine. It's idealistic goal is to completely replace Monobehaviour.
 
-Due to the complexity of the package, ECS will be introduced first. The Unity NetCode library and Physics library will be mentioned where it makes sense, and then fully dicussed at the end.
+Due to the complexity of the package, ECS will be introduced first. The Unity NetCode library and Physics library will be mentioned where it makes sense, and then fully discussed at the end.
 
 ## Intro Documents
 
@@ -62,7 +62,7 @@ Systems in Unity ECS are in a weird spot. There is currently **4** supported met
 
 [Information on Entities.ForEach, the "recommended" way to modify entities and components.](https://docs.unity3d.com/Packages/com.unity.entities@0.17/manual/ecs_lookup_data.html)
 
-[Need to add or delete components from an entity? You need an Entity Command Buffer for that.](https://docs.unity3d.com/Packages/com.unity.entities@0.17/manual/entity_command_buffer.html) Entity Command Buffers are nothing more than queuing up destructive/possiblely desync-able actions to be done later all at once. The ComponentSystem has one already setup as the `PostUpdateCommands` object.
+[Need to add or delete components from an entity? You need an Entity Command Buffer for that.](https://docs.unity3d.com/Packages/com.unity.entities@0.17/manual/entity_command_buffer.html) Entity Command Buffers are nothing more than queuing up destructive/possibly desync-able actions to be done later all at once. The ComponentSystem has one already setup as the `PostUpdateCommands` object.
 
 [Systems Update in groups, which dictates a sort of update order.](https://docs.unity3d.com/Packages/com.unity.entities@0.17/manual/system_update_order.html) This happens to be very important for the Unity NetCode library [as it heavily uses groups for Server vs Client Systems](https://docs.unity3d.com/Packages/com.unity.netcode@0.6/manual/client-server-worlds.html). Connecting this back to Worlds, you can assume Server and Client groups only exist on their respective worlds.
 
