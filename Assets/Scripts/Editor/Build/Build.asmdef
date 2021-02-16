@@ -2,7 +2,8 @@
     "name": "Build",
     "rootNamespace": "",
     "references": [
-        "GUID:363a3288c06c1c14cbbeedbda31215f9"
+        "GUID:363a3288c06c1c14cbbeedbda31215f9",
+        "GUID:50bd1c5d858bee44389fcf0e3faf0e0e"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

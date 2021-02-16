@@ -11,9 +11,15 @@ public class GameEntryServerSystem : ComponentSystem {
 
       Debug.Log(String.Format("Server setting connection {0} to in game", EntityManager.GetComponentData<NetworkIdComponent>(reqSrc.SourceConnection).Value));
 
-      var spawnDataSingleton = GetSingletonEntity<SpawnData>();
-      var spawnData = EntityManager.GetComponentData<SpawnData>(spawnDataSingleton);
-      var player = EntityManager.Instantiate(spawnData.playerPrefab);
+      var ghostCollection = GetSingletonEntity<GhostPrefabCollectionComponent>();
+
+      var prefab = Entity.Null;
+      var prefabs = EntityManager.GetBuffer<GhostPrefabBuffer>(ghostCollection);
+      for (int ghostId = 0; ghostId < prefabs.Length; ghostId++) {
+        if (EntityManager.HasComponent<PlayerComponent>(prefabs[ghostId].Value))
+          prefab = prefabs[ghostId].Value;
+      }
+      var player = EntityManager.Instantiate(prefab);
       EntityManager.SetComponentData(player, new GhostOwnerComponent { NetworkId = EntityManager.GetComponentData<NetworkIdComponent>(reqSrc.SourceConnection).Value });
 
       PostUpdateCommands.AddBuffer<PlayerInput>(player);

@@ -1,6 +1,6 @@
 {
     "Dependencies": [
-        "GlobalObjectId_V1-1-a7d58cf2b75ce7ea3bbe6fd13136436f-93214019566545601-0"
+        "GlobalObjectId_V1-0-00000000000000000000000000000000-0-0"
     ],
     "Components": [
         {
@@ -10,24 +10,15 @@
             "SceneInfos": [
                 {
                     "Scene": "GlobalObjectId_V1-1-9bacf591d32f47cee808c6a89ce022de-102900000-0",
-                    "AutoLoad": true
+                    "AutoLoad": false
                 }
             ]
         },
         {
-            "$type": "Unity.Build.Classic.EnableHeadlessMode, Unity.Build.Classic"
-        },
-        {
             "$type": "Unity.Build.Common.PlayerScriptingDefines, Unity.Build",
             "Defines": [
-                "UNITY_SERVER"
+                "UNITY_CLIENT"
             ]
-        },
-        {
-            "$type": "Unity.Build.Classic.ClassicScriptingSettings, Unity.Build.Classic",
-            "ScriptingBackend": 0,
-            "Il2CppCompilerConfiguration": 1,
-            "UseIncrementalGC": false
         }
     ]
 }

@@ -21,7 +21,7 @@ public class GameConnectionSystem : ComponentSystem {
 
     foreach (var world in World.All) {
       var network = world.GetExistingSystem<NetworkStreamReceiveSystem>();
-#if UNITY_EDITOR || UNITY_CLIENT
+#if UNITY_EDITOR || !UNITY_SERVER
       if (world.GetExistingSystem<ClientSimulationSystemGroup>() != null) {
         UnityEngine.Debug.Log("Starting up Client");
         // Client localhost Connection

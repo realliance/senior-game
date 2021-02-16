@@ -1,6 +1,7 @@
 {
     "Dependencies": [
-        "GlobalObjectId_V1-1-a7d58cf2b75ce7ea3bbe6fd13136436f-93214019566545601-0"
+        "GlobalObjectId_V1-1-a7d58cf2b75ce7ea3bbe6fd13136436f-93214019566545601-0",
+        "GlobalObjectId_V1-1-a3a33d4f9093b4fadb8ab54a3e7c275f-93214019566545601-0"
     ],
     "Components": [
         {
@@ -15,19 +16,22 @@
             ]
         },
         {
-            "$type": "Unity.Build.Classic.EnableHeadlessMode, Unity.Build.Classic"
+            "$type": "Unity.Build.Classic.ClassicBuildProfile, Unity.Build.Classic",
+            "$version": 1,
+            "Platform": "linux",
+            "Configuration": 3
         },
         {
             "$type": "Unity.Build.Common.PlayerScriptingDefines, Unity.Build",
             "Defines": [
-                "UNITY_SERVER"
+                "UNITY_CLIENT"
             ]
         },
         {
             "$type": "Unity.Build.Classic.ClassicScriptingSettings, Unity.Build.Classic",
             "ScriptingBackend": 0,
             "Il2CppCompilerConfiguration": 1,
-            "UseIncrementalGC": false
+            "UseIncrementalGC": true
         }
     ]
 }
