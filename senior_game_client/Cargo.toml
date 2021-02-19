@@ -1,0 +1,15 @@
+[package]
+name = "senior_game_client"
+version = "0.1.0"
+authors = ["Christopher Miller <cmiller548@gmail.com>", "Alice Hartley <alicehartleyhartley@gmail.com>", "Connor Catlett <ccatlett2000@gmail.com>", "Eddie Torres <edilbertotorres1999@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+senior_game_shared = { path = "../senior_game_shared" }
+bevy = "0.4.0"
+bevy_rapier3d = "0.8.0"
+bevy_prototype_networking_laminar = { git = "https://github.com/Hugheth/bevy_prototype_networking_laminar", branch = "bevy-0.4" }
+bevy_asset_ron = "0.1.0"
+bevy_egui = "0.2.0"
+kurinji = "1.0.5"
+serde = "1.0.123"
