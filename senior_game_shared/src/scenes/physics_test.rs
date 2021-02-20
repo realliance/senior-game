@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy::reflect::TypeRegistry;
 use senior_game_shared::components::assets::*;
+
 use crate::scenes::destination_helper::Destination;
 
 pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
@@ -27,14 +28,12 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
     CreatePhysics {
       rigidbody_transform: Transform::identity(),
       rigidbody_type: RigidbodyType::Dynamic,
-      colliders: vec![
-        CreateCollider {
-          collider_transform_position: Transform::identity().translation,
-          collider_transform_rotation: Transform::identity().rotation,
-          collider_shape_size: Vec3::new(1.0, 1.0, 1.0),
-          collider_shape: ShapeType::Cube,
-        }
-      ],
+      colliders: vec![CreateCollider {
+        collider_transform_position: Transform::identity().translation,
+        collider_transform_rotation: Transform::identity().rotation,
+        collider_shape_size: Vec3::new(1.0, 1.0, 1.0),
+        collider_shape: ShapeType::Cube,
+      }],
     },
     AssetChild {
       path: "models/cube.gltf".to_string(),
@@ -49,14 +48,12 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
     CreatePhysics {
       rigidbody_transform: Transform::from_translation(Vec3::new(-1.75, -5.0, 0.0)),
       rigidbody_type: RigidbodyType::Static,
-      colliders: vec![
-        CreateCollider {
-          collider_transform_position: Transform::identity().translation,
-          collider_transform_rotation: Transform::identity().rotation,
-          collider_shape_size: Vec3::new(1.0, 1.0, 1.0),
-          collider_shape: ShapeType::Cube,
-        }
-      ],
+      colliders: vec![CreateCollider {
+        collider_transform_position: Transform::identity().translation,
+        collider_transform_rotation: Transform::identity().rotation,
+        collider_shape_size: Vec3::new(1.0, 1.0, 1.0),
+        collider_shape: ShapeType::Cube,
+      }],
     },
     AssetChild {
       path: "models/cube.gltf".to_string(),
