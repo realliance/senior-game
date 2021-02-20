@@ -3,6 +3,7 @@ use std::path::Path;
 use bevy::asset::{AssetServer, Handle};
 use bevy::ecs::{Commands, Entity, Query, Res, ResMut};
 use bevy::scene::{DynamicScene, SceneSpawner};
+use bevy::prelude::BuildChildren;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
 use bevy_rapier3d::rapier::geometry::ColliderBuilder;
 
@@ -29,9 +30,12 @@ pub fn load_scene_system(
   }
 }
 
-pub fn load_physics(query: Query<(Entity, &PhysicsBuilder)>, commands: &mut Commands) {
+pub fn load_physics(
+  query: Query<(Entity, &CreatePhysics)>,
+  commands: &mut Commands,
+) {
   for (entity, bundle) in query.iter() {
-    println!("Load Physics Triggered");
+    println!("Load Rigidbody Triggered");
     let trans = bundle.rigidbody_transform.translation;
 
     let rigidbody = match bundle.rigidbody_type {
@@ -41,18 +45,29 @@ pub fn load_physics(query: Query<(Entity, &PhysicsBuilder)>, commands: &mut Comm
     }
     .translation(trans.x, trans.y, trans.z);
 
-    let collider = match bundle.collider_shape {
-      ShapeType::Cube => ColliderBuilder::cuboid(
-        bundle.collider_shape_size.x,
-        bundle.collider_shape_size.y,
-        bundle.collider_shape_size.z,
-      ),
-      ShapeType::Ball => ColliderBuilder::ball(bundle.collider_shape_size.x),
-    };
+    commands.insert(entity, (rigidbody,));
+      
+    for c in bundle.colliders.iter() {
+      println!("Load Collider Triggered");
 
-    commands.insert(entity, (rigidbody, collider));
+      let collider = match c.collider_shape {
+        ShapeType::Cube => ColliderBuilder::cuboid(
+          c.collider_shape_size.x,
+          c.collider_shape_size.y,
+          c.collider_shape_size.z,
+        ),
+        ShapeType::Ball => ColliderBuilder::ball(c.collider_shape_size.x),
+      }.translation(
+        c.collider_transform_position.x,
+        c.collider_transform_position.y,
+        c.collider_transform_position.z,
+      );
 
-    commands.remove_one::<PhysicsBuilder>(entity);
+      let child = commands.spawn((collider,)).current_entity().unwrap();
+
+      commands.push_children(entity, &[child]);
+    }
+    commands.remove_one::<CreatePhysics>(entity);
   }
 }
 

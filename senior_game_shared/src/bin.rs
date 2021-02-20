@@ -14,7 +14,8 @@ mod scenes;
 pub fn main() {
   App::build()
     .add_plugins(DefaultPlugins)
-    .register_type::<PhysicsBuilder>()
+    .register_type::<CreatePhysics>()
+    .register_type::<CreateCollider>()
     .register_type::<RigidbodyType>()
     .register_type::<AssetChild>()
     .register_type::<ShapeType>()
@@ -28,8 +29,11 @@ fn exit_system(mut exit: ResMut<Events<AppExit>>) {
 }
 
 fn build_scenes(type_registry: Res<TypeRegistry>) {
-  const SCENES: &'static [(Destination, &'static str, fn(&Res<TypeRegistry>) -> String)] =
-    &[(Destination::Client, "physics_test.scn", physics_test::build)];
+  const SCENES: &'static [(Destination, &'static str, fn(Destination, &Res<TypeRegistry>) -> String)] =
+  &[
+    (Destination::Both, "physics_test.scn", physics_test::build),
+    (Destination::Both, "platform.scn", platform::build)
+  ];
 
   let client_prefix = Path::new("../senior_game_client/assets/scenes");
   let server_prefix = Path::new("../senior_game_server/assets/scenes");
@@ -37,11 +41,11 @@ fn build_scenes(type_registry: Res<TypeRegistry>) {
   for (dest, name, build_fn) in SCENES {
     println!("Saving Scene {}", name);
     if *dest == Destination::Client || *dest == Destination::Both {
-      fs::write(client_prefix.join(name), build_fn(&type_registry)).expect("Unable to write file");
+      fs::write(client_prefix.join(name), build_fn(Destination::Client, &type_registry)).expect("Unable to write file");
     }
 
     if *dest == Destination::Server || *dest == Destination::Both {
-      fs::write(server_prefix.join(name), build_fn(&type_registry)).expect("Unable to write file");
+      fs::write(server_prefix.join(name), build_fn(Destination::Server, &type_registry)).expect("Unable to write file");
     }
   }
 
