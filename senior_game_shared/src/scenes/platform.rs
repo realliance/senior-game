@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy::reflect::TypeRegistry;
 use senior_game_shared::components::assets::*;
+
 use crate::scenes::destination_helper::Destination;
 
 pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {

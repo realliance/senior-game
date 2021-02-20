@@ -2,8 +2,8 @@ use std::path::Path;
 
 use bevy::asset::{AssetServer, Handle};
 use bevy::ecs::{Commands, Entity, Query, Res, ResMut};
-use bevy::scene::{DynamicScene, SceneSpawner};
 use bevy::prelude::BuildChildren;
+use bevy::scene::{DynamicScene, SceneSpawner};
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
 use bevy_rapier3d::rapier::geometry::ColliderBuilder;
 
@@ -30,10 +30,7 @@ pub fn load_scene_system(
   }
 }
 
-pub fn load_physics(
-  query: Query<(Entity, &CreatePhysics)>,
-  commands: &mut Commands,
-) {
+pub fn load_physics(query: Query<(Entity, &CreatePhysics)>, commands: &mut Commands) {
   for (entity, bundle) in query.iter() {
     println!("Load Rigidbody Triggered");
     let trans = bundle.rigidbody_transform.translation;
@@ -46,7 +43,7 @@ pub fn load_physics(
     .translation(trans.x, trans.y, trans.z);
 
     commands.insert(entity, (rigidbody,));
-      
+
     for c in bundle.colliders.iter() {
       println!("Load Collider Triggered");
 
@@ -57,7 +54,8 @@ pub fn load_physics(
           c.collider_shape_size.z,
         ),
         ShapeType::Ball => ColliderBuilder::ball(c.collider_shape_size.x),
-      }.translation(
+      }
+      .translation(
         c.collider_transform_position.x,
         c.collider_transform_position.y,
         c.collider_transform_position.z,
