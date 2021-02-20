@@ -21,45 +21,33 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
     });
   }
 
+  // Platform
+
+  let column = Transform::from_translation(Vec3::new(5.0, 3.5, 4.0));
+
   scene_world.spawn((
     Transform::default(),
     GlobalTransform::default(),
     CreatePhysics {
       rigidbody_transform: Transform::identity(),
-      rigidbody_type: RigidbodyType::Dynamic,
-      colliders: vec![
-        CreateCollider {
-          collider_transform_position: Transform::identity().translation,
-          collider_transform_rotation: Transform::identity().rotation,
-          collider_shape_size: Vec3::new(1.0, 1.0, 1.0),
-          collider_shape: ShapeType::Cube,
-        }
-      ],
-    },
-    AssetChild {
-      path: "models/cube.gltf".to_string(),
-    },
-  ));
-
-  // cube
-
-  scene_world.spawn((
-    Transform::default(),
-    GlobalTransform::default(),
-    CreatePhysics {
-      rigidbody_transform: Transform::from_translation(Vec3::new(-1.75, -5.0, 0.0)),
       rigidbody_type: RigidbodyType::Static,
       colliders: vec![
         CreateCollider {
           collider_transform_position: Transform::identity().translation,
           collider_transform_rotation: Transform::identity().rotation,
-          collider_shape_size: Vec3::new(1.0, 1.0, 1.0),
+          collider_shape_size: Vec3::new(10.0, 0.5, 10.0),
           collider_shape: ShapeType::Cube,
-        }
+        },
+        CreateCollider {
+          collider_transform_position: column.translation,
+          collider_transform_rotation: column.rotation,
+          collider_shape_size: Vec3::new(1.0, 3.0, 1.0),
+          collider_shape: ShapeType::Cube,
+        },
       ],
     },
     AssetChild {
-      path: "models/cube.gltf".to_string(),
+      path: "models/platform.gltf".to_string(),
     },
   ));
 

@@ -28,18 +28,19 @@ pub enum ShapeType {
   Ball,
 }
 
-impl Default for ShapeType {
-  fn default() -> ShapeType {
-    ShapeType::Cube
-  }
-}
-
 #[derive(Clone, Debug, Reflect, Default)]
 #[reflect(Component)]
-pub struct PhysicsBuilder {
+pub struct CreatePhysics {
   pub rigidbody_type: RigidbodyType,
   pub rigidbody_transform: Transform,
-  pub collider_transform: Transform,
+  pub colliders: Vec<CreateCollider>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Reflect)]
+#[reflect_value(PartialEq, Serialize, Deserialize)]
+pub struct CreateCollider {
+  pub collider_transform_position: Vec3,
+  pub collider_transform_rotation: Quat,
   pub collider_shape_size: Vec3,
   pub collider_shape: ShapeType,
 }
