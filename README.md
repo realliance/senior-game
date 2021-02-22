@@ -14,7 +14,8 @@
 ```
 # Install Rust Toolchain via Rustup
 
-rustup toolchain install stable
+rustup toolchain install nightly
+rustup default nightly
 
 # If on Linux, install cargo-binutils
 
@@ -29,13 +30,9 @@ rustup component add llvm-tools-preview
 ## Using rustfmt
 
 ```
-# Install nightly Rust toolchain
-
-rustup toolchain install nightly
-
 # Run rustfmt from root of project
 
-cargo +nightly fmt
+cargo fmt
 ```
 
 ## Running project crates
@@ -58,6 +55,8 @@ cargo run
 
 ## `senior_game_client`
 Client crate, will be built into the client executable
+
+For bevy's dynamic linking feature (faster compilation times), use `cargo run --features bevy/dynamic`
 
 ## `senior_game_server`
 Server crate, will be built into the headless server executable
