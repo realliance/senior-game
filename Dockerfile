@@ -14,7 +14,8 @@ RUN --mount=type=cache,target=/var/cache/apt \
 
 COPY . .
 
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
+RUN --mount=type=cache,target=~/.cargo/registry \
+    --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/build/target \
     cargo build --release -p senior_game_server && \
     cargo install --path /build/senior_game_server --bin senior_game_server --verbose

@@ -3,3 +3,4 @@ target/
 Dockerfile
 rustfmt.toml
 README.md
+.renovaterc.json
