@@ -48,7 +48,7 @@ impl PluginGroup for FlaggedPlugins {
     if cfg!(debug_assertions) {
       // Physics Debug Renderer
       if args.contains(&"--render-collider-bounds".to_string()) {
-        println!("Render Debug Activated");
+        info!(target: "app_startup", "Render Debug Activated");
         group.add(RapierRenderPlugin);
       }
     }
@@ -60,7 +60,7 @@ fn manual_start_server_connection(commands: &mut Commands) {
     addr: SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 12350),
   });
 
-  println!("Crated Server Connection Component");
+  info!(target: "manual_start_server_connection", "Crated Server Connection Component");
 }
 
 fn manual_load_scene(commands: &mut Commands) {
@@ -69,5 +69,5 @@ fn manual_load_scene(commands: &mut Commands) {
     watch: false,
   });
 
-  println!("Scene Manually Loaded");
+  info!(target: "manual_load_scene", "Scene Manually Loaded");
 }

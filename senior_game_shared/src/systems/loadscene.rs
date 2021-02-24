@@ -1,6 +1,7 @@
 use std::path::Path;
 
 use bevy::asset::{AssetServer, Handle};
+use bevy::log::*;
 use bevy::ecs::{Commands, Entity, Query, Res, ResMut};
 use bevy::prelude::BuildChildren;
 use bevy::scene::{DynamicScene, SceneSpawner};
@@ -16,8 +17,7 @@ pub fn load_scene_system(
   query: Query<(Entity, &LoadScene)>,
 ) {
   for (entity, load_scene) in query.iter() {
-    println!("Load Scene Triggered");
-    println!("{}", &load_scene.path);
+    info!(target: "load_scene_system", "Load Scene Triggered: {}", &load_scene.path);
 
     let scene_handle: Handle<DynamicScene> = asset_server.load(Path::new(&load_scene.path));
     scene_spawner.spawn_dynamic(scene_handle);
@@ -32,7 +32,7 @@ pub fn load_scene_system(
 
 pub fn load_physics(query: Query<(Entity, &CreatePhysics)>, commands: &mut Commands) {
   for (entity, bundle) in query.iter() {
-    println!("Load Rigidbody Triggered");
+    info!(target: "load_physics", "Load Rigidbody Triggered");
     let trans = bundle.rigidbody_transform.translation;
 
     let rigidbody = match bundle.rigidbody_type {
@@ -45,7 +45,7 @@ pub fn load_physics(query: Query<(Entity, &CreatePhysics)>, commands: &mut Comma
     commands.insert(entity, (rigidbody,));
 
     for c in bundle.colliders.iter() {
-      println!("Load Collider Triggered");
+      info!(target: "load_physics", "Load Collider Triggered");
 
       let collider = match c.collider_shape {
         ShapeType::Cube => ColliderBuilder::cuboid(
@@ -76,7 +76,7 @@ pub fn load_asset(
   mut scene_spawner: ResMut<SceneSpawner>,
 ) {
   for (entity, asset) in query.iter() {
-    println!("Load Asset Triggered");
+    info!(target: "load_asset", "Load Asset Triggered");
     scene_spawner.spawn_as_child(asset_server.load(Path::new(&asset.path)), entity);
 
     commands.remove_one::<AssetChild>(entity);

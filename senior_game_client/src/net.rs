@@ -15,7 +15,7 @@ pub fn server_connection_system(
   query: Query<(Entity, &StartServerConnection)>,
 ) {
   for (entity, conn_info) in query.iter() {
-    println!("Connecting to {}", conn_info.addr.to_string());
+    info!(target: "server_connection_system", "Connecting to {}", conn_info.addr.to_string());
 
     net
       .bind("127.0.0.1:12351")
@@ -43,7 +43,7 @@ pub fn handle_network_events(
         let msg = NetworkMessage::decode(&msg[..]);
         match msg {
           NetworkMessage::Pong => {
-            println!("Pong Recieved");
+            info!(target: "handle_network_events", "Pong Recieved");
           },
           _ => {},
         }
