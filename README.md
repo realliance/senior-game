@@ -11,7 +11,7 @@
 
 ## Setting up Rust
 
-```
+```console
 # Install Rust Toolchain via Rustup
 
 rustup toolchain install nightly
@@ -29,7 +29,7 @@ rustup component add llvm-tools-preview
 
 ## Using rustfmt
 
-```
+```console
 # Run rustfmt from root of project
 
 cargo fmt
@@ -37,7 +37,7 @@ cargo fmt
 
 ## Running project crates
 
-```
+```console
 # Run Client
 cd senior_game_client/
 cargo run

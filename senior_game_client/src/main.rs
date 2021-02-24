@@ -47,7 +47,7 @@ impl PluginGroup for FlaggedPlugins {
     // Debug Build Only Flags
     if cfg!(debug_assertions) {
       // Physics Debug Renderer
-      if args.contains(&"--debugrender".to_string()) {
+      if args.contains(&"--render-collider-bounds".to_string()) {
         println!("Render Debug Activated");
         group.add(RapierRenderPlugin);
       }
