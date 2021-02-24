@@ -8,7 +8,7 @@ resources:
   - name: pull-request
     type: pull-request
     icon: source-branch
-    check_every: 1m
+    webhook_token: ((webhook-token))
     source:
       repository: realliance/senior-game
       access_token: ((github-access-token))
@@ -22,12 +22,14 @@ resources:
   - name: senior-game-main
     type: git
     icon: git
+    webhook_token: ((webhook-token))
     source:
       uri: https://github.com/realliance/senior-game
       branch: main
   - name: senior-game-tagged-release
     type: git
     icon: git
+    webhook_token: ((webhook-token))
     source:
       uri: https://github.com/realliance/senior-game
       branch: main
