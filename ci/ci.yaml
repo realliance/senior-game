@@ -132,6 +132,8 @@ jobs:
               - exc
               - |
                 git tag -l --points-at HEAD > version/tag
+      - load_var: version
+        file: version/tag
       - task: build
         image: oci-build-task
         config:
@@ -148,5 +150,5 @@ jobs:
       - put: quay
         params:
           image: image/image.tar
-          additional_tags: version/tag
+          version: ((.:version))
       
