@@ -75,6 +75,12 @@ jobs:
             image: rust-nightly
             config:
               platform: linux
+              params:
+                CARGO_HOME: ./cargo
+              caches:
+                - path: target
+                - path: cargo
+                - path: apt
               inputs:
                 - name: pull-request
                   path: .
@@ -83,6 +89,10 @@ jobs:
                 args:
                   - -exc
                   - |
+                    apt-get update -o Dir::Cache=$PWD/apt > /dev/null
+                    apt-get install -yqq --no-install-recommends \
+                    -o Dir::Cache=$PWD/apt \
+                    clang lld libasound2-dev libudev-dev > /dev/null
                     cargo clippy
           - task: rustfmt
             image: rust-nightly
