@@ -1,6 +1,5 @@
 target/
 cache/
-.dockerignore
 Dockerfile
 rustfmt.toml
 README.md

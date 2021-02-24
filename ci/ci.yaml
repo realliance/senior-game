@@ -32,8 +32,8 @@ resources:
     webhook_token: ((webhook-token))
     source:
       uri: https://github.com/realliance/senior-game
-      branch: main
       tag_filter: "*"
+      branch: main
   - name: quay
     type: registry-image
     icon: docker
@@ -45,7 +45,8 @@ resources:
     type: registry-image
     icon: docker
     source:
-      repository: docker.io/rustlang/rust:nightly-buster
+      repository: docker.io/rustlang/rust
+      tag: nightly-buster
   - name: busybox
     type: registry-image
     icon: docker
@@ -82,14 +83,16 @@ jobs:
                 args:
                   - -exc
                   - |
-                    cargo +nightly fmt --check
+                    cargo fmt -- --check
           - task: unit-test
             image: rust-nightly
             config:
               platform: linux
               caches:
                 - path: target
-                - path: vendor
+                - path: senior_game_client/vendor
+                - path: senior_game_server/vendor
+                - path: senior_game_shared/vendor
               inputs:
                 - name: pull-request
                   path: .
@@ -104,7 +107,9 @@ jobs:
                     lld \
                     libasound2-dev \
                     libudev-dev
-                    cargo vendor > .cargo/config.toml
+                    cargo vendor --manifest-path senior_game_client/Cargo.toml > senior_game_client/.cargo/config.toml
+                    cargo vendor --manifest-path senior_game_server/Cargo.toml > senior_game_server/.cargo/config.toml
+                    cargo vendor --manifest-path senior_game_shared/Cargo.toml > senior_game_shared/.cargo/config.toml
                     cargo test
         on_failure:
           put: pull-request
@@ -121,23 +126,8 @@ jobs:
         trigger: true
       - get: oci-build-task
       - get: busybox
-      - task: get-tag
-        image: busybox
-        config:
-          platform: linux
-          inputs:
-            - name: senior-game-tagged-release
-              path: .
-          outputs:
-            - name: version
-          run:
-            path: /bin/sh
-            args:
-              - exc
-              - |
-                git tag -l --points-at HEAD > version/tag
-      - load_var: version
-        file: version/tag
+      - load_var: tag
+        file: .git/ref
       - task: build
         image: oci-build-task
         config:
@@ -154,5 +144,5 @@ jobs:
       - put: quay
         params:
           image: image/image.tar
-          version: ((.:version))
+          version: ((.:tag))
       

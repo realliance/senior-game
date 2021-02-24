@@ -1,8 +1,8 @@
 use std::path::Path;
 
 use bevy::asset::{AssetServer, Handle};
-use bevy::log::*;
 use bevy::ecs::{Commands, Entity, Query, Res, ResMut};
+use bevy::log::*;
 use bevy::prelude::BuildChildren;
 use bevy::scene::{DynamicScene, SceneSpawner};
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
