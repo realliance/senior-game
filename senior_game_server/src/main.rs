@@ -81,6 +81,8 @@ fn handle_network_events(
     match event {
       NetworkEvent::Message(conn, msg) => {
         let msg = NetworkMessage::decode(&msg[..]);
+        // Temporarily allow single match since this match statement will expand soon
+        #[allow(clippy::single_match)]
         match msg {
           NetworkMessage::Introduction(_) => {
             println!("Player Connected");
@@ -95,7 +97,7 @@ fn handle_network_events(
         }
       },
       NetworkEvent::Disconnected(conn) => {
-        if let Some(_) = state.players.remove(conn) {
+        if state.players.remove(conn).is_some() {
           println!("Player Disconnected");
         }
       },

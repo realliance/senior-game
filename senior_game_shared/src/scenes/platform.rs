@@ -54,5 +54,5 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
 
   let scene = DynamicScene::from_world(&scene_world, &type_registry);
 
-  return scene.serialize_ron(&type_registry).unwrap();
+  scene.serialize_ron(&type_registry).unwrap()
 }

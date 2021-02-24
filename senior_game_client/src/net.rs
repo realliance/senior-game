@@ -38,6 +38,8 @@ pub fn handle_network_events(
   network_events: Res<Events<NetworkEvent>>,
 ) {
   for event in state.network_events.iter(&network_events) {
+    // Temporarily allow single match since this match statement will expand soon
+    #[allow(clippy::single_match)]
     match event {
       NetworkEvent::Message(_conn, msg) => {
         let msg = NetworkMessage::decode(&msg[..]);

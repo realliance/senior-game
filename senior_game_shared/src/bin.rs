@@ -29,9 +29,10 @@ fn exit_system(mut exit: ResMut<Events<AppExit>>) {
 }
 
 fn build_scenes(type_registry: Res<TypeRegistry>) {
-  const SCENES: &'static [(
+  #[allow(clippy::type_complexity)]
+  const SCENES: &[(
     Destination,
-    &'static str,
+    &str,
     fn(Destination, &Res<TypeRegistry>) -> String,
   )] = &[
     (Destination::Both, "physics_test.scn", physics_test::build),

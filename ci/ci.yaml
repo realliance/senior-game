@@ -71,6 +71,19 @@ jobs:
           status: pending
       - get: rust-nightly
       - in_parallel:
+          - task: linting
+            image: rust-nightly
+            config:
+              platform: linux
+              inputs:
+                - name: pull-request
+                  path: .
+              run:
+                path: /bin/sh
+                args:
+                  - -exc
+                  - |
+                    cargo clippy
           - task: rustfmt
             image: rust-nightly
             config:
