@@ -88,9 +88,12 @@ jobs:
             image: rust-nightly
             config:
               platform: linux
+              params:
+                CARGO_HOME: ./cargo
               caches:
                 - path: target
-                - path: vendor
+                - path: cargo
+                - path: apt
               inputs:
                 - name: pull-request
                   path: .
@@ -99,15 +102,10 @@ jobs:
                 args:
                   - -exc
                   - |
-                    apt-get update
+                    apt-get update -o Dir::Cache=$PWD/apt > /dev/null
                     apt-get install -yqq --no-install-recommends \
-                    clang \
-                    lld \
-                    libasound2-dev \
-                    libudev-dev
-                    cargo vendor --manifest-path senior_game_client/Cargo.toml --no-delete --locked >> senior_game_client/.cargo/config.toml
-                    cargo vendor --manifest-path senior_game_server/Cargo.toml --no-delete --locked >> senior_game_server/.cargo/config.toml
-                    cargo vendor --manifest-path senior_game_shared/Cargo.toml --no-delete --locked >> senior_game_shared/.cargo/config.toml
+                    -o Dir::Cache=$PWD/apt \
+                    clang lld libasound2-dev libudev-dev > /dev/null
                     cargo test
         on_failure:
           put: pull-request
