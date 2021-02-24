@@ -105,9 +105,9 @@ jobs:
                     lld \
                     libasound2-dev \
                     libudev-dev
-                    cargo vendor --manifest-path senior_game_client/Cargo.toml > senior_game_client/.cargo/config.toml
-                    cargo vendor --manifest-path senior_game_server/Cargo.toml > senior_game_server/.cargo/config.toml
-                    cargo vendor --manifest-path senior_game_shared/Cargo.toml > senior_game_shared/.cargo/config.toml
+                    cargo vendor --manifest-path senior_game_client/Cargo.toml --no-delete > senior_game_client/.cargo/config.toml
+                    cargo vendor --manifest-path senior_game_server/Cargo.toml --no-delete > senior_game_server/.cargo/config.toml
+                    cargo vendor --manifest-path senior_game_shared/Cargo.toml --no-delete > senior_game_shared/.cargo/config.toml
                     cargo test
         on_failure:
           put: pull-request
