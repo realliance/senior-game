@@ -89,6 +89,7 @@ jobs:
               platform: linux
               caches:
                 - path: target
+                - path: vendor
               inputs:
                 - name: pull-request
                   path: .
@@ -103,6 +104,7 @@ jobs:
                     lld \
                     libasound2-dev \
                     libudev-dev
+                    cargo vendor > .cargo/config.toml
                     cargo test
         on_failure:
           put: pull-request
