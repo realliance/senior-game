@@ -1,0 +1,152 @@
+---
+resource_types:
+  - name: pull-request
+    type: registry-image
+    source:
+      repository: docker.io/teliaoss/github-pr-resource
+resources:
+  - name: pull-request
+    type: pull-request
+    icon: source-branch
+    check_every: 1m
+    source:
+      repository: realliance/senior-game
+      access_token: ((github-access-token))
+      disable_ci_skip: true
+      disable_forks: true
+  - name: oci-build-task
+    type: registry-image
+    icon: docker
+    source:
+      repository: docker.io/vito/oci-build-task
+  - name: senior-game-main
+    type: git
+    icon: git
+    source:
+      uri: https://github.com/realliance/senior-game
+      branch: main
+  - name: senior-game-tagged-release
+    type: git
+    icon: git
+    source:
+      uri: https://github.com/realliance/senior-game
+      branch: main
+      tag_filter: "*"
+  - name: quay
+    type: registry-image
+    icon: docker
+    source:
+      repository: quay.io/realliance/senior-game
+      username: ((quay-ci-account.username))
+      password: ((quay-ci-account.token))
+  - name: rust-nightly
+    type: registry-image
+    icon: docker
+    source:
+      repository: docker.io/rustlang/rust:nightly-buster
+  - name: busybox
+    type: registry-image
+    icon: docker
+    source:
+      repository: busybox
+
+jobs:
+  - name: set-pipeline
+    plan:
+      - get: senior-game-main
+        trigger: true
+      - set_pipeline: self
+        file: senior-game-main/ci/ci.yaml
+  - name: pr-validation
+    plan:
+      - get: pull-request
+        trigger: true
+        version: check_every
+      - put: pull-request
+        params:
+          path: pull-request
+          status: pending
+      - get: rust-nightly
+      - in_parallel:
+          - task: linting
+            image: rust-nightly
+            config:
+              platform: linux
+              inputs:
+                - name: pull-request
+                  path: .
+              run:
+                path: /bin/sh
+                args:
+                  - -exc
+                  - |
+                    cargo +nightly fmt --check
+          - task: unit-test
+            image: rust-nightly
+            config:
+              platform: linux
+              caches:
+                - path: target
+              inputs:
+                - name: pull-request
+                  path: .
+              run:
+                path: /bin/sh
+                args:
+                  - -exc
+                  - |
+                    apt-get update
+                    apt-get install -yqq --no-install-recommends \
+                    clang \
+                    lld \
+                    libasound2-dev \
+                    libudev-dev
+                    cargo test
+        on_failure:
+          put: pull-request
+          params:
+            path: pull-request
+            status: failure
+      - put: pull-request
+        params:
+          path: pull-request
+          status: success
+  - name: tagged-release
+    plan:
+      - get: senior-game-tagged-release
+        trigger: true
+      - get: oci-build-task
+      - get: busybox
+      - task: get-tag
+        image: busybox
+        config:
+          platform: linux
+          inputs:
+            - name: senior-game-tagged-release
+              path: .
+          outputs:
+            - name: version
+          run:
+            path: /bin/sh
+            args:
+              - exc
+              - |
+                git tag -l --points-at HEAD > version/tag
+      - task: build
+        image: oci-build-task
+        config:
+          platform: linux
+          inputs:
+            - name: senior-game-tagged-release
+              path: .
+          ouputs:
+            - name: image
+          caches:
+            - path: caches
+          run:
+            path: build
+      - put: quay
+        params:
+          image: image/image.tar
+          additional_tags: version/tag
+      
