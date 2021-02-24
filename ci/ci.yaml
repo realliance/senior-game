@@ -57,7 +57,7 @@ jobs:
         trigger: true
       - set_pipeline: self
         file: senior-game-main/ci/ci.yaml
-  - name: pr-validation
+  - name: validate-pr
     plan:
       - get: pull-request
         trigger: true
@@ -68,7 +68,7 @@ jobs:
           status: pending
       - get: rust-nightly
       - in_parallel:
-          - task: linting
+          - task: rustfmt
             image: rust-nightly
             config:
               platform: linux
