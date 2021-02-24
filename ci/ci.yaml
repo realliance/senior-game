@@ -90,9 +90,7 @@ jobs:
               platform: linux
               caches:
                 - path: target
-                - path: senior_game_client/vendor
-                - path: senior_game_server/vendor
-                - path: senior_game_shared/vendor
+                - path: vendor
               inputs:
                 - name: pull-request
                   path: .
