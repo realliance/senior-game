@@ -6,6 +6,7 @@
     ":prConcurrentLimitNone",
     ":pinVersions",
     "docker:pinDigests",
-    ":rebaseStalePrs"
+    ":rebaseStalePrs",
+    "group:allNonMajor"
   ]
 }
