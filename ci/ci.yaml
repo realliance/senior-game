@@ -32,7 +32,7 @@ resources:
     webhook_token: ((webhook-token))
     source:
       uri: https://github.com/realliance/senior-game
-      tag_filter: "*"
+      tag_filter: '*'
       branch: main
   - name: quay
     type: registry-image
@@ -52,7 +52,11 @@ resources:
     icon: docker
     source:
       repository: busybox
-
+  - name: python
+    type: registry-image
+    icon: docker
+    source:
+      repository: docker.io/python
 jobs:
   - name: set-pipeline
     plan:
@@ -70,6 +74,7 @@ jobs:
           path: pull-request
           status: pending
       - get: rust-nightly
+      - get: python
       - in_parallel:
           - task: linting
             image: rust-nightly
@@ -130,6 +135,40 @@ jobs:
                     -o Dir::Cache=$PWD/apt \
                     clang lld libasound2-dev libudev-dev > /dev/null
                     cargo test
+          - task: yamllint
+            image: python
+            config:
+              platform: linux
+              inputs:
+                - name: pull-request
+                  path: .
+              caches:
+                - path: cache
+              run:
+                path: /bin/sh
+                args:
+                  - -exc
+                  - |
+                    pip install --cache-dir ./cache yamllint > /dev/null
+                    yamllint .
+          - task: pre-commit
+            image: python
+            params:
+              SKIP: no-commit-to-branch,validate-pipeline,renovate-config,lint-apidocs
+            config:
+              platform: linux
+              inputs:
+                - name: pull-request
+                  path: .
+              caches:
+                - path: cache
+              run:
+                path: /bin/sh
+                args:
+                  - -exc
+                  - |
+                    pip install --cache-dir ./cache pre-commit > /dev/null
+                    pre-commit run --all-files
         on_failure:
           put: pull-request
           params:
@@ -164,4 +203,3 @@ jobs:
         params:
           image: image/image.tar
           version: ((.:tag))
-      

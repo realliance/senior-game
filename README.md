@@ -27,6 +27,20 @@ rustup component add llvm-tools-preview
 
 ```
 
+## Pre-Commit
+
+This repository uses the [pre-commit](https://pre-commit.com/) tool to facilitate some automatic code corrections.
+
+Before beginning coding, [install pre-commit](https://pre-commit.com/#install) and set up the hook:
+
+```console
+# Install git hook
+pre-commit install
+
+# Manually run pre-commit
+pre-commit run --all-files
+```
+
 ## Using rustfmt
 
 ```console
