@@ -76,7 +76,7 @@ jobs:
       - get: rust-nightly
       - get: python
       - in_parallel:
-          - task: linting
+          - task: clippy
             image: rust-nightly
             config:
               platform: linux
@@ -154,7 +154,7 @@ jobs:
           - task: pre-commit
             image: python
             params:
-              SKIP: no-commit-to-branch,validate-pipeline,renovate-config,lint-apidocs
+              SKIP: no-commit-to-branch,validate-pipeline,renovate-config
             config:
               platform: linux
               inputs:
