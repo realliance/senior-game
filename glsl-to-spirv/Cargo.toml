@@ -1,0 +1,41 @@
+[package]
+name = "bevy-glsl-to-spirv"
+version = "0.2.2"
+authors = ["Pierre Krieger <pierre.krieger1708@gmail.com>", "The vulkano contributors", "Carter Anderson <mcanders1@gmail.com>", "Nicholas Rishel <rishel.nick@gmail.com>", "Martin Krisnanto Putra <grygrflzr@hotmail.com>"]
+description = "Deprecated. This crate is a temporary measure until native rust shader compilation like https://github.com/gfx-rs/naga lands."
+repository = "https://github.com/cart/glsl-to-spirv"
+license = "MIT/Apache-2.0"
+categories = ["rendering::graphics-api"]
+edition = "2018"
+
+[dependencies]
+# Default panic message handling
+bevy-glsl-to-spirv-builder = { path = "glsl-to-spirv-builder", default-features = false }
+
+# Pre-built libraries
+[target.x86_64-unknown-linux-gnu.dependencies]
+bevy-glsl-to-spirv-builder = { path = "glsl-to-spirv-builder", default-features = false }
+
+[target.x86_64-apple-darwin.dependencies]
+bevy-glsl-to-spirv-builder = { path = "glsl-to-spirv-builder", default-features = false }
+
+[target.aarch64-linux-android.dependencies]
+bevy-glsl-to-spirv-builder = { path = "glsl-to-spirv-builder", default-features = false }
+
+[target.armv7-linux-androideabi.dependencies]
+bevy-glsl-to-spirv-builder = { path = "glsl-to-spirv-builder", default-features = false }
+
+# Optionally build from source in the future
+# Wait for cargo resolver version 2
+[target.x86_64-pc-windows-msvc.dependencies]
+bevy-glsl-to-spirv-builder = { path = "glsl-to-spirv-builder", default-features = false  }
+
+# Always build from source
+[target.i686-pc-windows-msvc.dependencies]
+bevy-glsl-to-spirv-builder = { path = "glsl-to-spirv-builder", features = ["build-from-source"] }
+
+[target.x86_64-pc-windows-gnu.dependencies]
+bevy-glsl-to-spirv-builder = { path = "glsl-to-spirv-builder", features = ["build-from-source"] }
+
+[target.i686-pc-windows-gnu.dependencies]
+bevy-glsl-to-spirv-builder = { path = "glsl-to-spirv-builder", features = ["build-from-source"] }
