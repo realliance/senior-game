@@ -260,6 +260,7 @@ dependencies = [
 [[package]]
 name = "bevy-glsl-to-spirv"
 version = "0.2.2"
+source = "git+https://github.com/realliance/glsl-to-spirv#d7a5ea07d434ec3ea10fafb9c04e29c479c3f261"
 dependencies = [
  "bevy-glsl-to-spirv-builder",
 ]
@@ -267,6 +268,7 @@ dependencies = [
 [[package]]
 name = "bevy-glsl-to-spirv-builder"
 version = "0.1.0"
+source = "git+https://github.com/realliance/glsl-to-spirv#d7a5ea07d434ec3ea10fafb9c04e29c479c3f261"
 dependencies = [
  "cc",
  "cmake",
