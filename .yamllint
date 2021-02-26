@@ -1,6 +1,5 @@
 ---
 extends: default
-ignore: glsl-to-spirv/
 rules:
   comments:
     level: error
