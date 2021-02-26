@@ -47,16 +47,16 @@ resources:
     source:
       repository: docker.io/rustlang/rust
       tag: nightly-buster
-  - name: busybox
-    type: registry-image
-    icon: docker
-    source:
-      repository: busybox
   - name: python
     type: registry-image
     icon: docker
     source:
       repository: docker.io/python
+  - name: sentry-cli
+    type: registry-image
+    icon: docker
+    source:
+      repository: docker.io/getsentry/sentry-cli
 jobs:
   - name: set-pipeline
     plan:
@@ -99,6 +99,7 @@ jobs:
                     -o Dir::Cache=$PWD/apt \
                     clang lld libasound2-dev libudev-dev > /dev/null
                     cargo clippy
+                    cargo clippy --release
           - task: rustfmt
             image: rust-nightly
             config:
@@ -112,6 +113,31 @@ jobs:
                   - -exc
                   - |
                     cargo fmt -- --check
+          - task: validate-build
+            image: rust-nightly
+            config:
+              platform: linux
+              params:
+                CARGO_HOME: ./cargo
+              caches:
+                - path: target
+                - path: cargo
+                - path: apt
+              inputs:
+                - name: pull-request
+                  path: .
+              run:
+                path: /bin/sh
+                args:
+                  - -exc
+                  - |
+                    apt-get update -o Dir::Cache=$PWD/apt > /dev/null
+                    apt-get install -yqq --no-install-recommends \
+                    -o Dir::Cache=$PWD/apt \
+                    clang lld libasound2-dev libudev-dev > /dev/null
+                    cargo build --locked --package senior_game_shared
+                    cargo install --locked --path senior_game_client
+                    cargo install --locked --path senior_game_server
           - task: unit-test
             image: rust-nightly
             config:
@@ -183,23 +209,97 @@ jobs:
       - get: senior-game-tagged-release
         trigger: true
       - get: oci-build-task
-      - get: busybox
+      - get: sentry-cli
       - load_var: tag
         file: .git/ref
-      - task: build
-        image: oci-build-task
+        reveal: true
+      - task: sentry-new
+        image: sentry-cli
+        params:
+          SENTRY_ORG: ((sentry.org))
+          SENTRY_AUTH_TOKEN: ((sentry.auth-token))
+          SENTRY_URL: ((sentry.url))
         config:
           platform: linux
+          params:
+            TAG: ((.:tag))
           inputs:
-            - name: senior-game-tagged-release
+            - name: senior-accounts-main
               path: .
-          ouputs:
-            - name: image
-          caches:
-            - path: caches
+          outputs:
+            - name: release
           run:
-            path: build
+            path: /bin/sh
+            args:
+              - -exc
+              - |
+                VERSION=senior-game@$TAG
+                echo $VERSION > release/version.txt
+                sentry-cli releases new -p senior-server senior-client "$VERSION"
+                sentry-cli releases set-commits --auto "$VERSION"
+      - load_var: sentry-release
+        file: release/version.txt
+        reveal: true
+      - in_parallel:
+          - task: build-server
+            image: oci-build-task
+            params:
+              BUILD_ARG_RELEASE: ((.:sentry-release))
+            config:
+              platform: linux
+              inputs:
+                - name: senior-game-tagged-release
+                  path: .
+              ouputs:
+                - name: image
+              caches:
+                - path: caches
+              run:
+                path: build
+          - task: build-client-linux
+            image: rust-nightly
+            config:
+              platform: linux
+              params:
+                CARGO_HOME: ./cargo
+                RELEASE: ((.:sentry-release))
+              caches:
+                - path: target
+                - path: cargo
+                - path: apt
+              inputs:
+                - name: senior-game-tagged-release
+                  path: .
+              outputs:
+                - name: clients
+              run:
+                path: /bin/sh
+                args:
+                  - -exc
+                  - |
+                    apt-get update -o Dir::Cache=$PWD/apt > /dev/null
+                    apt-get install -yqq --no-install-recommends \
+                    -o Dir::Cache=$PWD/apt \
+                    clang lld libasound2-dev libudev-dev > /dev/null
+                    rustup target add x86_64-pc-windows-msvc mingw-w64 > /dev/null
+                    ./build-linux-client.sh
+                    ./build-windows-client.sh
       - put: quay
         params:
           image: image/image.tar
           version: ((.:tag))
+      - task: sentry-finalize
+        image: sentry-cli
+        params:
+          SENTRY_ORG: ((sentry.org))
+          SENTRY_AUTH_TOKEN: ((sentry.auth-token))
+          SENTRY_URL: ((sentry.url))
+          VERSION: ((.:sentry-release))
+        config:
+          platform: linux
+          run:
+            path: /bin/sh
+            args:
+              - -exc
+              - |
+                sentry-cli releases finalize "$VERSION"

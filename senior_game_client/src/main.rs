@@ -1,5 +1,7 @@
-#[cfg(debug_assertions)]
 use std::env;
+#[cfg(not(debug_assertions))]
+use std::borrow::Cow;
+use std::option::Option::Some;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
 use bevy::app::PluginGroupBuilder;
@@ -17,6 +19,21 @@ use crate::net::{handle_network_events, server_connection_system, StartServerCon
 mod net;
 
 fn main() {
+  #[cfg(not(debug_assertions))] {
+    // Sentry Guard (pushes to sentry on drop)
+    // Picks up DSN from SENTRY_DSN environment variable
+    //
+    // If you think you want to change this, you're probably wrong
+    // It *must* be the first thing in main
+    // It *cannot* be extracted into a function
+    // Yes, embedding the DSN is intentional
+    let _guard = sentry::init(("https://006f14a134fe4af9b94849382ad25982@sentry.realliance.net/5",
+    sentry::ClientOptions {
+      release: Some(Cow::Borrowed(env!("RELEASE"))),
+      ..Default::default()
+    }));
+  }
+
   App::build()
     .add_resource(Msaa::default())
     .add_plugins(DefaultPlugins)
@@ -44,8 +61,8 @@ pub struct FlaggedPlugins;
 impl PluginGroup for FlaggedPlugins {
   fn build(&mut self, group: &mut PluginGroupBuilder) {
     let args: Vec<String> = env::args().collect();
-    // Debug Build Only Flags
-    if cfg!(debug_assertions) {
+
+    #[cfg(debug_assertions)] {
       // Physics Debug Renderer
       if args.contains(&"--render-collider-bounds".to_string()) {
         info!(target: "app_startup", "Render Debug Activated");
@@ -60,7 +77,7 @@ fn manual_start_server_connection(commands: &mut Commands) {
     addr: SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 12350),
   });
 
-  info!(target: "manual_start_server_connection", "Crated Server Connection Component");
+  info!(target: "manual_start_server_connection", "Created Server Connection Component");
 }
 
 fn manual_load_scene(commands: &mut Commands) {

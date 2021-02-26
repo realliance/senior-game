@@ -11,14 +11,16 @@ COPY . .
 
 RUN --mount=type=cache,target=/build/cargo \
     --mount=type=cache,target=/build/target \
-    cargo install --locked --path senior_game_server \
-    --root /build/install --bin senior_game_server
+    cargo install --locked --root install \
+    --path senior_game_server --target x86_64-unknown-linux-gnu
 
 FROM gcr.io/distroless/cc-debian10
-
+ARG RELEASE
 WORKDIR /app
+ENV RELEASE $RELEASE
 
 COPY --from=builder /build/install/bin/senior_game_server /app
 COPY senior_game_server/assets /app/assets
 
+EXPOSE 12350
 CMD ["/app/senior_game_server"]

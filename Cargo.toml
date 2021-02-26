@@ -7,3 +7,6 @@ opt-level = 1
 
 [profile.release]
 opt-level = 3
+
+[patch.crates-io]
+bevy-glsl-to-spirv = { path = "glsl-to-spirv" }

@@ -9,3 +9,4 @@ senior_game_shared = { path = "../senior_game_shared" }
 bevy = "0.4.0"
 bevy_rapier3d = "0.8.0"
 bevy_prototype_networking_laminar = { git = "https://github.com/Hugheth/bevy_prototype_networking_laminar", branch = "bevy-0.4" }
+sentry = "0.21.0"

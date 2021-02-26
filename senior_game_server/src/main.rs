@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::borrow::Cow;
 
 use bevy::asset::AssetPlugin;
 use bevy::prelude::*;
@@ -13,6 +14,17 @@ use senior_game_shared::net::{NetworkListenerState, NetworkMessage};
 use senior_game_shared::systems::loadscene::*;
 
 pub fn main() {
+  // Sentry Guard (pushes to sentry on drop)
+  // Picks up DSN from SENTRY_DSN environment variable
+  //
+  // If you think you want to change this, you're probably wrong
+  // It *must* be the first thing in main
+  // It *cannot* be extracted into a function
+  let _guard = sentry::init(sentry::ClientOptions {
+    release: std::env::var("RELEASE").ok().map(Cow::Owned),
+    ..Default::default()
+  });
+
   App::build()
     .init_resource::<State>()
     .add_plugins(MinimalPlugins)
