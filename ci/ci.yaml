@@ -83,6 +83,7 @@ jobs:
               params:
                 CARGO_HOME: ./cargo
                 RELEASE: ci
+                SENTRY_DSN: ci
               caches:
                 - path: target
                 - path: cargo
@@ -121,6 +122,7 @@ jobs:
               params:
                 CARGO_HOME: ./cargo
                 RELEASE: ci
+                SENTRY_DSN: ci
               caches:
                 - path: target
                 - path: cargo
