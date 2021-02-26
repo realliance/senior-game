@@ -1,0 +1,42 @@
+---
+repos:
+  - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+    rev: 0.1.0
+    hooks:
+      - id: yamlfmt
+        args: [--mapping, '2', --sequence, '4', --offset, '2']
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
+    hooks:
+      - id: check-added-large-files
+        args: [--maxkb, '2048']
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: destroyed-symlinks
+      - id: end-of-file-fixer
+      - id: fix-byte-order-marker
+        name: Fix UTF-8 byte order marker
+      - id: mixed-line-ending
+        args: [--fix, lf]
+      - id: no-commit-to-branch
+        args: [--branch, main]
+      - id: trailing-whitespace
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.26.0
+    hooks:
+      - id: yamllint
+        name: Check YAML style with yamllint
+  - repo: local
+    hooks:
+      - id: validate-pipeline
+        name: Validate CI pipeline
+        entry: fly validate-pipeline --config
+        language: system
+        files: ci/.*
+      - id: renovate-config
+        name: Check renovate config
+        entry: --entrypoint=/bin/sh docker.io/renovate/renovate -c renovate-config-validator
+        language: docker_image
+        files: \.renovaterc\.json

@@ -1,0 +1,310 @@
+---
+resource_types:
+  - name: pull-request
+    type: registry-image
+    source:
+      repository: docker.io/teliaoss/github-pr-resource
+resources:
+  - name: pull-request
+    type: pull-request
+    icon: source-branch
+    webhook_token: ((webhook-token))
+    source:
+      repository: realliance/senior-game
+      access_token: ((github-access-token))
+      disable_ci_skip: true
+      disable_forks: true
+  - name: oci-build-task
+    type: registry-image
+    icon: docker
+    source:
+      repository: docker.io/vito/oci-build-task
+  - name: senior-game-main
+    type: git
+    icon: git
+    webhook_token: ((webhook-token))
+    source:
+      uri: https://github.com/realliance/senior-game
+      branch: main
+  - name: senior-game-tagged-release
+    type: git
+    icon: git
+    webhook_token: ((webhook-token))
+    source:
+      uri: https://github.com/realliance/senior-game
+      tag_filter: '*'
+      branch: main
+  - name: quay
+    type: registry-image
+    icon: docker
+    source:
+      repository: quay.io/realliance/senior-game
+      username: ((quay-ci-account.username))
+      password: ((quay-ci-account.token))
+  - name: rust-nightly
+    type: registry-image
+    icon: docker
+    source:
+      repository: docker.io/rustlang/rust
+      tag: nightly-buster
+  - name: python
+    type: registry-image
+    icon: docker
+    source:
+      repository: docker.io/python
+  - name: sentry-cli
+    type: registry-image
+    icon: docker
+    source:
+      repository: docker.io/getsentry/sentry-cli
+jobs:
+  - name: set-pipeline
+    plan:
+      - get: senior-game-main
+        trigger: true
+      - set_pipeline: self
+        file: senior-game-main/ci/ci.yaml
+  - name: validate-pr
+    plan:
+      - get: pull-request
+        trigger: true
+        version: check_every
+      - put: pull-request
+        params:
+          path: pull-request
+          status: pending
+      - get: rust-nightly
+      - get: python
+      - in_parallel:
+          - task: clippy
+            image: rust-nightly
+            config:
+              platform: linux
+              params:
+                CARGO_HOME: ./cargo
+                RELEASE: ci
+                SENTRY_DSN: ci
+              caches:
+                - path: target
+                - path: cargo
+                - path: apt
+              inputs:
+                - name: pull-request
+                  path: .
+              run:
+                path: /bin/sh
+                args:
+                  - -exc
+                  - |
+                    apt-get update -o Dir::Cache=$PWD/apt > /dev/null
+                    apt-get install -yqq --no-install-recommends \
+                    -o Dir::Cache=$PWD/apt \
+                    clang lld libasound2-dev libudev-dev > /dev/null
+                    cargo clippy
+                    cargo clippy --release
+          - task: rustfmt
+            image: rust-nightly
+            config:
+              platform: linux
+              inputs:
+                - name: pull-request
+                  path: .
+              run:
+                path: /bin/sh
+                args:
+                  - -exc
+                  - |
+                    cargo fmt -- --check
+          - task: validate-build
+            image: rust-nightly
+            config:
+              platform: linux
+              params:
+                CARGO_HOME: ./cargo
+                RELEASE: ci
+                SENTRY_DSN: ci
+              caches:
+                - path: target
+                - path: cargo
+                - path: apt
+              inputs:
+                - name: pull-request
+                  path: .
+              run:
+                path: /bin/sh
+                args:
+                  - -exc
+                  - |
+                    apt-get update -o Dir::Cache=$PWD/apt > /dev/null
+                    apt-get install -yqq --no-install-recommends \
+                    -o Dir::Cache=$PWD/apt \
+                    clang lld libasound2-dev libudev-dev > /dev/null
+                    cargo build --locked --package senior_game_shared
+                    cargo install --locked --path senior_game_client
+                    cargo install --locked --path senior_game_server
+          - task: unit-test
+            image: rust-nightly
+            config:
+              platform: linux
+              params:
+                CARGO_HOME: ./cargo
+              caches:
+                - path: target
+                - path: cargo
+                - path: apt
+              inputs:
+                - name: pull-request
+                  path: .
+              run:
+                path: /bin/sh
+                args:
+                  - -exc
+                  - |
+                    apt-get update -o Dir::Cache=$PWD/apt > /dev/null
+                    apt-get install -yqq --no-install-recommends \
+                    -o Dir::Cache=$PWD/apt \
+                    clang lld libasound2-dev libudev-dev > /dev/null
+                    cargo test
+          - task: yamllint
+            image: python
+            config:
+              platform: linux
+              inputs:
+                - name: pull-request
+                  path: .
+              caches:
+                - path: cache
+              run:
+                path: /bin/sh
+                args:
+                  - -exc
+                  - |
+                    pip install --cache-dir ./cache yamllint > /dev/null
+                    yamllint .
+          - task: pre-commit
+            image: python
+            params:
+              SKIP: no-commit-to-branch,validate-pipeline,renovate-config
+            config:
+              platform: linux
+              inputs:
+                - name: pull-request
+                  path: .
+              caches:
+                - path: cache
+              run:
+                path: /bin/sh
+                args:
+                  - -exc
+                  - |
+                    pip install --cache-dir ./cache pre-commit > /dev/null
+                    pre-commit run --all-files
+        on_failure:
+          put: pull-request
+          params:
+            path: pull-request
+            status: failure
+      - put: pull-request
+        params:
+          path: pull-request
+          status: success
+  - name: tagged-release
+    plan:
+      - get: senior-game-tagged-release
+        trigger: true
+      - get: oci-build-task
+      - get: sentry-cli
+      - load_var: tag
+        file: .git/ref
+        reveal: true
+      - task: sentry-new
+        image: sentry-cli
+        params:
+          SENTRY_ORG: ((sentry.org))
+          SENTRY_AUTH_TOKEN: ((sentry.auth-token))
+          SENTRY_URL: ((sentry.url))
+        config:
+          platform: linux
+          params:
+            TAG: ((.:tag))
+          inputs:
+            - name: senior-accounts-main
+              path: .
+          outputs:
+            - name: release
+          run:
+            path: /bin/sh
+            args:
+              - -exc
+              - |
+                VERSION=senior-game@$TAG
+                echo $VERSION > release/version.txt
+                sentry-cli releases new -p senior-server senior-client "$VERSION"
+                sentry-cli releases set-commits --auto "$VERSION"
+      - load_var: sentry-release
+        file: release/version.txt
+        reveal: true
+      - in_parallel:
+          - task: build-server
+            image: oci-build-task
+            params:
+              BUILD_ARG_RELEASE: ((.:sentry-release))
+            config:
+              platform: linux
+              inputs:
+                - name: senior-game-tagged-release
+                  path: .
+              ouputs:
+                - name: image
+              caches:
+                - path: caches
+              run:
+                path: build
+          - task: build-clients
+            image: rust-nightly
+            config:
+              platform: linux
+              params:
+                CARGO_HOME: ./cargo
+                RELEASE: ((.:sentry-release))
+                SENTRY_DSN: https://006f14a134fe4af9b94849382ad25982@sentry.realliance.net/5
+              caches:
+                - path: target
+                - path: cargo
+                - path: apt
+              inputs:
+                - name: senior-game-tagged-release
+                  path: .
+              outputs:
+                - name: clients
+              run:
+                path: /bin/sh
+                args:
+                  - -exc
+                  - |
+                    apt-get update -o Dir::Cache=$PWD/apt > /dev/null
+                    apt-get install -yqq --no-install-recommends \
+                    -o Dir::Cache=$PWD/apt \
+                    clang lld libasound2-dev libudev-dev > /dev/null
+                    rustup target add x86_64-pc-windows-msvc mingw-w64 > /dev/null
+                    ./build-linux-client.sh
+                    ./build-windows-client.sh
+      - put: quay
+        params:
+          image: image/image.tar
+          version: ((.:tag))
+      - task: sentry-finalize
+        image: sentry-cli
+        params:
+          SENTRY_ORG: ((sentry.org))
+          SENTRY_AUTH_TOKEN: ((sentry.auth-token))
+          SENTRY_URL: ((sentry.url))
+          VERSION: ((.:sentry-release))
+        config:
+          platform: linux
+          run:
+            path: /bin/sh
+            args:
+              - -exc
+              - |
+                sentry-cli releases finalize "$VERSION"
