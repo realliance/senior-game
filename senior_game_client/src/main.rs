@@ -1,8 +1,8 @@
-use std::env;
 #[cfg(not(debug_assertions))]
 use std::borrow::Cow;
-use std::option::Option::Some;
+use std::env;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use std::option::Option::Some;
 
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::*;
@@ -19,7 +19,8 @@ use crate::net::{handle_network_events, server_connection_system, StartServerCon
 mod net;
 
 fn main() {
-  #[cfg(not(debug_assertions))] {
+  #[cfg(not(debug_assertions))]
+  {
     // Sentry Guard (pushes to sentry on drop)
     // Picks up DSN from SENTRY_DSN environment variable
     //
@@ -27,11 +28,13 @@ fn main() {
     // It *must* be the first thing in main
     // It *cannot* be extracted into a function
     // Yes, embedding the DSN is intentional
-    let _guard = sentry::init(("https://006f14a134fe4af9b94849382ad25982@sentry.realliance.net/5",
-    sentry::ClientOptions {
-      release: Some(Cow::Borrowed(env!("RELEASE"))),
-      ..Default::default()
-    }));
+    let _guard = sentry::init((
+      "https://006f14a134fe4af9b94849382ad25982@sentry.realliance.net/5",
+      sentry::ClientOptions {
+        release: Some(Cow::Borrowed(env!("RELEASE"))),
+        ..Default::default()
+      },
+    ));
   }
 
   App::build()
@@ -62,7 +65,8 @@ impl PluginGroup for FlaggedPlugins {
   fn build(&mut self, group: &mut PluginGroupBuilder) {
     let args: Vec<String> = env::args().collect();
 
-    #[cfg(debug_assertions)] {
+    #[cfg(debug_assertions)]
+    {
       // Physics Debug Renderer
       if args.contains(&"--render-collider-bounds".to_string()) {
         info!(target: "app_startup", "Render Debug Activated");
