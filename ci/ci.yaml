@@ -82,6 +82,7 @@ jobs:
               platform: linux
               params:
                 CARGO_HOME: ./cargo
+                RELEASE: ci
               caches:
                 - path: target
                 - path: cargo
@@ -119,6 +120,7 @@ jobs:
               platform: linux
               params:
                 CARGO_HOME: ./cargo
+                RELEASE: ci
               caches:
                 - path: target
                 - path: cargo
