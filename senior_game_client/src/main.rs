@@ -29,8 +29,7 @@ fn main() {
     // It *cannot* be extracted into a function
     // Yes, embedding the DSN is intentional
     let _guard = sentry::init((
-      "https://006f14a134fe4af9b94849382ad25982@sentry.realliance.net/5",
-      sentry::ClientOptions {
+      env!("SENTRY_DSN"), sentry::ClientOptions {
         release: Some(Cow::Borrowed(env!("RELEASE"))),
         ..Default::default()
       },

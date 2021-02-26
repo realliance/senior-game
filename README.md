@@ -46,7 +46,7 @@ pre-commit install
 cargo fmt
 ```
 
-## Running project crates
+## Running Project Crates
 
 ```console
 # Run Client
@@ -61,6 +61,10 @@ cargo run
 cd senior_game_shared/
 cargo run
 ```
+
+## Production Client Builds
+
+Production client builds can be built with the `build-linux-client.sh` and `build-windows-client.sh` scripts. The `clients` directory should already exist and appropriate values need to be supplied for the environment variables `SENTRY_DSN` and `RELEASE`.
 
 # Project Structure
 

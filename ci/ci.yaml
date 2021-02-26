@@ -258,13 +258,14 @@ jobs:
                 - path: caches
               run:
                 path: build
-          - task: build-client-linux
+          - task: build-clients
             image: rust-nightly
             config:
               platform: linux
               params:
                 CARGO_HOME: ./cargo
                 RELEASE: ((.:sentry-release))
+                SENTRY_DSN: https://006f14a134fe4af9b94849382ad25982@sentry.realliance.net/5
               caches:
                 - path: target
                 - path: cargo
