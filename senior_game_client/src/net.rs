@@ -1,0 +1,56 @@
+use std::net::SocketAddr;
+
+use bevy::prelude::*;
+use bevy_prototype_networking_laminar::{NetworkDelivery, NetworkEvent, NetworkResource};
+use senior_game_shared::net::{NetworkListenerState, NetworkMessage};
+
+#[derive(Debug)]
+pub struct StartServerConnection {
+  pub addr: SocketAddr,
+}
+
+pub fn server_connection_system(
+  commands: &mut Commands,
+  mut net: ResMut<NetworkResource>,
+  query: Query<(Entity, &StartServerConnection)>,
+) {
+  for (entity, conn_info) in query.iter() {
+    info!(target: "server_connection_system", "Connecting to {}", conn_info.addr.to_string());
+
+    net
+      .bind("127.0.0.1:12351")
+      .expect("Failed to bind to socket");
+
+    net
+      .send(
+        conn_info.addr,
+        &NetworkMessage::Introduction("Hello Server!".to_string()).encode()[..],
+        NetworkDelivery::ReliableSequenced(Some(1)),
+      )
+      .expect("Failed to send intro message");
+
+    commands.despawn(entity);
+  }
+}
+
+pub fn handle_network_events(
+  mut state: ResMut<NetworkListenerState>,
+  network_events: Res<Events<NetworkEvent>>,
+) {
+  for event in state.network_events.iter(&network_events) {
+    // Temporarily allow single match since this match statement will expand soon
+    #[allow(clippy::single_match)]
+    match event {
+      NetworkEvent::Message(_conn, msg) => {
+        let msg = NetworkMessage::decode(&msg[..]);
+        match msg {
+          NetworkMessage::Pong => {
+            info!(target: "handle_network_events", "Pong Recieved");
+          },
+          _ => {},
+        }
+      },
+      _ => {},
+    }
+  }
+}

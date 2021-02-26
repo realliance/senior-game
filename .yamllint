@@ -1,0 +1,21 @@
+---
+extends: default
+rules:
+  comments:
+    level: error
+  comments-indentation:
+    level: error
+  document-start:
+    level: error
+  empty-lines:
+    max: 0
+  empty-values: enable
+  indentation:
+    spaces: 2
+  line-length: disable
+  octal-values: enable
+  quoted-strings:
+    required: only-when-needed
+    quote-type: single
+  truthy:
+    level: error

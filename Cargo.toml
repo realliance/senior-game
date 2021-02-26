@@ -1,0 +1,12 @@
+[workspace]
+
+members = ["senior_game_client", "senior_game_server", "senior_game_shared"]
+
+[profile.dev]
+opt-level = 1
+
+[profile.release]
+opt-level = 3
+
+[patch.crates-io]
+bevy-glsl-to-spirv = { git = "https://github.com/realliance/glsl-to-spirv" }
