@@ -36,9 +36,6 @@ Before beginning coding, [install pre-commit](https://pre-commit.com/#install) a
 ```console
 # Install git hook
 pre-commit install
-
-# Manually run pre-commit
-pre-commit run --all-files
 ```
 
 ## Using rustfmt
