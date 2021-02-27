@@ -14,4 +14,3 @@ bevy_egui = "0.2.0"
 kurinji = "1.0.5"
 serde = "1.0.123"
 sentry = "0.21.0"
-agones = { git = "https://github.com/realliance/agones-sdk" }

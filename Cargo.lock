@@ -3941,7 +3941,6 @@ checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
 name = "senior_game_client"
 version = "0.1.0"
 dependencies = [
- "agones",
  "bevy",
  "bevy_asset_ron",
  "bevy_egui",
@@ -3957,6 +3956,7 @@ dependencies = [
 name = "senior_game_server"
 version = "0.1.0"
 dependencies = [
+ "agones",
  "bevy",
  "bevy_prototype_networking_laminar",
  "bevy_rapier3d",
