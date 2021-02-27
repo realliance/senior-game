@@ -3,9 +3,9 @@ WORKDIR /build
 ENV CARGO_HOME /build/cargo
 
 RUN --mount=type=cache,target=/var/cache/apt \
-  apt-get update && \
+  apt-get update -yqq && \
   apt-get install -yqq --no-install-recommends \
-  clang lld libasound2-dev libudev-dev
+  clang lld libasound2-dev libudev-dev cmake
 
 COPY . .
 

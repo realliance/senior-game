@@ -132,10 +132,10 @@ jobs:
                 args:
                   - -exc
                   - |
-                    apt-get update -o Dir::Cache=$PWD/apt > /dev/null
+                    apt-get update -yqq -o Dir::Cache=$PWD/apt > /dev/null
                     apt-get install -yqq --no-install-recommends \
                     -o Dir::Cache=$PWD/apt \
-                    clang lld libasound2-dev libudev-dev > /dev/null
+                    clang lld libasound2-dev libudev-dev cmake > /dev/null
                     cargo clippy
                     cargo clippy --release
           - task: rustfmt
@@ -169,10 +169,10 @@ jobs:
                 args:
                   - -exc
                   - |
-                    apt-get update -o Dir::Cache=$PWD/apt > /dev/null
+                    apt-get update -yqq -o Dir::Cache=$PWD/apt > /dev/null
                     apt-get install -yqq --no-install-recommends \
                     -o Dir::Cache=$PWD/apt \
-                    clang lld libasound2-dev libudev-dev > /dev/null
+                    clang lld libasound2-dev libudev-dev cmake > /dev/null
                     cargo test
           - task: yamllint
             image: python
@@ -295,10 +295,10 @@ jobs:
                     args:
                       - -exc
                       - |
-                        apt-get update -o Dir::Cache=$PWD/apt > /dev/null
+                        apt-get update -yqq -o Dir::Cache=$PWD/apt > /dev/null
                         apt-get install -yqq --no-install-recommends \
                         -o Dir::Cache=$PWD/apt \
-                        clang lld libasound2-dev libudev-dev mingw-w64 zip > /dev/null
+                        clang lld libasound2-dev libudev-dev cmake mingw-w64 zip > /dev/null
                         rustup target add x86_64-pc-windows-gnu > /dev/null
                         ./build-linux-client.sh
                         ./build-windows-client.sh
