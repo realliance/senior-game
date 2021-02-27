@@ -11,4 +11,5 @@ cp install/bin/senior_game_client linux/WizardConnect3
 cp -r senior_game_client/assets linux
 
 cd linux
-zip -r ../clients/linux.zip .
+mkdir -p ../clients/$VERSION
+zip -r ../clients/$VERSION/linux.zip .

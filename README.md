@@ -64,7 +64,7 @@ cargo run
 
 ## Production Client Builds
 
-Production client builds can be built with the `build-linux-client.sh` and `build-windows-client.sh` scripts. The `clients` directory should already exist and appropriate values need to be supplied for the environment variables `SENTRY_DSN` and `RELEASE`.
+Production client builds can be built with the `build-linux-client.sh` and `build-windows-client.sh` scripts. Appropriate values need to be supplied for the environment variables `SENTRY_DSN`, `RELEASE`, and `VERSION`.
 
 # Project Structure
 
