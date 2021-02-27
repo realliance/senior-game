@@ -4,11 +4,16 @@ resource_types:
     type: registry-image
     source:
       repository: docker.io/teliaoss/github-pr-resource
+  - name: slack-notification
+    type: registry-image
+    source:
+      repository: cfcommunity/slack-notification-resource
 resources:
   - name: pull-request
     type: pull-request
     icon: source-branch
     webhook_token: ((webhook-token))
+    check_every: 1h
     source:
       repository: realliance/senior-game
       access_token: ((github-access-token))
@@ -17,12 +22,14 @@ resources:
   - name: oci-build-task
     type: registry-image
     icon: docker
+    check_every: never
     source:
       repository: docker.io/vito/oci-build-task
   - name: senior-game-main
     type: git
     icon: git
     webhook_token: ((webhook-token))
+    check_every: 1h
     source:
       uri: https://github.com/realliance/senior-game
       branch: main
@@ -30,6 +37,7 @@ resources:
     type: git
     icon: git
     webhook_token: ((webhook-token))
+    check_every: 1h
     source:
       uri: https://github.com/realliance/senior-game
       tag_filter: '*'
@@ -37,6 +45,7 @@ resources:
   - name: quay
     type: registry-image
     icon: docker
+    check_every: never
     source:
       repository: quay.io/realliance/senior-game
       username: ((quay-ci-account.username))
@@ -44,19 +53,46 @@ resources:
   - name: rust-nightly
     type: registry-image
     icon: docker
+    check_every: never
     source:
       repository: docker.io/rustlang/rust
       tag: nightly-buster
   - name: python
     type: registry-image
     icon: docker
+    check_every: never
     source:
       repository: docker.io/python
   - name: sentry-cli
     type: registry-image
     icon: docker
+    check_every: never
     source:
       repository: docker.io/getsentry/sentry-cli
+  - name: slack-ci-senior
+    type: slack-notification
+    icon: slack
+    check_every: never
+    source:
+      url: ((slack-ci-senior))
+  - name: minio-windows
+    type: s3
+    icon: file
+    source:
+      bucket: client
+      endpoint: https://files.game.senior.realliance.net
+      access_key_id: ((senior-game-minio.accesskey))
+      secret_access_key: ((senior-game-minio.secretkey))
+      regexp: (.*)/windows.zip
+  - name: minio-linux
+    type: s3
+    icon: file
+    source:
+      bucket: client
+      endpoint: https://files.game.senior.realliance.net
+      access_key_id: ((senior-game-minio.accesskey))
+      secret_access_key: ((senior-game-minio.secretkey))
+      regexp: ([^/]+)/linux.zip
 jobs:
   - name: set-pipeline
     plan:
@@ -96,10 +132,10 @@ jobs:
                 args:
                   - -exc
                   - |
-                    apt-get update -o Dir::Cache=$PWD/apt > /dev/null
+                    apt-get update -yqq -o Dir::Cache=$PWD/apt > /dev/null
                     apt-get install -yqq --no-install-recommends \
                     -o Dir::Cache=$PWD/apt \
-                    clang lld libasound2-dev libudev-dev > /dev/null
+                    clang lld libasound2-dev libudev-dev cmake > /dev/null
                     cargo clippy
                     cargo clippy --release
           - task: rustfmt
@@ -115,33 +151,6 @@ jobs:
                   - -exc
                   - |
                     cargo fmt -- --check
-          - task: validate-build
-            image: rust-nightly
-            config:
-              platform: linux
-              params:
-                CARGO_HOME: ./cargo
-                RELEASE: ci
-                SENTRY_DSN: ci
-              caches:
-                - path: target
-                - path: cargo
-                - path: apt
-              inputs:
-                - name: pull-request
-                  path: .
-              run:
-                path: /bin/sh
-                args:
-                  - -exc
-                  - |
-                    apt-get update -o Dir::Cache=$PWD/apt > /dev/null
-                    apt-get install -yqq --no-install-recommends \
-                    -o Dir::Cache=$PWD/apt \
-                    clang lld libasound2-dev libudev-dev > /dev/null
-                    cargo build --locked --package senior_game_shared
-                    cargo install --locked --path senior_game_client
-                    cargo install --locked --path senior_game_server
           - task: unit-test
             image: rust-nightly
             config:
@@ -160,10 +169,10 @@ jobs:
                 args:
                   - -exc
                   - |
-                    apt-get update -o Dir::Cache=$PWD/apt > /dev/null
+                    apt-get update -yqq -o Dir::Cache=$PWD/apt > /dev/null
                     apt-get install -yqq --no-install-recommends \
                     -o Dir::Cache=$PWD/apt \
-                    clang lld libasound2-dev libudev-dev > /dev/null
+                    clang lld libasound2-dev libudev-dev cmake > /dev/null
                     cargo test
           - task: yamllint
             image: python
@@ -212,10 +221,11 @@ jobs:
     plan:
       - get: senior-game-tagged-release
         trigger: true
-      - get: oci-build-task
       - get: sentry-cli
+      - get: oci-build-task
+      - get: rust-nightly
       - load_var: tag
-        file: .git/ref
+        file: senior-game-tagged-release/.git/ref
         reveal: true
       - task: sentry-new
         image: sentry-cli
@@ -228,7 +238,7 @@ jobs:
           params:
             TAG: ((.:tag))
           inputs:
-            - name: senior-accounts-main
+            - name: senior-game-tagged-release
               path: .
           outputs:
             - name: release
@@ -239,7 +249,7 @@ jobs:
               - |
                 VERSION=senior-game@$TAG
                 echo $VERSION > release/version.txt
-                sentry-cli releases new -p senior-server senior-client "$VERSION"
+                sentry-cli releases new -p senior-server -p senior-client "$VERSION"
                 sentry-cli releases set-commits --auto "$VERSION"
       - load_var: sentry-release
         file: release/version.txt
@@ -249,6 +259,7 @@ jobs:
             image: oci-build-task
             params:
               BUILD_ARG_RELEASE: ((.:sentry-release))
+            privileged: true
             config:
               platform: linux
               inputs:
@@ -260,35 +271,50 @@ jobs:
                 - path: caches
               run:
                 path: build
-          - task: build-clients
-            image: rust-nightly
-            config:
-              platform: linux
-              params:
-                CARGO_HOME: ./cargo
-                RELEASE: ((.:sentry-release))
-                SENTRY_DSN: https://006f14a134fe4af9b94849382ad25982@sentry.realliance.net/5
-              caches:
-                - path: target
-                - path: cargo
-                - path: apt
-              inputs:
-                - name: senior-game-tagged-release
-                  path: .
-              outputs:
-                - name: clients
-              run:
-                path: /bin/sh
-                args:
-                  - -exc
-                  - |
-                    apt-get update -o Dir::Cache=$PWD/apt > /dev/null
-                    apt-get install -yqq --no-install-recommends \
-                    -o Dir::Cache=$PWD/apt \
-                    clang lld libasound2-dev libudev-dev > /dev/null
-                    rustup target add x86_64-pc-windows-msvc mingw-w64 > /dev/null
-                    ./build-linux-client.sh
-                    ./build-windows-client.sh
+          - do:
+              - task: build-clients
+                image: rust-nightly
+                config:
+                  platform: linux
+                  params:
+                    CARGO_HOME: ./cargo
+                    RELEASE: ((.:sentry-release))
+                    SENTRY_DSN: https://006f14a134fe4af9b94849382ad25982@sentry.realliance.net/5
+                    VERSION: ((.:tag))
+                  caches:
+                    - path: target
+                    - path: cargo
+                    - path: apt
+                  inputs:
+                    - name: senior-game-tagged-release
+                      path: .
+                  outputs:
+                    - name: clients
+                  run:
+                    path: /bin/sh
+                    args:
+                      - -exc
+                      - |
+                        apt-get update -yqq -o Dir::Cache=$PWD/apt > /dev/null
+                        apt-get install -yqq --no-install-recommends \
+                        -o Dir::Cache=$PWD/apt \
+                        clang lld libasound2-dev libudev-dev cmake mingw-w64 zip > /dev/null
+                        rustup target add x86_64-pc-windows-gnu > /dev/null
+                        ./build-linux-client.sh
+                        ./build-windows-client.sh
+              - put: minio-windows
+                params:
+                  file: clients/*/windows.zip
+              - put: minio-linux
+                params:
+                  file: clients/*/linux.zip
+              - put: slack-ci-senior
+                params:
+                  silent: true
+                  text: |-
+                    *Production Build (((.:tag)))*
+                    Windows Client: https://files.game.senior.realliance.net/client/((.:tag))/windows.zip
+                    Linux Client: https://files.game.senior.realliance.net/client/((.:tag))/linux.zip
       - put: quay
         params:
           image: image/image.tar
