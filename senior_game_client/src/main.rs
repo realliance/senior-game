@@ -35,16 +35,6 @@ fn main() {
         ..Default::default()
       },
     ));
-
-    let sdk = agones::Sdk::new().unwrap();
-    // TODO: move this to a more appropriate step
-    // TODO: we should check the return value of this in a less bad way
-    sdk.ready().unwrap();
-
-    // TODO: we need to do this constantly
-    if sdk.health().1.is_ok() {
-      debug!("Health ping sent");
-    }
   }
 
   App::build()
