@@ -83,7 +83,7 @@ resources:
       endpoint: https://files.game.senior.realliance.net
       access_key_id: ((senior-game-minio.accesskey))
       secret_access_key: ((senior-game-minio.secretkey))
-      regexp: (.*)/windows.zip
+      regexp: windows-(.*).zip
   - name: minio-linux
     type: s3
     icon: file
@@ -92,7 +92,7 @@ resources:
       endpoint: https://files.game.senior.realliance.net
       access_key_id: ((senior-game-minio.accesskey))
       secret_access_key: ((senior-game-minio.secretkey))
-      regexp: ([^/]+)/linux.zip
+      regexp: linux-(.*).zip
 jobs:
   - name: set-pipeline
     plan:
