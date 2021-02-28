@@ -24,7 +24,7 @@ resources:
     icon: docker
     check_every: never
     source:
-      repository: docker.io/vito/oci-build-task
+      repository: quay.io/realliance/oci-build-task
   - name: senior-game-main
     type: git
     icon: git
