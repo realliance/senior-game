@@ -9,5 +9,5 @@ target/
 # Build scripts
 windows/
 linux/
-clients/
+client/
 install/
