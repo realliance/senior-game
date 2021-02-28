@@ -83,7 +83,7 @@ resources:
       endpoint: https://files.game.senior.realliance.net
       access_key_id: ((senior-game-minio.accesskey))
       secret_access_key: ((senior-game-minio.secretkey))
-      regexp: ([^/])/linux.zip
+      regexp: stable/linux(.*).zip
   - name: minio-windows
     type: s3
     icon: file
@@ -92,7 +92,7 @@ resources:
       endpoint: https://files.game.senior.realliance.net
       access_key_id: ((senior-game-minio.accesskey))
       secret_access_key: ((senior-game-minio.secretkey))
-      regexp: ([^/])/windows.zip
+      regexp: stable/windows(.*).zip
 jobs:
   - name: set-pipeline
     plan:
@@ -132,8 +132,8 @@ jobs:
                 args:
                   - -exc
                   - |
-                    apt-get update -yqq -o Dir::Cache=$PWD/apt > /dev/null
-                    apt-get install -yqq --no-install-recommends \
+                    apt-get update -y -o Dir::Cache=$PWD/apt > /dev/null
+                    apt-get install -y --no-install-recommends \
                     -o Dir::Cache=$PWD/apt \
                     clang lld libasound2-dev libudev-dev cmake > /dev/null
                     cargo clippy
@@ -169,8 +169,8 @@ jobs:
                 args:
                   - -exc
                   - |
-                    apt-get update -yqq -o Dir::Cache=$PWD/apt > /dev/null
-                    apt-get install -yqq --no-install-recommends \
+                    apt-get update -y -o Dir::Cache=$PWD/apt > /dev/null
+                    apt-get install -y --no-install-recommends \
                     -o Dir::Cache=$PWD/apt \
                     clang lld libasound2-dev libudev-dev cmake > /dev/null
                     cargo test
@@ -300,8 +300,8 @@ jobs:
                     args:
                       - -exc
                       - |
-                        apt-get update -yqq -o Dir::Cache=$PWD/apt > /dev/null
-                        apt-get install -yqq --no-install-recommends \
+                        apt-get update -y -o Dir::Cache=$PWD/apt > /dev/null
+                        apt-get install -y --no-install-recommends \
                         -o Dir::Cache=$PWD/apt \
                         clang lld libasound2-dev libudev-dev cmake mingw-w64 zip > /dev/null
                         rustup target add x86_64-pc-windows-gnu > /dev/null
@@ -309,10 +309,10 @@ jobs:
                         ./build-windows-client.sh
               - put: minio-linux
                 params:
-                  file: client/*/linux.zip
+                  file: client/linux*.zip
               - put: minio-windows
                 params:
-                  file: client/*/windows.zip
+                  file: client/windows*.zip
       - task: sentry-finalize
         image: sentry-cli
         params:
