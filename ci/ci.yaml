@@ -255,64 +255,62 @@ jobs:
         file: release/version.txt
         reveal: true
       - in_parallel:
-          - do:
-              - task: build-server
-                image: oci-build-task
-                params:
-                  BUILD_ARG_RELEASE: ((.:sentry-release))
-                privileged: true
-                config:
-                  platform: linux
-                  inputs:
-                    - name: senior-game-tagged-release
-                      path: .
-                  ouputs:
-                    - name: image
-                  caches:
-                    - path: cache
-                  run:
-                    path: build
-              - put: quay
-                params:
-                  image: image/image.tar
-                  version: ((.:tag))
-          - do:
-              - task: build-clients
-                image: rust-nightly
-                config:
-                  platform: linux
-                  params:
-                    CARGO_HOME: ./cargo
-                    RELEASE: ((.:sentry-release))
-                    SENTRY_DSN: https://006f14a134fe4af9b94849382ad25982@sentry.realliance.net/5
-                    VERSION: ((.:tag))
-                  caches:
-                    - path: target
-                    - path: cargo
-                    - path: apt
-                  inputs:
-                    - name: senior-game-tagged-release
-                      path: .
-                  outputs:
-                    - name: client
-                  run:
-                    path: /bin/sh
-                    args:
-                      - -exc
-                      - |
-                        apt-get update -y -o Dir::Cache=$PWD/apt > /dev/null
-                        apt-get install -y --no-install-recommends \
-                        -o Dir::Cache=$PWD/apt \
-                        clang lld libasound2-dev libudev-dev cmake mingw-w64 zip > /dev/null
-                        rustup target add x86_64-pc-windows-gnu > /dev/null
-                        ./build-linux-client.sh
-                        ./build-windows-client.sh
-              - put: minio-linux
-                params:
-                  file: client/linux*.zip
-              - put: minio-windows
-                params:
-                  file: client/windows*.zip
+          - task: build-server
+            image: oci-build-task
+            params:
+              BUILD_ARG_RELEASE: ((.:sentry-release))
+            privileged: true
+            config:
+              platform: linux
+              inputs:
+                - name: senior-game-tagged-release
+                  path: .
+              outputs:
+                - name: image
+              caches:
+                - path: cache
+              run:
+                path: build
+          - task: build-clients
+            image: rust-nightly
+            config:
+              platform: linux
+              params:
+                CARGO_HOME: ./cargo
+                RELEASE: ((.:sentry-release))
+                SENTRY_DSN: https://006f14a134fe4af9b94849382ad25982@sentry.realliance.net/5
+                VERSION: ((.:tag))
+              caches:
+                - path: target
+                - path: cargo
+                - path: apt
+              inputs:
+                - name: senior-game-tagged-release
+                  path: .
+              outputs:
+                - name: client
+              run:
+                path: /bin/sh
+                args:
+                  - -exc
+                  - |
+                    apt-get update -yqq -o Dir::Cache=$PWD/apt > /dev/null
+                    apt-get install -yqq --no-install-recommends \
+                    -o Dir::Cache=$PWD/apt \
+                    clang lld libasound2-dev libudev-dev cmake mingw-w64 zip > /dev/null
+                    rustup target add x86_64-pc-windows-gnu > /dev/null
+                    ./build-linux-client.sh
+                    ./build-windows-client.sh
+      - put: quay
+        params:
+          image: image/image.tar
+          version: ((.:tag))
+      - put: minio-linux
+        params:
+          file: client/linux*.zip
+      - put: minio-windows
+        params:
+          file: client/windows*.zip
       - task: sentry-finalize
         image: sentry-cli
         params:
