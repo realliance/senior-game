@@ -22,7 +22,7 @@ resources:
   - name: oci-build-task
     type: registry-image
     icon: docker
-    check_every: never
+    check_every: 1h
     source:
       repository: quay.io/realliance/oci-build-task
   - name: senior-game-main
@@ -45,7 +45,7 @@ resources:
   - name: quay
     type: registry-image
     icon: docker
-    check_every: never
+    check_every: 1h
     source:
       repository: quay.io/realliance/senior-game
       username: ((quay-ci-account.username))
@@ -53,26 +53,26 @@ resources:
   - name: rust-nightly
     type: registry-image
     icon: docker
-    check_every: never
+    check_every: 1h
     source:
       repository: docker.io/rustlang/rust
       tag: nightly-buster
   - name: python
     type: registry-image
     icon: docker
-    check_every: never
+    check_every: 1h
     source:
       repository: docker.io/python
   - name: sentry-cli
     type: registry-image
     icon: docker
-    check_every: never
+    check_every: 1h
     source:
       repository: docker.io/getsentry/sentry-cli
   - name: slack-ci-senior
     type: slack-notification
     icon: slack
-    check_every: never
+    check_every: 1h
     source:
       url: ((slack-ci-senior))
   - name: minio-linux
