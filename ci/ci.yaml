@@ -331,5 +331,5 @@ jobs:
           silent: true
           text: |-
             *Production Build (((.:tag)))*
-            Windows Client: https://files.game.senior.realliance.net/client/((.:tag))/windows.zip
-            Linux Client: https://files.game.senior.realliance.net/client/((.:tag))/linux.zip
+            Linux Client: https://files.game.senior.realliance.net/client/stable/linux((.:tag)).zip
+            Windows Client: https://files.game.senior.realliance.net/client/stabe/windows((.:tag)).zip
