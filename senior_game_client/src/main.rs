@@ -4,6 +4,8 @@ use std::env;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::option::Option::Some;
 
+use bevy_egui::{EguiPlugin};
+
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::*;
 use bevy_prototype_networking_laminar::NetworkingPlugin;
@@ -15,7 +17,9 @@ use senior_game_shared::net::NetworkListenerState;
 use senior_game_shared::systems::loadscene::*;
 
 use crate::net::{handle_network_events, server_connection_system, StartServerConnection};
+use crate::ui::UISystemPlugin;
 
+mod ui;
 mod net;
 
 fn main() {
@@ -43,14 +47,14 @@ fn main() {
     .add_plugins(FlaggedPlugins)
     .add_plugin(RapierPhysicsPlugin)
     .add_plugin(NetworkingPlugin)
+    .add_plugin(EguiPlugin)
+    .add_plugin(UISystemPlugin)
     .init_resource::<NetworkListenerState>()
     .register_type::<CreateCollider>()
     .register_type::<CreatePhysics>()
     .register_type::<RigidbodyType>()
     .register_type::<AssetChild>()
     .register_type::<ShapeType>()
-    .add_startup_system(manual_load_scene.system())
-    .add_startup_system(manual_start_server_connection.system())
     .add_system(load_scene_system.system())
     .add_system(server_connection_system.system())
     .add_system(handle_network_events.system())
