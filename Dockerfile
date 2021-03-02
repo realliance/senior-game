@@ -1,4 +1,4 @@
-FROM docker.io/rustlang/rust:nightly-buster@sha256:39de5fa42f3ee841ea47c1872e8b8b9813d83b246b0525e20245cc43aaae85da as builder
+FROM docker.io/rustlang/rust:nightly-buster@sha256:cb791579f640b268dee48e0756a7749f5ff0b4d798859b1b6cce4c76e72d46df as builder
 WORKDIR /build
 ENV CARGO_HOME /build/cargo
 
