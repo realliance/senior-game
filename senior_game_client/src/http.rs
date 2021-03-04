@@ -1,16 +1,9 @@
 use bevy::prelude::*;
 use std::collections::HashMap;
-use std::pin::Pin;
-use std::task::Poll;
-use std::future::Future;
-use bevy::tasks::TaskPoolBuilder;
 use std::sync::{Arc, Mutex};
-use futures::poll;
 use std::thread;
 use reqwest::blocking::{Client, Response, RequestBuilder};
 use reqwest::Error;
-use tokio::runtime::Runtime;
-use lazy_static::lazy_static;
 
 pub enum WebRequestVerb {
   Get,
@@ -28,26 +21,16 @@ pub struct HttpRequest {
 }
 
 #[derive(Default)]
-struct HttpRequestCompleted(bool, Option<Result<Response, Error>>);
-
-lazy_static! {
-  static ref HTTP_IN_PROGRESS: Arc<Mutex<Vec<HttpRequestCompleted>>> = Arc::new(Mutex::new(vec![]));
-}
-
-//Box<dyn Future<Output = Result<Response, Error>>>
-pub struct HttpInProgress(usize);
+pub struct HttpInProgress(Arc<Mutex<Option<Result<Response, Error>>>>);
 
 pub struct HttpResponse;
 
 fn handle_http_response(query: Query<(Entity, &HttpRequest, &HttpInProgress), Without<HttpResponse>>,commands: &mut Commands) {
   for (entity, _, in_progress) in query.iter() {
-    let lock = HTTP_IN_PROGRESS.lock().unwrap();
+    let element = in_progress.0.lock().unwrap();
 
-    let element = lock.get(in_progress.0).unwrap();
-
-    if element.0 {
-      let result = element.1.as_ref();
-      match result.unwrap() {
+    if let Some(result) = &*element {
+      match result {
         Ok(response) => {
           info!(target: "make_http_requests", "Response: {}", response.status());
         },
@@ -68,17 +51,17 @@ fn handle_http_response(query: Query<(Entity, &HttpRequest, &HttpInProgress), Wi
   }
 }
 
-fn send_request(request: RequestBuilder, index: usize) {
+fn send_request(request: RequestBuilder, in_progress: &HttpInProgress) {
+  let cloned = in_progress.0.clone();
   thread::spawn(move || {
     let res = request.send();
-    *HTTP_IN_PROGRESS.lock().unwrap().get_mut(index).unwrap() = HttpRequestCompleted(true, Some(res));
+    *cloned.lock().unwrap() = Some(res);
     info!(target: "make_http_requests", "Request Complete!");
   });
 }
 
 fn make_http_request(query: Query<(Entity, &HttpRequest), Without<HttpInProgress>>, commands: &mut Commands) {
   let client = Client::new();
-  let mut lock = HTTP_IN_PROGRESS.lock().unwrap();
 
   for (entity, request) in query.iter() {
     info!(target: "make_http_requests", "Starting Request...");
@@ -87,10 +70,11 @@ fn make_http_request(query: Query<(Entity, &HttpRequest), Without<HttpInProgress
       WebRequestVerb::Post => client.post(&request.url),
     }.json(&request.body);
 
-    lock.push(HttpRequestCompleted::default());
-    send_request(res, lock.len() - 1);
+    let in_progress = HttpInProgress::default();
 
-    commands.insert(entity, (HttpInProgress(lock.len() - 1),));
+    send_request(res, &in_progress);
+
+    commands.insert(entity, (in_progress,));
   }
 }
 
