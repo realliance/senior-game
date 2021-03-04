@@ -3988,6 +3988,7 @@ dependencies = [
  "bevy_prototype_networking_laminar",
  "bevy_rapier3d",
  "kurinji",
+ "reqwest",
  "senior_game_shared",
  "sentry",
  "serde",

@@ -18,9 +18,11 @@ use senior_game_shared::systems::loadscene::*;
 
 use crate::net::{handle_network_events, server_connection_system, StartServerConnection};
 use crate::ui::UISystemPlugin;
+use crate::http::HttpSystemPlugin;
 
 mod ui;
 mod net;
+mod http;
 
 fn main() {
   #[cfg(not(debug_assertions))]
@@ -49,6 +51,7 @@ fn main() {
     .add_plugin(NetworkingPlugin)
     .add_plugin(EguiPlugin)
     .add_plugin(UISystemPlugin)
+    .add_plugin(HttpSystemPlugin)
     .init_resource::<NetworkListenerState>()
     .register_type::<CreateCollider>()
     .register_type::<CreatePhysics>()
