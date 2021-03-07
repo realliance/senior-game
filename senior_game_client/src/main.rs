@@ -15,12 +15,15 @@ use bevy_rapier3d::render::RapierRenderPlugin;
 use senior_game_shared::components::assets::*;
 use senior_game_shared::net::NetworkListenerState;
 use senior_game_shared::systems::loadscene::*;
+use senior_game_shared::systems::loadsound::*;
 
 use crate::net::{handle_network_events, server_connection_system, StartServerConnection};
 use crate::ui::UISystemPlugin;
+use crate::http::HttpSystemPlugin;
 
 mod ui;
 mod net;
+mod http;
 
 fn main() {
   #[cfg(not(debug_assertions))]
@@ -49,12 +52,15 @@ fn main() {
     .add_plugin(NetworkingPlugin)
     .add_plugin(EguiPlugin)
     .add_plugin(UISystemPlugin)
+    .add_plugin(HttpSystemPlugin)
     .init_resource::<NetworkListenerState>()
     .register_type::<CreateCollider>()
     .register_type::<CreatePhysics>()
     .register_type::<RigidbodyType>()
     .register_type::<AssetChild>()
     .register_type::<ShapeType>()
+    .add_startup_system(manual_load_sound.system())
+    .add_system(load_sound_system.system())
     .add_system(load_scene_system.system())
     .add_system(server_connection_system.system())
     .add_system(handle_network_events.system())
@@ -95,4 +101,12 @@ fn manual_load_scene(commands: &mut Commands) {
   });
 
   info!(target: "manual_load_scene", "Scene Manually Loaded");
+}
+
+fn manual_load_sound(commands: &mut Commands) {
+  commands.spawn(()).with(LoadSound {
+    path: "sounds/Komiku - A Tale is never forgotten - 01 The main reason we are here.mp3".to_string(),
+    watch: false,
+  });
+  info!(target: "manual_load_sound", "Sound Manually Loaded");
 }

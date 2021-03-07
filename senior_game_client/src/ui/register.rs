@@ -1,18 +1,16 @@
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContext};
-use crate::ui::LoginUIState;
 use crate::ui::RegisterUIState;
-use crate::http::{LoginRequestTag, HttpRequest, WebRequestVerb, LOGIN_URL};
+use crate::http::{RegisterRequestTag, HttpRequest, WebRequestVerb, REGISTER_URL};
 use serde_json::json;
 
-pub fn login_ui(
+pub fn register_ui(
   windows: Res<Windows>,
-  mut login_state : ResMut<LoginUIState>,
   mut register_state : ResMut<RegisterUIState>,
   mut egui_ctx : ResMut<EguiContext>,
-  commands: &mut Commands) {
+  commands: &mut Commands){
 
-  if !login_state.visible {
+  if !register_state.visible {
     return;
   }
 
@@ -23,8 +21,10 @@ pub fn login_ui(
 
   let ctx = &mut egui_ctx.ctx;
 
-  egui::Window::new("login")
-   .title_bar(false)
+  egui::Window::new("Account Registration")
+   .title_bar(true)
+   //.collapsible(true)
+   .resizable(false)
    .scroll(false)
    .open(&mut true)
 
@@ -46,62 +46,57 @@ pub fn login_ui(
       ui.spacing_mut().item_spacing = egui::vec2(10.0, 15.0);
 
       ui.with_layout(egui::Layout::centered_and_justified(egui::Direction::TopDown), |ui| {
-        ui.vertical_centered_justified(|ui| {
-          ui.heading("Account Login");
-          ui.separator();
-        });
 
       ui.spacing_mut().item_spacing = egui::vec2(10.0, 11.0);
 
-      ui.vertical_centered(|ui| {
-        ui.label("Username");
+      ui.vertical(|ui| {
+        ui.label("Email");
 
-        ui.add(egui::TextEdit::singleline(&mut login_state.username)
+        ui.add(egui::TextEdit::singleline(&mut register_state.email)
         .text_style(egui::TextStyle::Body)
         .desired_width(500.0));
 
-        login_state.username.truncate(25);
+        register_state.email.truncate(35);
       });
 
-      ui.vertical_centered(|ui| {
+      ui.vertical(|ui| {
+        ui.label("Username");
+
+        ui.add(egui::TextEdit::singleline(&mut register_state.username)
+        .text_style(egui::TextStyle::Body)
+        .desired_width(500.0));
+
+        register_state.username.truncate(25);
+      });
+
+      ui.vertical(|ui| {
         ui.label("Password");
 
         //TODO: Rerender * for password
-        ui.add(egui::TextEdit::singleline(&mut login_state.password)
+        ui.add(egui::TextEdit::singleline(&mut register_state.password)
         .text_style(egui::TextStyle::Body)
         .desired_width(500.0));
 
-        login_state.password.truncate(35);
+        register_state.password.truncate(35);
       });
-
-      ui.vertical_centered(|ui| {
-        if ui.button("Log In").clicked(){
-
-          let request_body = json!({
-            "username": login_state.username.clone(),
-            "password": login_state.password.clone(),
-        });
-
-          commands.spawn((LoginRequestTag, HttpRequest {
-            verb: WebRequestVerb::Post,
-            url: LOGIN_URL.to_string(),
-            body: request_body,
-          }));
-        }
-      });
-
-      ui.separator();
 
       ui.vertical(|ui| {
         if ui.button("Register").clicked(){
-          login_state.visible = false;
-          register_state.visible = true;
-        }
-      });
 
-      ui.vertical(|ui| {
-        //TODO: Update link to password recovery endpoint
-        ui.add(egui::Hyperlink::new("https://github.com/realliance/senior-game").text("Recover Account").small());
+          let request_body = json!({
+            "user": {
+              "username": register_state.username.clone(),
+              "email": register_state.email.clone(),
+              "password": register_state.password.clone(),
+            }
+          });
+
+          commands.spawn((RegisterRequestTag, HttpRequest {
+            verb: WebRequestVerb::Post,
+            url: REGISTER_URL.to_string(),
+            body: request_body,
+          }));
+        }
       });
     });
   });
