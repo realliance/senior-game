@@ -1,14 +1,12 @@
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContext};
 use crate::ui::LoginUIState;
-use crate::ui::RegisterUIState;
 use crate::http::{LoginRequestTag, HttpRequest, WebRequestVerb, LOGIN_URL};
 use serde_json::json;
 
 pub fn login_ui(
   windows: Res<Windows>,
   mut login_state : ResMut<LoginUIState>,
-  mut register_state : ResMut<RegisterUIState>,
   mut egui_ctx : ResMut<EguiContext>,
   commands: &mut Commands) {
 
@@ -93,10 +91,7 @@ pub fn login_ui(
       ui.separator();
 
       ui.vertical(|ui| {
-        if ui.button("Register").clicked(){
-          login_state.visible = false;
-          register_state.visible = true;
-        }
+        ui.add(egui::Hyperlink::new("https://accounts.senior.realliance.net/register").text("Register Account").small());
       });
 
       ui.vertical(|ui| {

@@ -10,10 +10,8 @@ pub enum WebRequestVerb {
 }
 
 pub const LOGIN_URL: &str = "https://accounts.senior.realliance.net/session";
-pub const REGISTER_URL: &str = "https://accounts.senior.realliance.net/user";
 
 pub struct LoginRequestTag;
-pub struct RegisterRequestTag;
 
 pub struct HttpRequest {
   pub verb: WebRequestVerb,
