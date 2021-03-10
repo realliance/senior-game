@@ -95,8 +95,7 @@ pub fn login_ui(
       });
 
       ui.vertical(|ui| {
-        //TODO: Update link to password recovery endpoint
-        ui.add(egui::Hyperlink::new("https://github.com/realliance/senior-game").text("Recover Account").small());
+        ui.add(egui::Hyperlink::new("https://accounts.senior.realliance.net/password/recovery").text("Forgot Password?").small());
       });
     });
   });
