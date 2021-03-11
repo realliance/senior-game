@@ -11,10 +11,10 @@ bevy = "0.4.0"
 bevy_rapier3d = "0.8.0"
 bevy_prototype_networking_laminar = { git = "https://github.com/Hugheth/bevy_prototype_networking_laminar", branch = "bevy-0.4" }
 bevy_asset_ron = "0.1.0"
-bevy_egui = "0.2.0"
 bevy-inspector-egui = "0.3.0"
+bevy_egui = "0.3.0"
 kurinji = "1.0.5"
-serde = "1.0.123"
+serde = "1.0.124"
 sentry = "0.22.0"
 reqwest = { version = "0.11", features = ["json", "blocking"] }
 serde_json = "1.0.64"
