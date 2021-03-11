@@ -2,22 +2,18 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 
 use bevy::prelude::*;
+#[cfg(test)]
+use mockito;
 use reqwest::blocking::{Client, RequestBuilder, Response};
 use reqwest::{Error, StatusCode};
 use serde_json::{Map, Value};
-
 use url::Url;
-
-#[cfg(test)]
-use mockito;
 
 #[allow(dead_code)]
 pub enum WebRequestVerb {
   Get,
   Post,
 }
-
-
 
 pub const LOGIN_SUFFIX: &str = "/session";
 
@@ -28,11 +24,15 @@ pub fn domain_url() -> Url {
   #[cfg(test)]
   let domain: &str = &mockito::server_url();
 
-  return Url::parse(domain).unwrap();
+  Url::parse(domain).unwrap()
 }
 
 pub fn login_route() -> String {
-  return domain_url().join(LOGIN_SUFFIX).unwrap().as_str().to_string();
+  return domain_url()
+    .join(LOGIN_SUFFIX)
+    .unwrap()
+    .as_str()
+    .to_string();
 }
 
 pub struct LoginRequestTag;

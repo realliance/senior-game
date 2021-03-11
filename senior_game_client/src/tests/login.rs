@@ -1,27 +1,28 @@
 use bevy::prelude::*;
-use serde_json::to_value;
 use reqwest::StatusCode;
-use crate::http::{LoginRequestTag, HttpResponse};
-use crate::ui::LoginUiState;
-use crate::ui::login::{handle_login_response, format_status_error, unknown_error};
-use crate::state::ClientState;
-use super::run_system;
 use serde::{Deserialize, Serialize};
+use serde_json::to_value;
+
+use super::run_system;
+use crate::http::{HttpResponse, LoginRequestTag};
+use crate::state::ClientState;
+use crate::ui::login::{format_status_error, handle_login_response, unknown_error};
+use crate::ui::LoginUiState;
 
 #[derive(Serialize, Deserialize, Clone)]
 struct ErrorObject {
-  error: String
+  error: String,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
 struct SuccessObject {
-  token: String
+  token: String,
 }
 
 #[test]
 fn test_successful_login() {
   let test_object = SuccessObject {
-    token: "1234".to_string()
+    token: "1234".to_string(),
   };
 
   let response = HttpResponse {
@@ -36,7 +37,7 @@ fn test_successful_login() {
   resources.insert(ClientState::default());
   resources.insert(LoginUiState::default());
 
-  world.spawn((response,LoginRequestTag));
+  world.spawn((response, LoginRequestTag));
 
   run_system(&mut world, &mut resources, handle_login_response.system());
 
@@ -50,7 +51,7 @@ fn test_successful_login() {
 #[test]
 fn test_invalid_password() {
   let test_object = ErrorObject {
-    error: "1234".to_string()
+    error: "1234".to_string(),
   };
 
   let response = HttpResponse {
@@ -65,7 +66,7 @@ fn test_invalid_password() {
   resources.insert(ClientState::default());
   resources.insert(LoginUiState::default());
 
-  world.spawn((response,LoginRequestTag));
+  world.spawn((response, LoginRequestTag));
 
   run_system(&mut world, &mut resources, handle_login_response.system());
 
@@ -92,7 +93,7 @@ fn test_unknown_error_with_status() {
   resources.insert(ClientState::default());
   resources.insert(LoginUiState::default());
 
-  world.spawn((response,LoginRequestTag));
+  world.spawn((response, LoginRequestTag));
 
   run_system(&mut world, &mut resources, handle_login_response.system());
 
@@ -119,7 +120,7 @@ fn test_unknown_error() {
   resources.insert(ClientState::default());
   resources.insert(LoginUiState::default());
 
-  world.spawn((response,LoginRequestTag));
+  world.spawn((response, LoginRequestTag));
 
   run_system(&mut world, &mut resources, handle_login_response.system());
 

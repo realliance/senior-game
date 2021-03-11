@@ -1,14 +1,19 @@
-use bevy::prelude::*;
-use serde_json::to_value;
 use std::time::Instant;
+
+use bevy::prelude::*;
 use reqwest::StatusCode;
-use crate::http::{login_route, HttpRequest, WebRequestVerb, HttpInProgress, HttpResponse, make_http_request, handle_http_response};
-use super::{TestJSONResponse, create_test_endpoint, run_system};
+use serde_json::to_value;
+
+use super::{create_test_endpoint, run_system, TestJSONResponse};
+use crate::http::{
+  handle_http_response, login_route, make_http_request, HttpInProgress, HttpRequest, HttpResponse,
+  WebRequestVerb,
+};
 
 #[test]
 fn test_get_request_is_processed() {
   let test_object = TestJSONResponse {
-    token: 2.to_string()
+    token: 2.to_string(),
   };
 
   let _m = create_test_endpoint("GET", "/session", 200, Some(&test_object));
@@ -19,12 +24,15 @@ fn test_get_request_is_processed() {
   world.spawn((HttpRequest {
     url: login_route(),
     verb: WebRequestVerb::Get,
-    body: None
+    body: None,
   },));
 
   run_system(&mut world, &mut resources, make_http_request.system());
 
-  let ents = world.query::<(Entity, &HttpInProgress)>().map(|(e, h)| (e, h)).collect::<Vec<_>>();
+  let ents = world
+    .query::<(Entity, &HttpInProgress)>()
+    .map(|(e, h)| (e, h))
+    .collect::<Vec<_>>();
 
   // Entity was tagged with HttpInProgress
   assert_eq!(ents.len(), 1);
@@ -33,7 +41,7 @@ fn test_get_request_is_processed() {
 #[test]
 fn test_post_request_is_processed() {
   let test_object = TestJSONResponse {
-    token: 2.to_string()
+    token: 2.to_string(),
   };
 
   let _m = create_test_endpoint("POST", "/session", 200, Some(&test_object));
@@ -44,12 +52,15 @@ fn test_post_request_is_processed() {
   world.spawn((HttpRequest {
     url: login_route(),
     verb: WebRequestVerb::Post,
-    body: None
+    body: None,
   },));
 
   run_system(&mut world, &mut resources, make_http_request.system());
 
-  let ents = world.query::<(Entity, &HttpInProgress)>().map(|(e, h)| (e, h)).collect::<Vec<_>>();
+  let ents = world
+    .query::<(Entity, &HttpInProgress)>()
+    .map(|(e, h)| (e, h))
+    .collect::<Vec<_>>();
 
   // Entity was tagged with HttpInProgress
   assert_eq!(ents.len(), 1);
@@ -58,7 +69,7 @@ fn test_post_request_is_processed() {
 #[test]
 fn test_request_response_ok() {
   let test_object = TestJSONResponse {
-    token: 2.to_string()
+    token: 2.to_string(),
   };
 
   let _m = create_test_endpoint("POST", "/session", 200, Some(&test_object));
@@ -69,7 +80,7 @@ fn test_request_response_ok() {
   let e = world.spawn((HttpRequest {
     url: login_route(),
     verb: WebRequestVerb::Post,
-    body: None
+    body: None,
   },));
 
   // Start Request
@@ -81,14 +92,17 @@ fn test_request_response_ok() {
   let expected_component = HttpResponse {
     is_error: false,
     status: Some(StatusCode::from_u16(200).unwrap()),
-    response_body: expected_body
+    response_body: expected_body,
   };
 
   loop {
     run_system(&mut world, &mut resources, handle_http_response.system());
 
     // Check if response completed
-    let ents = world.query::<(Entity, &HttpResponse)>().map(|(e, h)| (e, h)).collect::<Vec<_>>();
+    let ents = world
+      .query::<(Entity, &HttpResponse)>()
+      .map(|(e, h)| (e, h))
+      .collect::<Vec<_>>();
 
     // Leave Loop of Task Completed
     if ents.len() > 0 {
@@ -114,7 +128,7 @@ fn test_404_result() {
   let e = world.spawn((HttpRequest {
     url: login_route(),
     verb: WebRequestVerb::Post,
-    body: None
+    body: None,
   },));
 
   // Start Request
@@ -125,19 +139,26 @@ fn test_404_result() {
   let expected_component = HttpResponse {
     is_error: false,
     status: Some(StatusCode::from_u16(404).unwrap()),
-    response_body: None
+    response_body: None,
   };
 
   loop {
     run_system(&mut world, &mut resources, handle_http_response.system());
 
     // Check if response completed
-    let ents = world.query::<(Entity, &HttpResponse)>().map(|(e, h)| (e, h)).collect::<Vec<_>>();
+    let ents = world
+      .query::<(Entity, &HttpResponse)>()
+      .map(|(e, h)| (e, h))
+      .collect::<Vec<_>>();
 
     // Leave Loop of Task Completed
     if ents.len() > 0 {
       assert_eq!(ents.len(), 1);
-      assert!(ents.contains(&(e, &expected_component)), "Did not contain components, ents: {:?}", ents);
+      assert!(
+        ents.contains(&(e, &expected_component)),
+        "Did not contain components, ents: {:?}",
+        ents
+      );
       break;
     }
 

@@ -21,15 +21,20 @@ fn run_system<S: System<In = (), Out = ()>>(
 
 #[derive(Serialize, Deserialize, Clone)]
 struct TestJSONResponse {
-  token: String
+  token: String,
 }
 
-fn create_test_endpoint(method: &str, path: &str, response: usize, body: Option<&TestJSONResponse>) -> Mock {
-  let mut m = mock(method, path)
-  .with_status(response);
+fn create_test_endpoint(
+  method: &str,
+  path: &str,
+  response: usize,
+  body: Option<&TestJSONResponse>,
+) -> Mock {
+  let mut m = mock(method, path).with_status(response);
 
   if let Some(b) = body {
-    m = m.with_header("content-type", "application/json; charset=utf-8")
+    m = m
+      .with_header("content-type", "application/json; charset=utf-8")
       .with_body(to_string(&b).unwrap());
   }
 

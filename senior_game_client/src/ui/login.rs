@@ -2,16 +2,16 @@ use bevy::prelude::*;
 use bevy_egui::{egui, EguiContext};
 use serde_json::json;
 
-use crate::http::{HttpRequest, HttpResponse, LoginRequestTag, WebRequestVerb, login_route};
+use crate::http::{login_route, HttpRequest, HttpResponse, LoginRequestTag, WebRequestVerb};
 use crate::state::ClientState;
 use crate::ui::LoginUiState;
 
 pub fn format_status_error(status: u16) -> String {
-  return format!("An unknown error has occured with status {}", status);
+  format!("An unknown error has occured with status {}", status)
 }
 
 pub fn unknown_error() -> String {
-  return "An unknown error has occured with no status".to_string();
+  "An unknown error has occured with no status".to_string()
 }
 
 pub fn handle_login_response(
@@ -37,7 +37,7 @@ pub fn handle_login_response(
         },
       }
     } else if let Some(status) = response.status {
-        login_state.set_error(format_status_error(status.as_u16()));
+      login_state.set_error(format_status_error(status.as_u16()));
     } else {
       login_state.set_error(unknown_error());
     }
