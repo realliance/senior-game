@@ -1,13 +1,15 @@
-use bevy::prelude::*;
 use std::sync::{Arc, Mutex};
 use std::thread;
-use reqwest::blocking::{Client, Response, RequestBuilder};
-use reqwest::{StatusCode, Error};
+
+use bevy::prelude::*;
+use reqwest::blocking::{Client, RequestBuilder, Response};
+use reqwest::{Error, StatusCode};
 use serde_json::{Map, Value};
 
+#[allow(dead_code)]
 pub enum WebRequestVerb {
   Get,
-  Post
+  Post,
 }
 
 pub const LOGIN_URL: &str = "https://accounts.senior.realliance.net/session";
@@ -35,11 +37,20 @@ impl HttpResponse {
   }
 
   pub fn get_value(&self, field: &str) -> String {
-    return self.get_json_object().get(field).unwrap().as_str().unwrap().to_string();
+    return self
+      .get_json_object()
+      .get(field)
+      .unwrap()
+      .as_str()
+      .unwrap()
+      .to_string();
   }
 }
 
-fn handle_http_response(mut query: Query<(Entity, &HttpRequest, &mut HttpInProgress), Without<HttpResponse>>, commands: &mut Commands) {
+fn handle_http_response(
+  mut query: Query<(Entity, &HttpRequest, &mut HttpInProgress), Without<HttpResponse>>,
+  commands: &mut Commands,
+) {
   for (entity, _, mut in_progress) in query.iter_mut() {
     let mut_borrow = Arc::get_mut(&mut in_progress.0);
 
@@ -57,11 +68,14 @@ fn handle_http_response(mut query: Query<(Entity, &HttpRequest, &mut HttpInProgr
           let mut buf: Vec<u8> = vec![];
           response.copy_to(&mut buf).unwrap();
           let json: Option<Value> = serde_json::from_slice(&buf).unwrap();
-          commands.insert(entity, (HttpResponse {
-            is_error: false,
-            status: Some(response.status()),
-            response_body: json,
-          },));
+          commands.insert(
+            entity,
+            (HttpResponse {
+              is_error: false,
+              status: Some(response.status()),
+              response_body: json,
+            },),
+          );
         },
         Err(error) => {
           info!(target: "make_http_requests", "Error Occured");
@@ -74,12 +88,15 @@ fn handle_http_response(mut query: Query<(Entity, &HttpRequest, &mut HttpInProgr
           info!(target: "make_http_requests", "Due To Timeout? {}", error.is_timeout());
           info!(target: "make_http_requests", "Due To Request? {}", error.is_request());
 
-          commands.insert(entity, (HttpResponse {
-            is_error: true,
-            status: error.status(),
-            response_body: None,
-          },));
-        }
+          commands.insert(
+            entity,
+            (HttpResponse {
+              is_error: true,
+              status: error.status(),
+              response_body: None,
+            },),
+          );
+        },
       };
     }
   }
@@ -94,7 +111,10 @@ fn send_request(request: RequestBuilder, in_progress: &HttpInProgress) {
   });
 }
 
-fn make_http_request(query: Query<(Entity, &HttpRequest), Without<HttpInProgress>>, commands: &mut Commands) {
+fn make_http_request(
+  query: Query<(Entity, &HttpRequest), Without<HttpInProgress>>,
+  commands: &mut Commands,
+) {
   let client = Client::new();
 
   for (entity, request) in query.iter() {
@@ -102,7 +122,8 @@ fn make_http_request(query: Query<(Entity, &HttpRequest), Without<HttpInProgress
     let res = match &request.verb {
       WebRequestVerb::Get => client.get(&request.url),
       WebRequestVerb::Post => client.post(&request.url),
-    }.json(&request.body);
+    }
+    .json(&request.body);
 
     let in_progress = HttpInProgress::default();
 

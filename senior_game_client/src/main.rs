@@ -4,10 +4,9 @@ use std::env;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::option::Option::Some;
 
-use bevy_egui::{EguiPlugin};
-
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::*;
+use bevy_egui::EguiPlugin;
 use bevy_prototype_networking_laminar::NetworkingPlugin;
 use bevy_rapier3d::physics::RapierPhysicsPlugin;
 #[cfg(debug_assertions)]
@@ -17,15 +16,15 @@ use senior_game_shared::net::NetworkListenerState;
 use senior_game_shared::systems::loadscene::*;
 use senior_game_shared::systems::loadsound::*;
 
-use crate::net::{handle_network_events, server_connection_system, StartServerConnection};
-use crate::ui::UISystemPlugin;
 use crate::http::HttpSystemPlugin;
+use crate::net::{handle_network_events, server_connection_system, StartServerConnection};
 use crate::state::ClientState;
+use crate::ui::UiSystemPlugin;
 
-mod ui;
-mod net;
 mod http;
+mod net;
 mod state;
+mod ui;
 
 fn main() {
   #[cfg(not(debug_assertions))]
@@ -53,7 +52,7 @@ fn main() {
     .add_plugin(RapierPhysicsPlugin)
     .add_plugin(NetworkingPlugin)
     .add_plugin(EguiPlugin)
-    .add_plugin(UISystemPlugin)
+    .add_plugin(UiSystemPlugin)
     .add_plugin(HttpSystemPlugin)
     .init_resource::<NetworkListenerState>()
     .init_resource::<ClientState>()
@@ -62,7 +61,7 @@ fn main() {
     .register_type::<RigidbodyType>()
     .register_type::<AssetChild>()
     .register_type::<ShapeType>()
-    .add_startup_system(manual_load_sound.system())
+    .add_startup_system(load_login_sound.system())
     .add_system(load_sound_system.system())
     .add_system(load_scene_system.system())
     .add_system(server_connection_system.system())
@@ -89,6 +88,8 @@ impl PluginGroup for FlaggedPlugins {
   }
 }
 
+// Allow as debug tool
+#[allow(dead_code)]
 fn manual_start_server_connection(commands: &mut Commands) {
   commands.spawn(()).with(StartServerConnection {
     addr: SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 12350),
@@ -97,6 +98,8 @@ fn manual_start_server_connection(commands: &mut Commands) {
   info!(target: "manual_start_server_connection", "Created Server Connection Component");
 }
 
+// Allow as debug tool
+#[allow(dead_code)]
 fn manual_load_scene(commands: &mut Commands) {
   commands.spawn(()).with(LoadScene {
     path: "scenes/physics_test.scn".to_string(),
@@ -106,10 +109,11 @@ fn manual_load_scene(commands: &mut Commands) {
   info!(target: "manual_load_scene", "Scene Manually Loaded");
 }
 
-fn manual_load_sound(commands: &mut Commands) {
+fn load_login_sound(commands: &mut Commands) {
   commands.spawn(()).with(LoadSound {
-    path: "sounds/Komiku - A Tale is never forgotten - 01 The main reason we are here.mp3".to_string(),
+    path: "sounds/Komiku - A Tale is never forgotten - 01 The main reason we are here.mp3"
+      .to_string(),
     watch: false,
   });
-  info!(target: "manual_load_sound", "Sound Manually Loaded");
+  info!(target: "load_login_sound", "Music Loaded");
 }

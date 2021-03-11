@@ -1,9 +1,9 @@
 use bevy::prelude::*;
-pub mod setup;
 pub mod background;
 pub mod login;
+pub mod setup;
 
-pub struct LoginUIState {
+pub struct LoginUiState {
   pub visible: bool,
   pub username: String,
   pub password: String,
@@ -11,7 +11,7 @@ pub struct LoginUIState {
   pub error_message: String,
 }
 
-impl LoginUIState {
+impl LoginUiState {
   pub fn set_error(&mut self, msg: String) {
     self.error_message = msg;
     self.has_error = true;
@@ -22,13 +22,13 @@ impl LoginUIState {
   }
 }
 
-pub struct BackgroundUIState {
-  pub visible: bool
+pub struct BackgroundUiState {
+  pub visible: bool,
 }
 
-impl Default for LoginUIState {
+impl Default for LoginUiState {
   fn default() -> Self {
-    LoginUIState {
+    LoginUiState {
       visible: true,
       username: String::default(),
       password: String::default(),
@@ -38,21 +38,19 @@ impl Default for LoginUIState {
   }
 }
 
-impl Default for BackgroundUIState {
+impl Default for BackgroundUiState {
   fn default() -> Self {
-    BackgroundUIState {
-      visible: true
-    }
+    BackgroundUiState { visible: true }
   }
 }
 
-pub struct UISystemPlugin;
+pub struct UiSystemPlugin;
 
-impl Plugin for UISystemPlugin {
+impl Plugin for UiSystemPlugin {
   fn build(&self, app: &mut AppBuilder) {
     app
-      .init_resource::<BackgroundUIState>()
-      .init_resource::<LoginUIState>()
+      .init_resource::<BackgroundUiState>()
+      .init_resource::<LoginUiState>()
       .add_startup_system(setup::setup_ui.system())
       .add_system(background::background_ui.system())
       .add_system(login::login_ui.system())
