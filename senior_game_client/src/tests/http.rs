@@ -1,33 +1,14 @@
 use bevy::prelude::*;
-use mockito::{mock, Mock};
-use serde::{Deserialize, Serialize};
-use serde_json::{to_string, to_value};
+use serde_json::to_value;
 use std::time::Instant;
 use reqwest::StatusCode;
 use crate::http::{login_route, HttpRequest, WebRequestVerb, HttpInProgress, HttpResponse, make_http_request, handle_http_response};
-use super::run_system;
-
-#[derive(Serialize, Deserialize, Clone)]
-struct TestJSONResponse {
-  value: String
-}
-
-fn create_test_endpoint(method: &str, path: &str, response: usize, body: Option<&TestJSONResponse>) -> Mock {
-  let mut m = mock(method, path)
-  .with_status(response);
-
-  if let Some(b) = body {
-    m = m.with_header("content-type", "application/json; charset=utf-8")
-      .with_body(to_string(&b).unwrap());
-  }
-
-  return m.create();
-}
+use super::{TestJSONResponse, create_test_endpoint, run_system};
 
 #[test]
 fn test_get_request_is_processed() {
   let test_object = TestJSONResponse {
-    value: 2.to_string()
+    token: 2.to_string()
   };
 
   let _m = create_test_endpoint("GET", "/session", 200, Some(&test_object));
@@ -52,7 +33,7 @@ fn test_get_request_is_processed() {
 #[test]
 fn test_post_request_is_processed() {
   let test_object = TestJSONResponse {
-    value: 2.to_string()
+    token: 2.to_string()
   };
 
   let _m = create_test_endpoint("POST", "/session", 200, Some(&test_object));
@@ -77,7 +58,7 @@ fn test_post_request_is_processed() {
 #[test]
 fn test_request_response_ok() {
   let test_object = TestJSONResponse {
-    value: 2.to_string()
+    token: 2.to_string()
   };
 
   let _m = create_test_endpoint("POST", "/session", 200, Some(&test_object));
@@ -156,7 +137,7 @@ fn test_404_result() {
     // Leave Loop of Task Completed
     if ents.len() > 0 {
       assert_eq!(ents.len(), 1);
-      assert!(ents.contains(&(e, &expected_component)), "Did not contain component, ents: {:?}", ents);
+      assert!(ents.contains(&(e, &expected_component)), "Did not contain components, ents: {:?}", ents);
       break;
     }
 

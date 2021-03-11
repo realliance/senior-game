@@ -6,6 +6,14 @@ use crate::http::{HttpRequest, HttpResponse, LoginRequestTag, WebRequestVerb, lo
 use crate::state::ClientState;
 use crate::ui::LoginUiState;
 
+pub fn format_status_error(status: u16) -> String {
+  return format!("An unknown error has occured with status {}", status);
+}
+
+pub fn unknown_error() -> String {
+  return "An unknown error has occured with no status".to_string();
+}
+
 pub fn handle_login_response(
   query: Query<(Entity, &HttpResponse, &LoginRequestTag)>,
   mut login_state: ResMut<LoginUiState>,
@@ -25,16 +33,13 @@ pub fn handle_login_response(
           login_state.set_error(response.get_value("error"));
         },
         x => {
-          login_state.set_error(format!("An unknown error has occured with status {}", x));
+          login_state.set_error(format_status_error(x));
         },
       }
     } else if let Some(status) = response.status {
-        login_state.set_error(format!(
-          "An unknown error has occured with status {}",
-          status
-        ));
+        login_state.set_error(format_status_error(status.as_u16()));
     } else {
-      login_state.set_error("An unknown error has occured with no status".to_string());
+      login_state.set_error(unknown_error());
     }
 
     commands.despawn(entity);
