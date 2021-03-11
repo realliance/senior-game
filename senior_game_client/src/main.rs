@@ -20,10 +20,12 @@ use senior_game_shared::systems::loadsound::*;
 use crate::net::{handle_network_events, server_connection_system, StartServerConnection};
 use crate::ui::UISystemPlugin;
 use crate::http::HttpSystemPlugin;
+use crate::state::ClientState;
 
 mod ui;
 mod net;
 mod http;
+mod state;
 
 fn main() {
   #[cfg(not(debug_assertions))]
@@ -54,6 +56,7 @@ fn main() {
     .add_plugin(UISystemPlugin)
     .add_plugin(HttpSystemPlugin)
     .init_resource::<NetworkListenerState>()
+    .init_resource::<ClientState>()
     .register_type::<CreateCollider>()
     .register_type::<CreatePhysics>()
     .register_type::<RigidbodyType>()

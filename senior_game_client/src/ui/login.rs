@@ -1,8 +1,43 @@
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContext};
 use crate::ui::LoginUIState;
-use crate::http::{LoginRequestTag, HttpRequest, WebRequestVerb, LOGIN_URL};
+use crate::http::{LoginRequestTag, HttpRequest, WebRequestVerb, HttpResponse, LOGIN_URL};
+use crate::state::ClientState;
 use serde_json::json;
+
+pub fn handle_login_response(
+  query: Query<(Entity, &HttpResponse, &LoginRequestTag)>,
+  mut login_state : ResMut<LoginUIState>,
+  mut client_state : ResMut<ClientState>,
+  commands: &mut Commands
+) {
+  for (entity, response, _) in query.iter() {
+    if !response.is_error {
+      let response_code = response.status.unwrap().as_u16();
+      match response_code {
+        200 => {
+          client_state.username = login_state.username.clone();
+          client_state.token = response.get_value("token");
+          login_state.visible = false;
+        },
+        400 => {
+          login_state.set_error(response.get_value("error"));
+        },
+        x => {
+          login_state.set_error(format!("An unknown error has occured with status {}", x));
+        }
+      }
+    } else {
+      if let Some(status) = response.status {
+        login_state.set_error(format!("An unknown error has occured with status {}", status));
+      } else {
+        login_state.set_error("An unknown error has occured with no status".to_string());
+      }
+    }
+
+    commands.despawn(entity);
+  }
+}
 
 pub fn login_ui(
   windows: Res<Windows>,
@@ -73,6 +108,7 @@ pub fn login_ui(
 
       ui.vertical_centered(|ui| {
         if ui.button("Log In").clicked(){
+          login_state.clear_error();
 
           let request_body = json!({
             "username": login_state.username.clone(),
@@ -86,6 +122,12 @@ pub fn login_ui(
           }));
         }
       });
+
+      if login_state.has_error {
+        ui.horizontal(|ui| {
+          ui.add(egui::Label::new(&login_state.error_message).text_color(egui::Color32::RED).wrap(true).text_style(egui::TextStyle::Small));
+        });
+      }
 
       ui.separator();
 
