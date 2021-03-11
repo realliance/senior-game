@@ -58,18 +58,17 @@ pub fn login_ui(
         .text_style(egui::TextStyle::Body)
         .desired_width(500.0));
 
-        login_state.username.truncate(25);
+        login_state.username.truncate(32);
       });
 
       ui.vertical_centered(|ui| {
         ui.label("Password");
 
-        //TODO: Rerender * for password
         ui.add(egui::TextEdit::singleline(&mut login_state.password)
-        .text_style(egui::TextStyle::Body)
+        .text_style(egui::TextStyle::Monospace)
         .desired_width(500.0));
 
-        login_state.password.truncate(35);
+        login_state.password.truncate(72);
       });
 
       ui.vertical_centered(|ui| {
