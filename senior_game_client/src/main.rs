@@ -78,10 +78,10 @@ pub struct FlaggedPlugins;
 
 impl PluginGroup for FlaggedPlugins {
   fn build(&mut self, group: &mut PluginGroupBuilder) {
-    let args: Vec<String> = env::args().collect();
-
     #[cfg(debug_assertions)]
     {
+      let args: Vec<String> = env::args().collect();
+
       // Physics Debug Renderer
       if args.contains(&"--render-collider-bounds".to_string()) {
         info!(target: "app_startup", "Render Debug Activated");

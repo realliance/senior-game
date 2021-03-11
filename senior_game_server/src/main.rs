@@ -1,3 +1,5 @@
+#[cfg(not(debug_assertions))]
+use std::borrow::Cow::Owned;
 use std::collections::HashMap;
 
 use bevy::asset::AssetPlugin;
@@ -22,7 +24,7 @@ pub fn main() {
     // It *must* be the first thing in main
     // It *cannot* be extracted into a function
     let _guard = sentry::init(sentry::ClientOptions {
-      release: std::env::var("RELEASE").ok().map(Cow::Owned),
+      release: std::env::var("RELEASE").ok().map(Owned),
       ..Default::default()
     });
 
