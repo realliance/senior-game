@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_egui::{egui, EguiContext};
 use serde_json::json;
 
-use crate::http::{HttpRequest, HttpResponse, LoginRequestTag, WebRequestVerb, LOGIN_URL};
+use crate::http::{HttpRequest, HttpResponse, LoginRequestTag, WebRequestVerb, login_route};
 use crate::state::ClientState;
 use crate::ui::LoginUiState;
 
@@ -129,8 +129,8 @@ pub fn login_ui(
                 LoginRequestTag,
                 HttpRequest {
                   verb: WebRequestVerb::Post,
-                  url: LOGIN_URL.to_string(),
-                  body: request_body,
+                  url: login_route(),
+                  body: Some(request_body),
                 },
               ));
             }

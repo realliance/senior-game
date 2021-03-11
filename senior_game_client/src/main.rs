@@ -26,6 +26,9 @@ mod net;
 mod state;
 mod ui;
 
+#[cfg(test)]
+mod tests;
+
 fn main() {
   #[cfg(not(debug_assertions))]
   {

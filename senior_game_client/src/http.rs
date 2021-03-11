@@ -6,25 +6,47 @@ use reqwest::blocking::{Client, RequestBuilder, Response};
 use reqwest::{Error, StatusCode};
 use serde_json::{Map, Value};
 
+use url::Url;
+
+#[cfg(test)]
+use mockito;
+
 #[allow(dead_code)]
 pub enum WebRequestVerb {
   Get,
   Post,
 }
 
-pub const LOGIN_URL: &str = "https://accounts.senior.realliance.net/session";
+
+
+pub const LOGIN_SUFFIX: &str = "/session";
+
+pub fn domain_url() -> Url {
+  #[cfg(not(test))]
+  let domain: &str = "https://accounts.senior.realliance.net";
+
+  #[cfg(test)]
+  let domain: &str = &mockito::server_url();
+
+  return Url::parse(domain).unwrap();
+}
+
+pub fn login_route() -> String {
+  return domain_url().join(LOGIN_SUFFIX).unwrap().as_str().to_string();
+}
 
 pub struct LoginRequestTag;
 
 pub struct HttpRequest {
   pub verb: WebRequestVerb,
   pub url: String,
-  pub body: serde_json::Value,
+  pub body: Option<Value>,
 }
 
 #[derive(Default)]
 pub struct HttpInProgress(Arc<Mutex<Option<Result<Response, Error>>>>);
 
+#[derive(PartialEq, Debug)]
 pub struct HttpResponse {
   pub is_error: bool,
   pub status: Option<StatusCode>,
@@ -47,7 +69,7 @@ impl HttpResponse {
   }
 }
 
-fn handle_http_response(
+pub fn handle_http_response(
   mut query: Query<(Entity, &HttpRequest, &mut HttpInProgress), Without<HttpResponse>>,
   commands: &mut Commands,
 ) {
@@ -67,7 +89,7 @@ fn handle_http_response(
           info!(target: "make_http_requests", "Response: {}", response.status());
           let mut buf: Vec<u8> = vec![];
           response.copy_to(&mut buf).unwrap();
-          let json: Option<Value> = serde_json::from_slice(&buf).unwrap();
+          let json: Option<Value> = serde_json::from_slice(&buf).ok();
           commands.insert(
             entity,
             (HttpResponse {
@@ -102,7 +124,7 @@ fn handle_http_response(
   }
 }
 
-fn send_request(request: RequestBuilder, in_progress: &HttpInProgress) {
+pub fn send_request(request: RequestBuilder, in_progress: &HttpInProgress) {
   let cloned = in_progress.0.clone();
   thread::spawn(move || {
     let res = request.send();
@@ -111,7 +133,7 @@ fn send_request(request: RequestBuilder, in_progress: &HttpInProgress) {
   });
 }
 
-fn make_http_request(
+pub fn make_http_request(
   query: Query<(Entity, &HttpRequest), Without<HttpInProgress>>,
   commands: &mut Commands,
 ) {
