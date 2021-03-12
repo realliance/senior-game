@@ -6,9 +6,7 @@ use bevy::asset::AssetPlugin;
 use bevy::prelude::*;
 use bevy::scene::ScenePlugin;
 use bevy::transform::TransformPlugin;
-use bevy_prototype_networking_laminar::{
-  Connection, NetworkDelivery, NetworkEvent, NetworkResource, NetworkingPlugin,
-};
+use bevy_prototype_networking_laminar::{Connection, NetworkDelivery, NetworkEvent, NetworkResource, NetworkingPlugin};
 use bevy_rapier3d::physics::{EventQueue, RapierPhysicsPlugin};
 use senior_game_shared::components::assets::*;
 use senior_game_shared::net::{NetworkListenerState, NetworkMessage};
@@ -63,9 +61,7 @@ pub fn main() {
 }
 
 fn start_server(mut net: ResMut<NetworkResource>) {
-  net
-    .bind("127.0.0.1:12350")
-    .expect("Unable to bind to address");
+  net.bind("127.0.0.1:12350").expect("Unable to bind to address");
 
   println!("Server Started on Port 12350");
 }

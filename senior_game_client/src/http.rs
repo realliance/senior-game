@@ -28,11 +28,7 @@ pub fn domain_url() -> Url {
 }
 
 pub fn login_route() -> String {
-  return domain_url()
-    .join(LOGIN_SUFFIX)
-    .unwrap()
-    .as_str()
-    .to_string();
+  return domain_url().join(LOGIN_SUFFIX).unwrap().into_string();
 }
 
 pub struct LoginRequestTag;
@@ -59,13 +55,7 @@ impl HttpResponse {
   }
 
   pub fn get_value(&self, field: &str) -> String {
-    return self
-      .get_json_object()
-      .get(field)
-      .unwrap()
-      .as_str()
-      .unwrap()
-      .to_string();
+    return self.get_json_object().get(field).unwrap().as_str().unwrap().to_string();
   }
 }
 
@@ -133,10 +123,7 @@ pub fn send_request(request: RequestBuilder, in_progress: &HttpInProgress) {
   });
 }
 
-pub fn make_http_request(
-  query: Query<(Entity, &HttpRequest), Without<HttpInProgress>>,
-  commands: &mut Commands,
-) {
+pub fn make_http_request(query: Query<(Entity, &HttpRequest), Without<HttpInProgress>>, commands: &mut Commands) {
   let client = Client::new();
 
   for (entity, request) in query.iter() {

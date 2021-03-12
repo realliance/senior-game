@@ -87,89 +87,86 @@ pub fn login_ui(
     .show(ctx, |ui| {
       ui.spacing_mut().item_spacing = egui::vec2(10.0, 15.0);
 
-      ui.with_layout(
-        egui::Layout::centered_and_justified(egui::Direction::TopDown),
-        |ui| {
-          ui.vertical_centered_justified(|ui| {
-            ui.heading("Account Login");
-            ui.separator();
-          });
-
-          ui.spacing_mut().item_spacing = egui::vec2(10.0, 11.0);
-
-          ui.vertical_centered(|ui| {
-            ui.label("Username");
-
-            ui.add(
-              egui::TextEdit::singleline(&mut login_state.username)
-                .text_style(egui::TextStyle::Body)
-                .desired_width(500.0),
-            );
-
-            login_state.username.truncate(32);
-          });
-
-          ui.vertical_centered(|ui| {
-            ui.label("Password");
-
-            ui.add(
-              egui::TextEdit::singleline(&mut login_state.password)
-                .text_style(egui::TextStyle::Monospace)
-                .desired_width(500.0),
-            );
-
-            login_state.password.truncate(72);
-          });
-
-          ui.vertical_centered(|ui| {
-            if ui.button("Log In").clicked() {
-              login_state.clear_error();
-
-              let request_body = json!({
-                  "username": login_state.username.clone(),
-                  "password": login_state.password.clone(),
-              });
-
-              commands.spawn((
-                LoginRequestTag,
-                HttpRequest {
-                  verb: WebRequestVerb::Post,
-                  url: login_route(),
-                  body: Some(request_body),
-                },
-              ));
-            }
-          });
-
-          if login_state.has_error {
-            ui.horizontal(|ui| {
-              ui.add(
-                egui::Label::new(&login_state.error_message)
-                  .text_color(egui::Color32::RED)
-                  .wrap(true)
-                  .text_style(egui::TextStyle::Small),
-              );
-            });
-          }
-
+      ui.with_layout(egui::Layout::centered_and_justified(egui::Direction::TopDown), |ui| {
+        ui.vertical_centered_justified(|ui| {
+          ui.heading("Account Login");
           ui.separator();
+        });
 
-          ui.vertical(|ui| {
+        ui.spacing_mut().item_spacing = egui::vec2(10.0, 11.0);
+
+        ui.vertical_centered(|ui| {
+          ui.label("Username");
+
+          ui.add(
+            egui::TextEdit::singleline(&mut login_state.username)
+              .text_style(egui::TextStyle::Body)
+              .desired_width(500.0),
+          );
+
+          login_state.username.truncate(32);
+        });
+
+        ui.vertical_centered(|ui| {
+          ui.label("Password");
+
+          ui.add(
+            egui::TextEdit::singleline(&mut login_state.password)
+              .text_style(egui::TextStyle::Monospace)
+              .desired_width(500.0),
+          );
+
+          login_state.password.truncate(72);
+        });
+
+        ui.vertical_centered(|ui| {
+          if ui.button("Log In").clicked() {
+            login_state.clear_error();
+
+            let request_body = json!({
+                "username": login_state.username.clone(),
+                "password": login_state.password.clone(),
+            });
+
+            commands.spawn((
+              LoginRequestTag,
+              HttpRequest {
+                verb: WebRequestVerb::Post,
+                url: login_route(),
+                body: Some(request_body),
+              },
+            ));
+          }
+        });
+
+        if login_state.has_error {
+          ui.centered_and_justified(|ui| {
             ui.add(
-              egui::Hyperlink::new("https://accounts.senior.realliance.net/register")
-                .text("Register Account")
-                .small(),
+              egui::Label::new(&login_state.error_message)
+                .text_color(egui::Color32::RED)
+                .wrap(true)
+                .text_style(egui::TextStyle::Small),
             );
           });
+        }
 
-          ui.vertical(|ui| {
-            ui.add(
-              egui::Hyperlink::new("https://accounts.senior.realliance.net/password/recovery")
-                .text("Forgot Password?")
-                .small(),
-            );
-          });
-        },
-      );
+        ui.separator();
+
+        ui.vertical(|ui| {
+          ui.add(
+            egui::Hyperlink::new("https://accounts.senior.realliance.net/register")
+              .text("Register Account")
+              .small(),
+          );
+        });
+
+        ui.vertical(|ui| {
+          ui.add(
+            egui::Hyperlink::new("https://accounts.senior.realliance.net/password/recovery")
+              .text("Forgot Password?")
+              .small(),
+          );
+        });
+      });
     });
 }

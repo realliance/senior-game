@@ -16,8 +16,7 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
 
     // camera
     scene_world.spawn(Camera3dBundle {
-      transform: Transform::from_translation(Vec3::new(-10.0, 4.0, 10.0))
-        .looking_at(Vec3::default(), Vec3::unit_y()),
+      transform: Transform::from_translation(Vec3::new(-10.0, 4.0, 10.0)).looking_at(Vec3::default(), Vec3::unit_y()),
       ..Default::default()
     });
   }

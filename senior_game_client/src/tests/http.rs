@@ -6,15 +6,12 @@ use serde_json::to_value;
 
 use super::{create_test_endpoint, run_system, TestJSONResponse};
 use crate::http::{
-  handle_http_response, login_route, make_http_request, HttpInProgress, HttpRequest, HttpResponse,
-  WebRequestVerb,
+  handle_http_response, login_route, make_http_request, HttpInProgress, HttpRequest, HttpResponse, WebRequestVerb,
 };
 
 #[test]
 fn test_get_request_is_processed() {
-  let test_object = TestJSONResponse {
-    token: 2.to_string(),
-  };
+  let test_object = TestJSONResponse { token: 2.to_string() };
 
   let _m = create_test_endpoint("GET", "/session", 200, Some(&test_object));
 
@@ -40,9 +37,7 @@ fn test_get_request_is_processed() {
 
 #[test]
 fn test_post_request_is_processed() {
-  let test_object = TestJSONResponse {
-    token: 2.to_string(),
-  };
+  let test_object = TestJSONResponse { token: 2.to_string() };
 
   let _m = create_test_endpoint("POST", "/session", 200, Some(&test_object));
 
@@ -68,9 +63,7 @@ fn test_post_request_is_processed() {
 
 #[test]
 fn test_request_response_ok() {
-  let test_object = TestJSONResponse {
-    token: 2.to_string(),
-  };
+  let test_object = TestJSONResponse { token: 2.to_string() };
 
   let _m = create_test_endpoint("POST", "/session", 200, Some(&test_object));
 

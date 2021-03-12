@@ -114,8 +114,7 @@ fn manual_load_scene(commands: &mut Commands) {
 
 fn load_login_sound(commands: &mut Commands) {
   commands.spawn(()).with(LoadSound {
-    path: "sounds/Komiku - A Tale is never forgotten - 01 The main reason we are here.mp3"
-      .to_string(),
+    path: "sounds/Komiku - A Tale is never forgotten - 01 The main reason we are here.mp3".to_string(),
     watch: false,
   });
   info!(target: "load_login_sound", "Music Loaded");

@@ -7,11 +7,7 @@ mod http;
 mod login;
 
 // https://github.com/bevyengine/bevy/blob/v0.4.0/crates/bevy_ecs/src/system/into_system.rs
-fn run_system<S: System<In = (), Out = ()>>(
-  world: &mut World,
-  resources: &mut Resources,
-  system: S,
-) {
+fn run_system<S: System<In = (), Out = ()>>(world: &mut World, resources: &mut Resources, system: S) {
   let mut schedule = Schedule::default();
   let mut update = SystemStage::serial();
   update.add_system(system);
@@ -24,12 +20,7 @@ struct TestJSONResponse {
   token: String,
 }
 
-fn create_test_endpoint(
-  method: &str,
-  path: &str,
-  response: usize,
-  body: Option<&TestJSONResponse>,
-) -> Mock {
+fn create_test_endpoint(method: &str, path: &str, response: usize, body: Option<&TestJSONResponse>) -> Mock {
   let mut m = mock(method, path).with_status(response);
 
   if let Some(b) = body {
