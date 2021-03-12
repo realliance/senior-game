@@ -28,7 +28,7 @@ pub fn domain_url() -> Url {
 }
 
 pub fn login_route() -> String {
-  return domain_url().join(LOGIN_SUFFIX).unwrap().into_string();
+  domain_url().join(LOGIN_SUFFIX).unwrap().into_string()
 }
 
 pub struct LoginRequestTag;
