@@ -1,5 +1,5 @@
-use bevy::prelude::*;
 use bevy::asset::HandleId;
+use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Hash, PartialEq, Eq, Clone, Debug, Reflect, Default)]

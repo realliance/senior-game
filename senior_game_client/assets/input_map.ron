@@ -1,0 +1,8 @@
+(
+  KeyboardKeys: {
+    Return: "SHOOT"
+  },
+  MouseButtons: {
+    Left: "SHOOT"
+  }
+)
