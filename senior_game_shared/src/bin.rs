@@ -5,6 +5,7 @@ use bevy::app::AppExit;
 use bevy::prelude::*;
 use bevy::reflect::TypeRegistry;
 use senior_game_shared::components::assets::*;
+use senior_game_shared::components::input::*;
 
 use crate::scenes::destination_helper::Destination;
 use crate::scenes::*;
@@ -21,6 +22,8 @@ pub fn main() {
     .register_type::<ShapeType>()
     .register_type::<BuildFlyCamera>()
     .register_type::<CreateAssetCollider>()
+    .register_type::<CreatePickSource>()
+    .register_type::<CubeFollow>()
     .add_startup_system(build_scenes.system())
     .add_system(exit_system.system())
     .run();

@@ -1,3 +1,4 @@
+#[cfg(not(debug_assertions))]
 use std::borrow::Cow;
 use std::collections::HashMap;
 
@@ -71,7 +72,7 @@ fn start_server(mut net: ResMut<NetworkResource>) {
 
 fn load_game_scene(commands: &mut Commands) {
   commands.spawn(()).with(LoadScene {
-    path: "scenes/physics_test.scn".to_string(),
+    path: "scenes/platform.scn".to_string(),
     watch: false,
   });
 
