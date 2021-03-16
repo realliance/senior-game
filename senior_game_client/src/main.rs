@@ -8,6 +8,7 @@ use bevy::app::PluginGroupBuilder;
 use bevy::prelude::*;
 use bevy_prototype_networking_laminar::NetworkingPlugin;
 use bevy_rapier3d::physics::RapierPhysicsPlugin;
+use bevy_fly_camera::{FlyCameraPlugin};
 #[cfg(debug_assertions)]
 use bevy_rapier3d::render::RapierRenderPlugin;
 use senior_game_shared::components::assets::*;
@@ -43,17 +44,22 @@ fn main() {
     .add_plugins(FlaggedPlugins)
     .add_plugin(RapierPhysicsPlugin)
     .add_plugin(NetworkingPlugin)
+    .add_plugin(FlyCameraPlugin)
     .init_resource::<NetworkListenerState>()
     .register_type::<CreateCollider>()
     .register_type::<CreatePhysics>()
     .register_type::<RigidbodyType>()
     .register_type::<AssetChild>()
     .register_type::<ShapeType>()
+    .register_type::<BuildFlyCamera>()
+    .register_type::<CreateAssetCollider>()
     .add_startup_system(manual_load_scene.system())
     .add_startup_system(manual_start_server_connection.system())
     .add_system(load_scene_system.system())
     .add_system(server_connection_system.system())
     .add_system(handle_network_events.system())
+    .add_system(load_fly_camera.system())
+    .add_system(load_asset_physics.system())
     .add_system_to_stage(stage::POST_UPDATE, load_asset.system())
     .add_system_to_stage(stage::POST_UPDATE, load_physics.system())
     .run();
@@ -86,7 +92,7 @@ fn manual_start_server_connection(commands: &mut Commands) {
 
 fn manual_load_scene(commands: &mut Commands) {
   commands.spawn(()).with(LoadScene {
-    path: "scenes/physics_test.scn".to_string(),
+    path: "scenes/game.scn".to_string(),
     watch: false,
   });
 
