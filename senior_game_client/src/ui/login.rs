@@ -26,11 +26,11 @@ pub fn handle_login_response(
       match response_code {
         200 => {
           client_state.username = login_state.username.clone();
-          client_state.token = response.get_value("token");
+          client_state.token = response.get_value("token").unwrap().to_string();
           login_state.visible = false;
         },
         400 => {
-          login_state.set_error(response.get_value("error"));
+          login_state.set_error(response.get_value("error").unwrap().to_string());
         },
         x => {
           login_state.set_error(format_status_error(x));

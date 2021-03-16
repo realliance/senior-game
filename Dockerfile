@@ -5,7 +5,7 @@ ENV CARGO_HOME /build/cargo
 RUN --mount=type=cache,target=/var/cache/apt \
   apt-get update -y && \
   apt-get install -y --no-install-recommends \
-  clang lld libasound2-dev libudev-dev cmake
+  clang lld libasound2-dev libudev-dev libxcb-xfixes0-dev libxcb-shape0-dev cmake
 
 COPY . .
 

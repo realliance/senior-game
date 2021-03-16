@@ -50,12 +50,23 @@ pub struct HttpResponse {
 }
 
 impl HttpResponse {
-  pub fn get_json_object(&self) -> &Map<String, Value> {
-    return self.response_body.as_ref().unwrap().as_object().unwrap();
+  pub fn get_json_object(&self) -> Option<&Map<String, Value>> {
+    match &self.response_body {
+      Some(body) => Some(body.as_object()?),
+      None => None,
+    }
   }
 
-  pub fn get_value(&self, field: &str) -> String {
-    return self.get_json_object().get(field).unwrap().as_str().unwrap().to_string();
+  pub fn get_value(&self, field: &str) -> Option<&str> {
+    match self.get_json_object() {
+      Some(json_map) => {
+        match json_map.get(field) {
+          Some(value) => value.as_str(),
+          None => None,
+        }
+      },
+      None => None,
+    }
   }
 }
 
