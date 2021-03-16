@@ -19,6 +19,8 @@ pub fn main() {
     .register_type::<RigidbodyType>()
     .register_type::<AssetChild>()
     .register_type::<ShapeType>()
+    .register_type::<BuildFlyCamera>()
+    .register_type::<CreateAssetCollider>()
     .add_startup_system(build_scenes.system())
     .add_system(exit_system.system())
     .run();
@@ -33,6 +35,7 @@ fn build_scenes(type_registry: Res<TypeRegistry>) {
   const SCENES: &[(Destination, &str, fn(Destination, &Res<TypeRegistry>) -> String)] = &[
     (Destination::Both, "physics_test.scn", physics_test::build),
     (Destination::Both, "platform.scn", platform::build),
+    (Destination::Both, "game.scn", game::build),
   ];
 
   let client_prefix = Path::new("../senior_game_client/assets/scenes");

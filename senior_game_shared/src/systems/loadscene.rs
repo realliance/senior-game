@@ -1,10 +1,13 @@
 use std::path::Path;
 
-use bevy::asset::{AssetServer, Handle};
+use bevy::prelude::*;
+use bevy::asset::{AssetServer, Handle, HandleId, AssetPathId};
 use bevy::ecs::{Commands, Entity, Query, Res, ResMut};
-use bevy::log::*;
 use bevy::prelude::BuildChildren;
+use bevy_fly_camera::FlyCamera;
 use bevy::scene::{DynamicScene, SceneSpawner};
+use bevy::render::mesh::{Indices, VertexAttributeValues};
+use bevy_rapier3d::na::Point3;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
 use bevy_rapier3d::rapier::geometry::ColliderBuilder;
 
@@ -30,8 +33,11 @@ pub fn load_scene_system(
   }
 }
 
-pub fn load_physics(query: Query<(Entity, &CreatePhysics)>, commands: &mut Commands) {
-  for (entity, bundle) in query.iter() {
+pub fn load_physics(
+  commands: &mut Commands,
+  physics_query: Query<(Entity, &CreatePhysics)>
+) {
+  for (entity, bundle) in physics_query.iter() {
     info!(target: "load_physics", "Load Rigidbody Triggered");
     let trans = bundle.rigidbody_transform.translation;
 
@@ -69,6 +75,66 @@ pub fn load_physics(query: Query<(Entity, &CreatePhysics)>, commands: &mut Comma
   }
 }
 
+pub fn load_asset_physics(
+  commands: &mut Commands,
+  asset_server: Res<AssetServer>,
+  meshes: Res<Assets<Mesh>>,
+  mut query: Query<(Entity, &mut CreateAssetCollider)>
+) {
+  for (entity, mut asset) in query.iter_mut() {
+
+    let path = Path::new(&asset.path);
+
+    if !asset.loading_started {
+      info!(target: "load_asset_physics", "Load Asset Physics Triggered {}", asset.path);
+      let handle: Handle<Mesh> = asset_server.load(path);
+      asset.handle_id = handle.id;
+      asset.loading_started = true;
+    }
+
+    if let HandleId::AssetPathId(asset_path_id) = asset.handle_id {
+      let source_path_id = asset_path_id.source_path_id();
+
+      for (id, mesh) in meshes.iter() {
+        if let HandleId::AssetPathId(mesh_asset) = id {
+          if mesh_asset.source_path_id() == source_path_id {
+            let collider = create_collider_for_mesh(mesh);
+            let child = commands.spawn((RigidBodyBuilder::new_static(), collider)).current_entity().unwrap();
+            commands.push_children(entity, &[child]);
+            commands.remove_one::<CreateAssetCollider>(entity);
+            info!(target: "load_asset_physics", "Load Asset Physics Finished {}", asset.path);
+            break;
+          }
+        }
+      }
+    } else {
+      panic!("Attempted to load asset but found a uuid asset!");
+    }
+  }
+}
+
+fn create_collider_for_mesh(mesh: &Mesh) -> ColliderBuilder {
+  let verts = mesh.attribute(Mesh::ATTRIBUTE_POSITION).unwrap();
+
+  let verts: &Vec<[f32; 3]> = match verts {
+      VertexAttributeValues::Float3(vert) => Some(vert),
+      _ => None
+  }.unwrap();
+
+  let verts: Vec<Point3<f32>> = verts.iter().map(|vert| {
+      Point3::new(vert[0], vert[1], vert[2])
+  }).collect();
+
+  let indices: Vec<[u32; 3]> = match mesh.indices().unwrap() {
+      Indices::U32(i) => Some(i),
+      _ => None,
+  }.unwrap().chunks(3).map(|tri| {
+      [tri[0], tri[1], tri[2]]
+  }).collect();
+
+  ColliderBuilder::trimesh(verts.clone(), indices.clone())
+}
+
 pub fn load_asset(
   query: Query<(Entity, &AssetChild)>,
   commands: &mut Commands,
@@ -80,5 +146,13 @@ pub fn load_asset(
     scene_spawner.spawn_as_child(asset_server.load(Path::new(&asset.path)), entity);
 
     commands.remove_one::<AssetChild>(entity);
+  }
+}
+
+pub fn load_fly_camera(query: Query<(Entity, &BuildFlyCamera)>, commands: &mut Commands) {
+  for (entity, _) in query.iter() {
+    info!(target: "load_fly_camera", "Load FlyCamera Triggered");
+    commands.insert(entity, (FlyCamera::default(),));
+    commands.remove_one::<BuildFlyCamera>(entity);
   }
 }
