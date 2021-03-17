@@ -47,8 +47,9 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
         },
       ],
     },
-    AssetChild {
+    LoadAsset {
       path: "models/platform.gltf".to_string(),
+      ..Default::default()
     },
   ));
 

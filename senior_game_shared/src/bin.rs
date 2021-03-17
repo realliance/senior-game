@@ -18,7 +18,7 @@ pub fn main() {
     .register_type::<CreatePhysics>()
     .register_type::<CreateCollider>()
     .register_type::<RigidbodyType>()
-    .register_type::<AssetChild>()
+    .register_type::<LoadAsset>()
     .register_type::<ShapeType>()
     .register_type::<BuildFlyCamera>()
     .register_type::<CreateAssetCollider>()

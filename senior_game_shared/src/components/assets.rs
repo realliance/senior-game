@@ -2,10 +2,24 @@ use bevy::asset::HandleId;
 use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Hash, PartialEq, Eq, Clone, Debug, Reflect, Default)]
+#[derive(Clone, Debug, Reflect)]
 #[reflect(Component)]
-pub struct AssetChild {
+pub struct LoadAsset {
   pub path: String,
+  pub mesh_index: u8,
+  pub loading: bool,
+  pub handle_id: HandleId,
+}
+
+impl Default for LoadAsset {
+  fn default() -> LoadAsset {
+    LoadAsset {
+      path: String::default(),
+      mesh_index: 0,
+      loading: bool::default(),
+      handle_id: HandleId::default::<Scene>(),
+    }
+  }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Reflect)]
