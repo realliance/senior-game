@@ -149,15 +149,16 @@ pub fn load_pick_source(query: Query<(Entity, &CreatePickSource)>, commands: &mu
 
 // TODO: Only make tagged entities pickable
 pub fn load_pick_mesh(
-  query: Query<(Entity, &Handle<Mesh>), Without<PickableMesh>>,
+  query: Query<(Entity, &Handle<Mesh>, &CreatePickMesh)>,
   commands: &mut Commands,
 ) {
-  for (entity, handle) in query.iter() {
+  for (entity, handle, _) in query.iter() {
     info!(target: "load_pick_mesh", "Load PickMesh Triggered");
     commands.insert(
       entity,
       (PickableMesh::default().with_bounding_sphere(handle.clone()),),
     );
+    commands.remove_one::<CreatePickMesh>(entity);
   }
 }
 

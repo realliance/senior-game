@@ -66,6 +66,7 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
       path: "models/map.gltf".to_string(),
       ..Default::default()
     },
+    CreatePickMesh::default(),
   ));
 
   const ROCK_Y: f32 = 0.5;
