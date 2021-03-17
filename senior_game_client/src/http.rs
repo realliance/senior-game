@@ -59,11 +59,9 @@ impl HttpResponse {
 
   pub fn get_value(&self, field: &str) -> Option<&str> {
     match self.get_json_object() {
-      Some(json_map) => {
-        match json_map.get(field) {
-          Some(value) => value.as_str(),
-          None => None,
-        }
+      Some(json_map) => match json_map.get(field) {
+        Some(value) => value.as_str(),
+        None => None,
       },
       None => None,
     }
