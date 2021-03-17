@@ -34,8 +34,9 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
         collider_shape: ShapeType::Cube,
       }],
     },
-    AssetChild {
+    LoadAsset {
       path: "models/cube.gltf".to_string(),
+      ..Default::default()
     },
   ));
 
@@ -54,8 +55,9 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
         collider_shape: ShapeType::Cube,
       }],
     },
-    AssetChild {
+    LoadAsset {
       path: "models/cube.gltf".to_string(),
+      ..Default::default()
     },
   ));
 

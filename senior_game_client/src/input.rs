@@ -1,5 +1,8 @@
 use bevy::prelude::*;
 use bevy_mod_picking::*;
+use bevy_rapier3d::rapier::dynamics::{RigidBodySet};
+use bevy_rapier3d::physics::RigidBodyHandleComponent;
+use bevy_rapier3d::na::{Vector3, Isometry3};
 use kurinji::*;
 use senior_game_shared::components::input::*;
 
@@ -27,14 +30,18 @@ pub fn load_input_binding(
 pub fn input_handler(
   input_map: Res<Kurinji>,
   pick_state: Res<PickState>,
-  mut query: Query<(Entity, &mut Children, &CubeFollow)>,
+  mut rigidbody_set: ResMut<RigidBodySet>,
+  query: Query<(Entity, &RigidBodyHandleComponent)>,
 ) {
-  for (_, mut cube_trans, _) in query.iter_mut() {
+  for (e, rigidbody_handle) in query.iter() {
     if input_map.is_action_active("SHOOT") {
       println!("hello");
       if let Some(result) = pick_state.top(Group::default()) {
+
         let (_, intersection) = result;
-        // cube_trans.set_position(*intersection.position(), false);
+        let rigidbody = rigidbody_set.get_mut(rigidbody_handle.handle()).unwrap();
+        let pos = *intersection.position();
+        rigidbody.set_position(Isometry3::new(Vector3::new(pos.x, pos.y, pos.z), Vector3::y()), false);
         println!("{:?}", intersection.position());
       }
     }

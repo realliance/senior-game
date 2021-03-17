@@ -38,8 +38,9 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
       path: "models/map.gltf".to_string(),
       ..Default::default()
     },
-    AssetChild {
+    LoadAsset {
       path: "models/map.gltf".to_string(),
+      ..Default::default()
     },
   ));
 
@@ -58,8 +59,9 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
         collider_shape: ShapeType::Cube,
       }],
     },
-    AssetChild {
+    LoadAsset {
       path: "models/rocksource.gltf".to_string(),
+      ..Default::default()
     },
   ));
 
@@ -78,10 +80,11 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
         collider_shape: ShapeType::Cube,
       }],
     },
-    AssetChild {
+    LoadAsset {
       path: "models/cube.gltf".to_string(),
+      ..Default::default()
     },
-    CubeFollow {},
+    CubeFollow::default(),
   ));
 
   let scene = DynamicScene::from_world(&scene_world, &type_registry);
