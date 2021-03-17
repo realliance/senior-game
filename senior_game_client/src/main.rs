@@ -17,6 +17,8 @@ use kurinji::KurinjiPlugin;
 use senior_game_shared::components::assets::*;
 use senior_game_shared::components::input::*;
 use senior_game_shared::net::NetworkListenerState;
+use senior_game_shared::systems::dev::dev_print_camera_location;
+use senior_game_shared::systems::game::GameSystemsPlugin;
 use senior_game_shared::systems::loadscene::*;
 use senior_game_shared::systems::loadsound::*;
 
@@ -66,8 +68,8 @@ fn main() {
     .add_plugin(FlyCameraPlugin)
     .add_plugin(KurinjiPlugin::default())
     .add_plugin(PickingPlugin)
-    .add_plugin(DebugPickingPlugin)
     .add_plugin(InteractablePickingPlugin)
+    .add_plugin(GameSystemsPlugin)
     .init_resource::<NetworkListenerState>()
     .init_resource::<ClientState>()
     .add_asset::<RawBinding>()
@@ -93,10 +95,11 @@ fn main() {
     .add_system(load_asset_physics.system())
     .add_system(load_input_binding.system())
     .add_system(input_handler.system())
+    .add_system(dev_print_camera_location.system())
     .add_system_to_stage(stage::POST_UPDATE, load_asset.system())
     .add_system_to_stage(stage::POST_UPDATE, load_physics.system())
     .add_system_to_stage(stage::POST_UPDATE, load_pick_source.system())
-    .add_system_to_stage(stage::POST_UPDATE, load_pick_mesh.system())
+    //.add_system_to_stage(stage::POST_UPDATE, load_pick_mesh.system())
     .run();
 }
 

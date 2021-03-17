@@ -179,13 +179,21 @@ pub fn load_asset(
     for (id, scene) in scenes.iter() {
       if id == asset.handle_id {
         let world = &scene.world;
-        let ents = world.query::<(Entity, &Handle<Mesh>, &Handle<StandardMaterial>)>().map(|(e, m, mat)| (e, m, mat)).collect::<Vec<_>>();
-        let (_, mesh, mat) = ents.get(asset.mesh_index as usize).expect("Invalid mesh index");
-        commands.insert(entity, PbrBundle {
-          mesh: (*mesh).clone(),
-          material: (*mat).clone(),
-          ..Default::default()
-        });
+        let ents = world
+          .query::<(Entity, &Handle<Mesh>, &Handle<StandardMaterial>)>()
+          .map(|(e, m, mat)| (e, m, mat))
+          .collect::<Vec<_>>();
+        let (_, mesh, mat) = ents
+          .get(asset.mesh_index as usize)
+          .expect("Invalid mesh index");
+        commands.insert(
+          entity,
+          PbrBundle {
+            mesh: (*mesh).clone(),
+            material: (*mat).clone(),
+            ..Default::default()
+          },
+        );
         commands.remove_one::<LoadAsset>(entity);
       }
     }

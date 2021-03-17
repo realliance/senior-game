@@ -6,6 +6,7 @@ use bevy::prelude::*;
 use bevy::reflect::TypeRegistry;
 use senior_game_shared::components::assets::*;
 use senior_game_shared::components::input::*;
+use senior_game_shared::systems::game::GameSystemsPlugin;
 
 use crate::scenes::destination_helper::Destination;
 use crate::scenes::*;
@@ -15,6 +16,7 @@ mod scenes;
 pub fn main() {
   App::build()
     .add_plugins(DefaultPlugins)
+    .add_plugin(GameSystemsPlugin)
     .register_type::<CreatePhysics>()
     .register_type::<CreateCollider>()
     .register_type::<RigidbodyType>()
