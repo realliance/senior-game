@@ -42,6 +42,7 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
       path: "models/map.gltf".to_string(),
       ..Default::default()
     },
+    CreatePickMesh::default(),
   ));
 
   let rock_trans = Transform::from_translation(Vec3::new(-10.0, 0.0, 10.0));
@@ -63,6 +64,7 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
       path: "models/rocksource.gltf".to_string(),
       ..Default::default()
     },
+    // CreatePickMesh::default(),
   ));
 
   let cube_trans = Transform::from_translation(Vec3::new(10.0, 0.0, -10.0));

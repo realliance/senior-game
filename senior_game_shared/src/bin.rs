@@ -23,6 +23,7 @@ pub fn main() {
     .register_type::<BuildFlyCamera>()
     .register_type::<CreateAssetCollider>()
     .register_type::<CreatePickSource>()
+    .register_type::<CreatePickMesh>()
     .register_type::<CubeFollow>()
     .add_startup_system(build_scenes.system())
     .add_system(exit_system.system())

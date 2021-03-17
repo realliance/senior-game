@@ -149,15 +149,16 @@ pub fn load_pick_source(query: Query<(Entity, &CreatePickSource)>, commands: &mu
 
 // TODO: Only make tagged entities pickable
 pub fn load_pick_mesh(
-  query: Query<(Entity, &Handle<Mesh>), Without<PickableMesh>>,
+  query: Query<(Entity, &Handle<Mesh>, &CreatePickMesh)>,
   commands: &mut Commands,
 ) {
-  for (entity, handle) in query.iter() {
+  for (entity, handle, _) in query.iter() {
     info!(target: "load_pick_mesh", "Load PickMesh Triggered");
     commands.insert(
       entity,
       (PickableMesh::default().with_bounding_sphere(handle.clone()),),
     );
+    commands.remove_one::<CreatePickMesh>(entity);
   }
 }
 
@@ -179,13 +180,21 @@ pub fn load_asset(
     for (id, scene) in scenes.iter() {
       if id == asset.handle_id {
         let world = &scene.world;
-        let ents = world.query::<(Entity, &Handle<Mesh>, &Handle<StandardMaterial>)>().map(|(e, m, mat)| (e, m, mat)).collect::<Vec<_>>();
-        let (_, mesh, mat) = ents.get(asset.mesh_index as usize).expect("Invalid mesh index");
-        commands.insert(entity, PbrBundle {
-          mesh: (*mesh).clone(),
-          material: (*mat).clone(),
-          ..Default::default()
-        });
+        let ents = world
+          .query::<(Entity, &Handle<Mesh>, &Handle<StandardMaterial>)>()
+          .map(|(e, m, mat)| (e, m, mat))
+          .collect::<Vec<_>>();
+        let (_, mesh, mat) = ents
+          .get(asset.mesh_index as usize)
+          .expect("Invalid mesh index");
+        commands.insert(
+          entity,
+          PbrBundle {
+            mesh: (*mesh).clone(),
+            material: (*mat).clone(),
+            ..Default::default()
+          },
+        );
         commands.remove_one::<LoadAsset>(entity);
       }
     }
