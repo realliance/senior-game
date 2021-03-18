@@ -49,3 +49,8 @@ pub struct LoadScene {
   pub path: String,
   pub watch: bool,
 }
+
+pub struct LoadSound {
+  pub path: String,
+  pub watch: bool,
+}
