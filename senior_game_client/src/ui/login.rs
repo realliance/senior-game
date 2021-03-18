@@ -5,6 +5,7 @@ use serde_json::json;
 use crate::http::{login_route, HttpRequest, HttpResponse, LoginRequestTag, WebRequestVerb};
 use crate::state::ClientState;
 use crate::ui::LoginUiState;
+use crate::ui::QueueUiState;
 
 pub fn format_status_error(status: u16) -> String {
   format!("An unknown error has occured with status {}", status)
@@ -18,6 +19,7 @@ pub fn handle_login_response(
   query: Query<(Entity, &HttpResponse, &LoginRequestTag)>,
   mut login_state: ResMut<LoginUiState>,
   mut client_state: ResMut<ClientState>,
+  mut queue_state: ResMut<QueueUiState>,
   commands: &mut Commands,
 ) {
   for (entity, response, _) in query.iter() {
@@ -28,6 +30,7 @@ pub fn handle_login_response(
           client_state.username = login_state.username.clone();
           client_state.token = response.get_value("token").unwrap().to_string();
           login_state.visible = false;
+          queue_state.visible = true;
         },
         400 => {
           login_state.set_error(response.get_value("error").unwrap().to_string());
