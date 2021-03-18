@@ -2,6 +2,10 @@ use bevy::prelude::*;
 pub mod background;
 pub mod login;
 pub mod setup;
+pub mod queue;
+pub mod finding_match;
+
+use chrono::{DateTime, Utc};
 
 pub struct LoginUiState {
   pub visible: bool,
@@ -26,6 +30,15 @@ pub struct BackgroundUiState {
   pub visible: bool,
 }
 
+pub struct QueueUiState {
+  pub visible: bool,
+}
+
+pub struct FindingMatchUiState {
+  pub visible: bool,
+  pub start_time: DateTime::<Utc>
+}
+
 impl Default for LoginUiState {
   fn default() -> Self {
     LoginUiState {
@@ -44,6 +57,21 @@ impl Default for BackgroundUiState {
   }
 }
 
+impl Default for QueueUiState {
+  fn default() -> Self {
+    QueueUiState { visible: false }
+  }
+}
+
+impl Default for FindingMatchUiState {
+  fn default() -> Self {
+    FindingMatchUiState {
+      visible: false,
+      start_time: Utc::now()
+    }
+  }
+}
+
 pub struct UiSystemPlugin;
 
 impl Plugin for UiSystemPlugin {
@@ -51,9 +79,13 @@ impl Plugin for UiSystemPlugin {
     app
       .init_resource::<BackgroundUiState>()
       .init_resource::<LoginUiState>()
+      .init_resource::<QueueUiState>()
+      .init_resource::<FindingMatchUiState>()
       .add_startup_system(setup::setup_ui.system())
       .add_system(background::background_ui.system())
       .add_system(login::login_ui.system())
-      .add_system(login::handle_login_response.system());
+      .add_system(login::handle_login_response.system())
+      .add_system(queue::queue_ui.system())
+      .add_system(finding_match::finding_match_ui.system());
   }
 }
