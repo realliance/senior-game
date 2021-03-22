@@ -99,7 +99,7 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
       &mut scene_world,
       i,
       SOURCE_CAPACITY,
-      SourceType::None,
+      SourceType::Red,
       mirrored_rock_trans,
     );
     i += 1;
@@ -109,7 +109,7 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
     &mut scene_world,
     i,
     SOURCE_CAPACITY,
-    SourceType::Blue,
+    SourceType::Green,
     Transform::from_translation(Vec3::new(0.0, ROCK_Y, 0.0)),
   );
 
