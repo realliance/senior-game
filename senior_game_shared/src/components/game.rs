@@ -14,9 +14,9 @@ impl SourceType {
   pub fn get_path(&self) -> Option<&str> {
     match self {
       SourceType::None => None,
-      SourceType::Red => Some("models/redcrystal.gltf"),
+      SourceType::Red => Some("models/redmanasource.gltf"),
       SourceType::Blue => Some("models/bluemanasource.gltf"),
-      SourceType::Green => Some("models/greencrystal.gltf"),
+      SourceType::Green => Some("models/greenmanasource.gltf"),
     }
   }
 }
