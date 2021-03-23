@@ -35,4 +35,8 @@ pub struct CreatePickSource;
 
 #[derive(Clone, Debug, Reflect, Default)]
 #[reflect(Component)]
+pub struct CreatePickMesh;
+
+#[derive(Clone, Debug, Reflect, Default)]
+#[reflect(Component)]
 pub struct CubeFollow;

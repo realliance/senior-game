@@ -6,7 +6,7 @@ use std::option::Option::Some;
 
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::*;
-use bevy_fly_camera::FlyCameraPlugin;
+use bevy_4x_camera::FourXCameraPlugin;
 use bevy_mod_picking::*;
 use bevy_prototype_networking_laminar::NetworkingPlugin;
 use bevy_rapier3d::physics::RapierPhysicsPlugin;
@@ -51,11 +51,11 @@ fn main() {
     .add_plugins(FlaggedPlugins)
     .add_plugin(RapierPhysicsPlugin)
     .add_plugin(NetworkingPlugin)
-    .add_plugin(FlyCameraPlugin)
+    .add_plugin(FourXCameraPlugin)
     .add_plugin(KurinjiPlugin::default())
     .add_plugin(PickingPlugin)
-    .add_plugin(InteractablePickingPlugin)
     .add_plugin(GameSystemsPlugin)
+    .add_plugin(DebugPickingPlugin)
     .init_resource::<NetworkListenerState>()
     .add_asset::<RawBinding>()
     .init_asset_loader::<RawBindingAssetLoader>()
@@ -64,9 +64,10 @@ fn main() {
     .register_type::<RigidbodyType>()
     .register_type::<LoadAsset>()
     .register_type::<ShapeType>()
-    .register_type::<BuildFlyCamera>()
+    .register_type::<Build4xCamera>()
     .register_type::<CreateAssetCollider>()
     .register_type::<CreatePickSource>()
+    .register_type::<CreatePickMesh>()
     .register_type::<CubeFollow>()
     .add_startup_system(manual_load_scene.system())
     .add_startup_system(manual_start_server_connection.system())
@@ -74,7 +75,7 @@ fn main() {
     .add_system(load_scene_system.system())
     .add_system(server_connection_system.system())
     .add_system(handle_network_events.system())
-    .add_system(load_fly_camera.system())
+    .add_system(load_4x_camera.system())
     .add_system(load_asset_physics.system())
     .add_system(load_input_binding.system())
     .add_system(input_handler.system())

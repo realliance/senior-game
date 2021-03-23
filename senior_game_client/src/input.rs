@@ -33,18 +33,20 @@ pub fn input_handler(
   mut rigidbody_set: ResMut<RigidBodySet>,
   query: Query<(Entity, &RigidBodyHandleComponent)>,
 ) {
-  for (e, rigidbody_handle) in query.iter() {
+  for (_, rigidbody_handle) in query.iter() {
     if input_map.is_action_active("SHOOT") {
-      println!("hello");
       if let Some(result) = pick_state.top(Group::default()) {
         let (_, intersection) = result;
         let rigidbody = rigidbody_set.get_mut(rigidbody_handle.handle()).unwrap();
         let pos = *intersection.position();
+        if pos.y > 0.1 || (1. - intersection.normal().y) > 0.01 {
+          continue;
+        }
         rigidbody.set_position(
           Isometry3::new(Vector3::new(pos.x, pos.y, pos.z), Vector3::y()),
           false,
         );
-        println!("{:?}", intersection.position());
+        // println!("{:?}", intersection.position());
       }
     }
   }

@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy::reflect::TypeRegistry;
+use bevy::render::camera::PerspectiveProjection;
 use senior_game_shared::components::assets::*;
 use senior_game_shared::components::game::*;
 use senior_game_shared::components::input::*;
@@ -38,16 +39,20 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
     // camera
 
     let camera = scene_world.spawn(Camera3dBundle {
-      transform: Transform::from_translation(Vec3::new(-10.0, 4.0, 10.0))
-        .looking_at(Vec3::default(), Vec3::unit_y()),
+      perspective_projection: PerspectiveProjection {
+        fov: 0.5,
+        ..Default::default()
+      },
+      transform: Transform::from_translation(Vec3::new(-20.0, 30., 20.0))
+        .looking_at(Vec3::zero(), Vec3::unit_y()),
       ..Default::default()
     });
     scene_world
       .insert(camera, (CreatePickSource::default(),))
       .expect("Adding PickingSource failed in scene creation");
     scene_world
-      .insert(camera, (BuildFlyCamera::default(),))
-      .expect("Failed to add fly camera");
+      .insert(camera, (Build4xCamera::default(),))
+      .expect("Failed to add 4x camera");
 
     scene_world.spawn(LightBundle {
       transform: Transform::from_translation(Vec3::new(0.0, 25.0, 0.0)),
@@ -66,6 +71,7 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
       path: "models/map.gltf".to_string(),
       ..Default::default()
     },
+    CreatePickMesh::default(),
   ));
 
   const ROCK_Y: f32 = 0.5;

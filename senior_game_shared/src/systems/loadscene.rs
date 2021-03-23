@@ -5,7 +5,7 @@ use bevy::ecs::{Commands, Entity, Query, Res, ResMut};
 use bevy::prelude::{BuildChildren, *};
 use bevy::render::mesh::{Indices, VertexAttributeValues};
 use bevy::scene::{DynamicScene, SceneSpawner};
-use bevy_fly_camera::FlyCamera;
+use bevy_4x_camera::CameraRigBundle;
 use bevy_mod_picking::*;
 use bevy_rapier3d::na::Point3;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
@@ -149,15 +149,16 @@ pub fn load_pick_source(query: Query<(Entity, &CreatePickSource)>, commands: &mu
 
 // TODO: Only make tagged entities pickable
 pub fn load_pick_mesh(
-  query: Query<(Entity, &Handle<Mesh>), Without<PickableMesh>>,
+  query: Query<(Entity, &Handle<Mesh>, &CreatePickMesh)>,
   commands: &mut Commands,
 ) {
-  for (entity, handle) in query.iter() {
+  for (entity, handle, _) in query.iter() {
     info!(target: "load_pick_mesh", "Load PickMesh Triggered");
     commands.insert(
       entity,
       (PickableMesh::default().with_bounding_sphere(handle.clone()),),
     );
+    commands.remove_one::<CreatePickMesh>(entity);
   }
 }
 
@@ -200,17 +201,17 @@ pub fn load_asset(
   }
 }
 
-pub fn load_fly_camera(query: Query<(Entity, &BuildFlyCamera)>, commands: &mut Commands) {
-  for (entity, _) in query.iter() {
-    info!(target: "load_fly_camera", "Load FlyCamera Triggered");
-    commands.insert(
-      entity,
-      (FlyCamera {
-        pitch: 30.0,
-        yaw: -30.0,
-        ..FlyCamera::default()
-      },),
-    );
-    commands.remove_one::<BuildFlyCamera>(entity);
+pub fn load_4x_camera(mut query: Query<(Entity, &Build4xCamera)>, commands: &mut Commands) {
+  for (entity, _) in query.iter_mut() {
+    info!(target: "load_4x_camera", "Load 4xCamera Triggered");
+
+    let parent = commands
+      .spawn(CameraRigBundle::default())
+      .current_entity()
+      .unwrap();
+
+    commands.push_children(parent, &[entity]);
+
+    commands.remove_one::<Build4xCamera>(entity);
   }
 }
