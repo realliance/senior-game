@@ -89,4 +89,4 @@ pub struct LoadSound {
 }
 #[derive(Clone, Debug, Reflect, Default)]
 #[reflect(Component)]
-pub struct BuildFlyCamera;
+pub struct Build4xCamera;
