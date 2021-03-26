@@ -4,6 +4,7 @@ use bevy::render::camera::PerspectiveProjection;
 use senior_game_shared::components::assets::*;
 use senior_game_shared::components::game::*;
 use senior_game_shared::components::input::*;
+use std::f32;
 
 use crate::scenes::destination_helper::Destination;
 
@@ -43,7 +44,7 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
         fov: 0.5,
         ..Default::default()
       },
-      transform: Transform::from_translation(Vec3::new(-20.0, 30., 20.0))
+      transform: Transform::from_translation(Vec3::new(-20.0, 30., 0.0))
         .looking_at(Vec3::zero(), Vec3::unit_y()),
       ..Default::default()
     });
@@ -60,8 +61,10 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
     });
   }
 
+  let theta = 45.0 * (f32::consts::PI / 180.0);
+
   scene_world.spawn((
-    Transform::default(),
+    Transform::from_rotation(Quat::from_rotation_y(theta)),
     GlobalTransform::default(),
     CreateAssetCollider {
       path: "models/map.gltf".to_string(),
@@ -78,19 +81,21 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
   const SOURCE_CAPACITY: u32 = 25000;
 
   let mirrored_rock_locations = [
-    Vec3::new(30.0, ROCK_Y, -112.0),
-    Vec3::new(-10.0, ROCK_Y, -108.0),
-    Vec3::new(-69.0, ROCK_Y, -74.0),
-    Vec3::new(91.0, ROCK_Y, -85.0),
-    Vec3::new(8.0, ROCK_Y, -8.0),
-    Vec3::new(-8.0, ROCK_Y, -8.0),
+    Vec3::new(-57.98, ROCK_Y, -100.41),
+    Vec3::new(-83.44, ROCK_Y, -69.30),
+    Vec3::new(-101.12, ROCK_Y, -3.54),
+    Vec3::new(4.24, ROCK_Y, -124.45),
+    Vec3::new(8.88, ROCK_Y, -1.13),
+    Vec3::new(-8.88, ROCK_Y, 1.13),
   ];
 
   let mut i = 0;
 
   for location in mirrored_rock_locations.iter() {
     let rock_trans = Transform::from_translation(*location);
-    let mirrored_rock_trans = Transform::from_translation(*location * Vec3::new(1.0, 1.0, -1.0));
+
+    let reflected = Transform::from_translation(Quat::from_rotation_y(-theta).mul_vec3(*location) * Vec3::new(1.0, 1.0, -1.0));
+    let mirrored_rock_trans = Transform::from_translation(Quat::from_rotation_y(theta).mul_vec3(reflected.translation));
 
     build_rock(
       &mut scene_world,
