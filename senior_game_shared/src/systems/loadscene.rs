@@ -163,12 +163,12 @@ pub fn load_pick_mesh(
 }
 
 pub fn load_asset(
-  mut query: Query<(Entity, &mut LoadAsset)>,
+  mut query: Query<(Entity, &GlobalTransform, &Transform, &mut LoadAsset)>,
   commands: &mut Commands,
   asset_server: ResMut<AssetServer>,
   scenes: Res<Assets<Scene>>,
 ) {
-  for (entity, mut asset) in query.iter_mut() {
+  for (entity, global_trans, trans, mut asset) in query.iter_mut() {
     info!(target: "load_asset", "Load Asset Triggered");
 
     if !asset.loading {
@@ -190,6 +190,7 @@ pub fn load_asset(
         commands.insert(
           entity,
           PbrBundle {
+            global_transform: global_trans.clone(),
             mesh: (*mesh).clone(),
             material: (*mat).clone(),
             ..Default::default()
