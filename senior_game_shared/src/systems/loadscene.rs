@@ -5,7 +5,6 @@ use bevy::ecs::{Commands, Entity, Query, Res, ResMut};
 use bevy::prelude::{BuildChildren, *};
 use bevy::render::mesh::{Indices, VertexAttributeValues};
 use bevy::scene::{DynamicScene, SceneSpawner};
-use bevy_4x_camera::CameraRigBundle;
 use bevy_mod_picking::*;
 use bevy_rapier3d::na::Point3;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
@@ -206,12 +205,12 @@ pub fn load_4x_camera(mut query: Query<(Entity, &Build4xCamera)>, commands: &mut
   for (entity, _) in query.iter_mut() {
     info!(target: "load_4x_camera", "Load 4xCamera Triggered");
 
-    let parent = commands
-      .spawn(CameraRigBundle::default())
-      .current_entity()
-      .unwrap();
+    // let parent = commands
+    //   .spawn(CameraRigBundle::default())
+    //   .current_entity()
+    //   .unwrap();
 
-    commands.push_children(parent, &[entity]);
+    // commands.push_children(parent, &[entity]);
 
     commands.remove_one::<Build4xCamera>(entity);
   }

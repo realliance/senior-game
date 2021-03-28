@@ -7,7 +7,6 @@ use std::option::Option::Some;
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
-use bevy_4x_camera::FourXCameraPlugin;
 use bevy_mod_picking::*;
 use bevy_prototype_networking_laminar::NetworkingPlugin;
 use bevy_rapier3d::physics::RapierPhysicsPlugin;
@@ -17,19 +16,20 @@ use kurinji::KurinjiPlugin;
 use senior_game_shared::components::assets::*;
 use senior_game_shared::components::input::*;
 use senior_game_shared::net::NetworkListenerState;
-use senior_game_shared::systems::dev::dev_print_camera_location;
 use senior_game_shared::systems::game::GameSystemsPlugin;
 use senior_game_shared::systems::loadscene::*;
 use senior_game_shared::systems::loadsound::*;
 
 use crate::http::HttpSystemPlugin;
-use crate::input::{input_handler, input_setup, load_input_binding};
+use crate::input::{input_setup, load_input_binding};
+use crate::movement::player;
 use crate::net::{handle_network_events, server_connection_system, StartServerConnection};
 use crate::state::ClientState;
 use crate::ui::UiSystemPlugin;
 
 mod http;
 mod input;
+mod movement;
 mod net;
 mod state;
 mod ui;
@@ -69,10 +69,10 @@ fn main() {
     .add_plugin(PickingPlugin)
     .add_plugin(InteractablePickingPlugin)
     .add_plugin(GameSystemsPlugin)
-    .add_plugin(FourXCameraPlugin)
     .add_plugin(KurinjiPlugin::default())
     .add_plugin(PickingPlugin)
     .add_plugin(DebugPickingPlugin)
+    // .add_plugin(DebugPickingPlugin)
     .init_resource::<NetworkListenerState>()
     .init_resource::<ClientState>()
     .add_asset::<RawBinding>()
@@ -98,12 +98,12 @@ fn main() {
     .add_system(load_4x_camera.system())
     .add_system(load_asset_physics.system())
     .add_system(load_input_binding.system())
-    .add_system(input_handler.system())
-    .add_system(dev_print_camera_location.system())
+    .add_system(player.system())
+    // .add_system(dev_print_camera_location.system())
     .add_system_to_stage(stage::POST_UPDATE, load_asset.system())
     .add_system_to_stage(stage::POST_UPDATE, load_physics.system())
     .add_system_to_stage(stage::POST_UPDATE, load_pick_source.system())
-    //.add_system_to_stage(stage::POST_UPDATE, load_pick_mesh.system())
+    .add_system_to_stage(stage::POST_UPDATE, load_pick_mesh.system())
     .run();
 }
 

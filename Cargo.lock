@@ -325,15 +325,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy_4x_camera"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3e6d30ed0a89b8327888f2afb0d8afc5b1a17aa39b439b1713ca54194e7cf7a"
-dependencies = [
- "bevy",
-]
-
-[[package]]
 name = "bevy_app"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4296,7 +4287,6 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "bevy-inspector-egui",
- "bevy_4x_camera",
  "bevy_asset_ron",
  "bevy_egui 0.3.0",
  "bevy_mod_picking",
@@ -4330,7 +4320,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "bevy",
- "bevy_4x_camera",
  "bevy_gltf 0.5.0",
  "bevy_mod_picking",
  "bevy_prototype_networking_laminar",

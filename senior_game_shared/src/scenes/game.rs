@@ -30,6 +30,7 @@ fn build_rock(world: &mut World, id: u8, capacity: u32, source_type: SourceType,
       path: "models/rockbase.gltf".to_string(),
       ..Default::default()
     },
+    CreatePickMesh::default(),
   ));
 }
 
