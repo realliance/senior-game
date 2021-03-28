@@ -15,14 +15,16 @@ use bevy_rapier3d::render::RapierRenderPlugin;
 use kurinji::KurinjiPlugin;
 use senior_game_shared::components::assets::*;
 use senior_game_shared::components::input::*;
+use senior_game_shared::components::game::*;
 use senior_game_shared::net::NetworkListenerState;
+// use senior_game_shared::systems::dev::dev_print_camera_location;
 use senior_game_shared::systems::game::GameSystemsPlugin;
 use senior_game_shared::systems::loadscene::*;
 use senior_game_shared::systems::loadsound::*;
 
 use crate::http::HttpSystemPlugin;
 use crate::input::{input_setup, load_input_binding};
-use crate::movement::player;
+use crate::movement::{player,naviagate};
 use crate::net::{handle_network_events, server_connection_system, StartServerConnection};
 use crate::state::ClientState;
 use crate::ui::UiSystemPlugin;
@@ -88,7 +90,8 @@ fn main() {
     .register_type::<CreateAssetCollider>()
     .register_type::<CreatePickSource>()
     .register_type::<CreatePickMesh>()
-    .register_type::<CubeFollow>()
+    .register_type::<PlayerEntity>()
+    .register_type::<NaviagateTo>()
     .add_startup_system(manual_load_scene.system())
     .add_startup_system(manual_start_server_connection.system())
     .add_startup_system(input_setup.system())
@@ -99,6 +102,7 @@ fn main() {
     .add_system(load_asset_physics.system())
     .add_system(load_input_binding.system())
     .add_system(player.system())
+    .add_system(naviagate.system())
     // .add_system(dev_print_camera_location.system())
     .add_system_to_stage(stage::POST_UPDATE, load_asset.system())
     .add_system_to_stage(stage::POST_UPDATE, load_physics.system())

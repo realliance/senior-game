@@ -4,29 +4,46 @@ use bevy_rapier3d::na::{Isometry3, Vector3};
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
 use bevy_rapier3d::rapier::dynamics::RigidBodySet;
 use kurinji::*;
-use senior_game_shared::components::input::*;
+use senior_game_shared::components::game::*;
 
 pub fn player(
   input_map: Res<Kurinji>,
   pick_state: Res<PickState>,
-  mut rigidbody_set: ResMut<RigidBodySet>,
-  query: Query<(Entity, &RigidBodyHandleComponent, &CubeFollow)>,
+  query: Query<(Entity, &PlayerEntity)>,
+  commands: &mut Commands,
 ) {
-  for (_, rigidbody_handle, _) in query.iter() {
-    if input_map.is_action_active("SHOOT") {
+  for (entity, _) in query.iter() {
+    if input_map.is_action_active("MOVE") {
       if let Some(result) = pick_state.top(Group::default()) {
         let (_, intersection) = result;
-        let rigidbody = rigidbody_set.get_mut(rigidbody_handle.handle()).unwrap();
         let pos = *intersection.position();
         if pos.y > 0.1 || (1. - intersection.normal().y) > 0.01 {
           continue;
         }
-        rigidbody.set_position(
-          Isometry3::new(Vector3::new(pos.x, pos.y, pos.z), Vector3::y()),
-          false,
-        );
+        commands.insert_one(entity,NaviagateTo{x: pos.x, y: pos.y, z: pos.z});
         // println!("{:?}", intersection.position());
       }
+    }
+  }
+}
+
+pub fn naviagate(
+  mut rigidbody_set: ResMut<RigidBodySet>,
+  query: Query<(Entity, &RigidBodyHandleComponent, &NaviagateTo)>,
+  commands: &mut Commands,
+) {
+  for (entity, rigidbody_handle, dest) in query.iter() {
+    let rigidbody = rigidbody_set.get_mut(rigidbody_handle.handle()).unwrap();
+    rigidbody.set_position(
+      rigidbody.position().lerp_slerp(
+        &Isometry3::new(Vector3::new(dest.x,dest.y,dest.z), Vector3::y()),
+        0.1
+      ),
+      false,
+    );
+    // println!("dist: {:?}", rigidbody.position().translation.vector.metric_distance(&Vector3::new(dest.x,dest.y,dest.z)));
+    if rigidbody.position().translation.vector.metric_distance(&Vector3::new(dest.x,dest.y,dest.z)) < 0.1 {
+      commands.remove_one::<NaviagateTo>(entity);
     }
   }
 }

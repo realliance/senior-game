@@ -167,7 +167,7 @@ pub fn load_asset(
   asset_server: ResMut<AssetServer>,
   scenes: Res<Assets<Scene>>,
 ) {
-  for (entity, global_trans, trans, mut asset) in query.iter_mut() {
+  for (entity, global_trans, _trans, mut asset) in query.iter_mut() {
     info!(target: "load_asset", "Load Asset Triggered");
 
     if !asset.loading {

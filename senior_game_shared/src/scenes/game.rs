@@ -125,6 +125,27 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
     Transform::from_translation(Vec3::new(0.0, ROCK_Y, 0.0)),
   );
 
+  scene_world.spawn((
+    Transform::default(),
+    GlobalTransform::default(),
+    CreatePhysics {
+      rigidbody_transform: Transform::from_translation(Vec3::new(0.0, 0.5, 0.0)),
+      rigidbody_type: RigidbodyType::Static,
+      colliders: vec![CreateCollider {
+        collider_transform_position: Vec3::new(0.0, 0.0, 0.0),
+        collider_transform_rotation: Transform::identity().rotation,
+        collider_shape_size: Vec3::new(1.0, 1.0, 1.0),
+        collider_shape: ShapeType::Cube,
+      }],
+    },
+    BuildSourceModel::default(),
+    LoadAsset {
+      path: "models/cube.gltf".to_string(),
+      ..Default::default()
+    },
+    PlayerEntity::default(),
+  ));
+
   let scene = DynamicScene::from_world(&scene_world, &type_registry);
 
   scene.serialize_ron(&type_registry).unwrap()

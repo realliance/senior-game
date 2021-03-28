@@ -6,6 +6,7 @@ use bevy::prelude::*;
 use bevy::reflect::TypeRegistry;
 use senior_game_shared::components::assets::*;
 use senior_game_shared::components::input::*;
+use senior_game_shared::components::game::*;
 use senior_game_shared::systems::game::GameSystemsPlugin;
 
 use crate::scenes::destination_helper::Destination;
@@ -26,7 +27,8 @@ pub fn main() {
     .register_type::<CreateAssetCollider>()
     .register_type::<CreatePickSource>()
     .register_type::<CreatePickMesh>()
-    .register_type::<CubeFollow>()
+    .register_type::<NaviagateTo>()
+    .register_type::<PlayerEntity>()
     .add_startup_system(build_scenes.system())
     .add_system(exit_system.system())
     .run();

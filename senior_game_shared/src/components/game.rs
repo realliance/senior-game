@@ -78,3 +78,15 @@ impl ManaSource {
     self.source_type = source_type;
   }
 }
+
+#[derive(Clone, Debug, Reflect, Default)]
+#[reflect(Component)]
+pub struct PlayerEntity;
+
+#[derive(Clone, Debug, Reflect, Default)]
+#[reflect(Component)]
+pub struct NaviagateTo{
+  pub x: f32,
+  pub y: f32,
+  pub z: f32,
+}
