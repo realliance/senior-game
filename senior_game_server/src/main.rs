@@ -1,5 +1,5 @@
 #[cfg(not(debug_assertions))]
-use std::borrow::Cow;
+use std::borrow::Cow::Owned;
 use std::collections::HashMap;
 
 use bevy::asset::AssetPlugin;

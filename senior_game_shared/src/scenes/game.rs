@@ -45,8 +45,7 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
         fov: 0.5,
         ..Default::default()
       },
-      transform: Transform::from_translation(Vec3::new(-20.0, 30., 0.0))
-        .looking_at(Vec3::zero(), Vec3::unit_y()),
+      transform: Transform::from_translation(Vec3::new(-20.0, 30., 0.0)).looking_at(Vec3::zero(), Vec3::unit_y()),
       ..Default::default()
     });
     scene_world
@@ -95,19 +94,11 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
   for location in mirrored_rock_locations.iter() {
     let rock_trans = Transform::from_translation(*location);
 
-    let reflected = Transform::from_translation(
-      Quat::from_rotation_y(-theta).mul_vec3(*location) * Vec3::new(1.0, 1.0, -1.0),
-    );
-    let mirrored_rock_trans =
-      Transform::from_translation(Quat::from_rotation_y(theta).mul_vec3(reflected.translation));
+    let reflected =
+      Transform::from_translation(Quat::from_rotation_y(-theta).mul_vec3(*location) * Vec3::new(1.0, 1.0, -1.0));
+    let mirrored_rock_trans = Transform::from_translation(Quat::from_rotation_y(theta).mul_vec3(reflected.translation));
 
-    build_rock(
-      &mut scene_world,
-      i,
-      SOURCE_CAPACITY,
-      SourceType::Blue,
-      rock_trans,
-    );
+    build_rock(&mut scene_world, i, SOURCE_CAPACITY, SourceType::Blue, rock_trans);
     i += 1;
 
     build_rock(

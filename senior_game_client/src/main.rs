@@ -7,8 +7,8 @@ use std::option::Option::Some;
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::*;
 use bevy_4x_camera::FourXCameraPlugin;
-use bevy_mod_picking::*;
 use bevy_egui::EguiPlugin;
+use bevy_mod_picking::*;
 use bevy_prototype_networking_laminar::NetworkingPlugin;
 use bevy_rapier3d::physics::RapierPhysicsPlugin;
 #[cfg(debug_assertions)]
@@ -21,14 +21,14 @@ use senior_game_shared::systems::game::GameSystemsPlugin;
 use senior_game_shared::systems::loadscene::*;
 use senior_game_shared::systems::loadsound::*;
 
-use crate::input::{input_handler, input_setup, load_input_binding};
 use crate::http::HttpSystemPlugin;
+use crate::input::{input_handler, input_setup, load_input_binding};
 use crate::net::{handle_network_events, server_connection_system, StartServerConnection};
 use crate::state::ClientState;
 use crate::ui::UiSystemPlugin;
 
-mod input;
 mod http;
+mod input;
 mod net;
 mod state;
 mod ui;

@@ -148,16 +148,10 @@ pub fn load_pick_source(query: Query<(Entity, &CreatePickSource)>, commands: &mu
 }
 
 // TODO: Only make tagged entities pickable
-pub fn load_pick_mesh(
-  query: Query<(Entity, &Handle<Mesh>, &CreatePickMesh)>,
-  commands: &mut Commands,
-) {
+pub fn load_pick_mesh(query: Query<(Entity, &Handle<Mesh>, &CreatePickMesh)>, commands: &mut Commands) {
   for (entity, handle, _) in query.iter() {
     info!(target: "load_pick_mesh", "Load PickMesh Triggered");
-    commands.insert(
-      entity,
-      (PickableMesh::default().with_bounding_sphere(handle.clone()),),
-    );
+    commands.insert(entity, (PickableMesh::default().with_bounding_sphere(handle.clone()),));
     commands.remove_one::<CreatePickMesh>(entity);
   }
 }
@@ -184,9 +178,7 @@ pub fn load_asset(
           .query::<(Entity, &Handle<Mesh>, &Handle<StandardMaterial>)>()
           .map(|(e, m, mat)| (e, m, mat))
           .collect::<Vec<_>>();
-        let (_, mesh, mat) = ents
-          .get(asset.mesh_index as usize)
-          .expect("Invalid mesh index");
+        let (_, mesh, mat) = ents.get(asset.mesh_index as usize).expect("Invalid mesh index");
         commands.insert(
           entity,
           PbrBundle {
@@ -206,10 +198,7 @@ pub fn load_4x_camera(mut query: Query<(Entity, &Build4xCamera)>, commands: &mut
   for (entity, _) in query.iter_mut() {
     info!(target: "load_4x_camera", "Load 4xCamera Triggered");
 
-    let parent = commands
-      .spawn(CameraRigBundle::default())
-      .current_entity()
-      .unwrap();
+    let parent = commands.spawn(CameraRigBundle::default()).current_entity().unwrap();
 
     commands.push_children(parent, &[entity]);
 

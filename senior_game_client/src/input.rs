@@ -42,10 +42,7 @@ pub fn input_handler(
         if pos.y > 0.1 || (1. - intersection.normal().y) > 0.01 {
           continue;
         }
-        rigidbody.set_position(
-          Isometry3::new(Vector3::new(pos.x, pos.y, pos.z), Vector3::y()),
-          false,
-        );
+        rigidbody.set_position(Isometry3::new(Vector3::new(pos.x, pos.y, pos.z), Vector3::y()), false);
       }
     }
   }
