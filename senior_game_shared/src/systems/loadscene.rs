@@ -136,7 +136,7 @@ fn create_collider_for_mesh(mesh: &Mesh) -> ColliderBuilder {
   .map(|tri| [tri[0], tri[1], tri[2]])
   .collect();
 
-  ColliderBuilder::trimesh(verts.clone(), indices.clone())
+  ColliderBuilder::trimesh(verts, indices)
 }
 
 pub fn load_pick_source(query: Query<(Entity, &CreatePickSource)>, commands: &mut Commands) {
@@ -171,7 +171,6 @@ pub fn load_asset(
   for (entity, global_trans, mut asset) in query.iter_mut() {
     info!(target: "load_asset", "Load Asset Triggered: {}", &asset.path);
 
-
     if !asset.loading {
       let handle: Handle<Scene> = asset_server.load(Path::new(&asset.path));
       asset.loading = true;
@@ -191,7 +190,7 @@ pub fn load_asset(
         commands.insert(
           entity,
           PbrBundle {
-            global_transform: global_trans.clone(),
+            global_transform: *global_trans,
             mesh: (*mesh).clone(),
             material: (*mat).clone(),
             ..Default::default()

@@ -11,11 +11,14 @@ pub fn load_source_model(
     info!(target: "load_source_model", "Load Source Model Triggered");
     if let Some(path) = mana_source.source_type().get_path() {
       let ent = commands
-        .spawn((LoadAsset {
-          path: path.to_string(),
-          mesh_index: 0,
-          ..Default::default()
-        }, GlobalTransform::default()))
+        .spawn((
+          LoadAsset {
+            path: path.to_string(),
+            mesh_index: 0,
+            ..Default::default()
+          },
+          GlobalTransform::default(),
+        ))
         .current_entity()
         .unwrap();
 

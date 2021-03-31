@@ -1,10 +1,11 @@
+use std::f32;
+
 use bevy::prelude::*;
 use bevy::reflect::TypeRegistry;
 use bevy::render::camera::PerspectiveProjection;
 use senior_game_shared::components::assets::*;
 use senior_game_shared::components::game::*;
 use senior_game_shared::components::input::*;
-use std::f32;
 
 use crate::scenes::destination_helper::Destination;
 
@@ -94,8 +95,11 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
   for location in mirrored_rock_locations.iter() {
     let rock_trans = Transform::from_translation(*location);
 
-    let reflected = Transform::from_translation(Quat::from_rotation_y(-theta).mul_vec3(*location) * Vec3::new(1.0, 1.0, -1.0));
-    let mirrored_rock_trans = Transform::from_translation(Quat::from_rotation_y(theta).mul_vec3(reflected.translation));
+    let reflected = Transform::from_translation(
+      Quat::from_rotation_y(-theta).mul_vec3(*location) * Vec3::new(1.0, 1.0, -1.0),
+    );
+    let mirrored_rock_trans =
+      Transform::from_translation(Quat::from_rotation_y(theta).mul_vec3(reflected.translation));
 
     build_rock(
       &mut scene_world,
