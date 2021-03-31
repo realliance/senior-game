@@ -38,11 +38,7 @@ fn exit_system(mut exit: ResMut<Events<AppExit>>) {
 
 fn build_scenes(type_registry: Res<TypeRegistry>) {
   #[allow(clippy::type_complexity)]
-  const SCENES: &[(
-    Destination,
-    &str,
-    fn(Destination, &Res<TypeRegistry>) -> String,
-  )] = &[
+  const SCENES: &[(Destination, &str, fn(Destination, &Res<TypeRegistry>) -> String)] = &[
     (Destination::Both, "physics_test.scn", physics_test::build),
     (Destination::Both, "platform.scn", platform::build),
     (Destination::Both, "game.scn", game::build),
@@ -54,19 +50,11 @@ fn build_scenes(type_registry: Res<TypeRegistry>) {
   for (dest, name, build_fn) in SCENES {
     println!("Saving Scene {}", name);
     if *dest == Destination::Client || *dest == Destination::Both {
-      fs::write(
-        client_prefix.join(name),
-        build_fn(Destination::Client, &type_registry),
-      )
-      .expect("Unable to write file");
+      fs::write(client_prefix.join(name), build_fn(Destination::Client, &type_registry)).expect("Unable to write file");
     }
 
     if *dest == Destination::Server || *dest == Destination::Both {
-      fs::write(
-        server_prefix.join(name),
-        build_fn(Destination::Server, &type_registry),
-      )
-      .expect("Unable to write file");
+      fs::write(server_prefix.join(name), build_fn(Destination::Server, &type_registry)).expect("Unable to write file");
     }
   }
 

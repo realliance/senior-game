@@ -17,9 +17,7 @@ pub fn server_connection_system(
   for (entity, conn_info) in query.iter() {
     info!(target: "server_connection_system", "Connecting to {}", conn_info.addr.to_string());
 
-    net
-      .bind("127.0.0.1:12351")
-      .expect("Failed to bind to socket");
+    net.bind("127.0.0.1:12351").expect("Failed to bind to socket");
 
     net
       .send(
@@ -33,10 +31,7 @@ pub fn server_connection_system(
   }
 }
 
-pub fn handle_network_events(
-  mut state: ResMut<NetworkListenerState>,
-  network_events: Res<Events<NetworkEvent>>,
-) {
+pub fn handle_network_events(mut state: ResMut<NetworkListenerState>, network_events: Res<Events<NetworkEvent>>) {
   for event in state.network_events.iter(&network_events) {
     // Temporarily allow single match since this match statement will expand soon
     #[allow(clippy::single_match)]

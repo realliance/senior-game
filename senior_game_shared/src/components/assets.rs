@@ -86,3 +86,8 @@ pub struct LoadScene {
 #[derive(Clone, Debug, Reflect, Default)]
 #[reflect(Component)]
 pub struct Build4xCamera;
+
+pub struct LoadSound {
+  pub path: String,
+  pub watch: bool,
+}
