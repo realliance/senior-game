@@ -46,7 +46,6 @@ pub fn input_handler(
           Isometry3::new(Vector3::new(pos.x, pos.y, pos.z), Vector3::y()),
           false,
         );
-        // println!("{:?}", intersection.position());
       }
     }
   }

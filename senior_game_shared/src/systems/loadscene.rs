@@ -163,13 +163,14 @@ pub fn load_pick_mesh(
 }
 
 pub fn load_asset(
-  mut query: Query<(Entity, &GlobalTransform, &Transform, &mut LoadAsset)>,
+  mut query: Query<(Entity, &GlobalTransform, &mut LoadAsset)>,
   commands: &mut Commands,
   asset_server: ResMut<AssetServer>,
   scenes: Res<Assets<Scene>>,
 ) {
-  for (entity, global_trans, trans, mut asset) in query.iter_mut() {
-    info!(target: "load_asset", "Load Asset Triggered");
+  for (entity, global_trans, mut asset) in query.iter_mut() {
+    info!(target: "load_asset", "Load Asset Triggered: {}", &asset.path);
+
 
     if !asset.loading {
       let handle: Handle<Scene> = asset_server.load(Path::new(&asset.path));
