@@ -142,6 +142,10 @@ jobs:
             image: rust-nightly
             config:
               platform: linux
+              params:
+                CARGO_HOME: ./cargo
+              caches:
+                - path: cargo
               inputs:
                 - name: pull-request
                   path: .
@@ -150,6 +154,7 @@ jobs:
                 args:
                   - -exc
                   - |
+                    rustup component add rustfmt > /dev/null
                     cargo fmt -- --check
           - task: unit-test
             image: rust-nightly
