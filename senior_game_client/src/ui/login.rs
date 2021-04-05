@@ -29,14 +29,16 @@ pub fn handle_login_response(
         200 => {
           client_state.username = login_state.username.clone();
           client_state.token = response.get_value("token").unwrap().to_string();
-          login_state.visible = false;
-          queue_state.visible = true;
+          //login_state.visible = false;
+          //queue_state.visible = true;
         },
         400 => {
           login_state.set_error(response.get_value("error").unwrap().to_string());
         },
         x => {
           login_state.set_error(format_status_error(x));
+          login_state.visible = false;
+          queue_state.visible = true;
         },
       }
     } else if let Some(status) = response.status {
