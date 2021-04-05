@@ -200,18 +200,3 @@ pub fn load_asset(
     }
   }
 }
-
-pub fn load_4x_camera(mut query: Query<(Entity, &Build4xCamera)>, commands: &mut Commands) {
-  for (entity, _) in query.iter_mut() {
-    info!(target: "load_4x_camera", "Load 4xCamera Triggered");
-
-    // let parent = commands
-    //   .spawn(CameraRigBundle::default())
-    //   .current_entity()
-    //   .unwrap();
-
-    // commands.push_children(parent, &[entity]);
-
-    commands.remove_one::<Build4xCamera>(entity);
-  }
-}

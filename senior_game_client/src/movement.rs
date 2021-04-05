@@ -20,30 +20,56 @@ pub fn player(
         if pos.y > 0.1 || (1. - intersection.normal().y) > 0.01 {
           continue;
         }
-        commands.insert_one(entity,NaviagateTo{x: pos.x, y: pos.y, z: pos.z});
+        commands.insert_one(
+          entity,
+          NavigateTo {
+            x: pos.x,
+            y: pos.y,
+            z: pos.z,
+          },
+        );
         // println!("{:?}", intersection.position());
       }
     }
   }
 }
 
-pub fn naviagate(
+pub fn navigate(
   mut rigidbody_set: ResMut<RigidBodySet>,
-  query: Query<(Entity, &RigidBodyHandleComponent, &NaviagateTo)>,
+  query: Query<(Entity, &RigidBodyHandleComponent, &NavigateTo)>,
   commands: &mut Commands,
 ) {
   for (entity, rigidbody_handle, dest) in query.iter() {
     let rigidbody = rigidbody_set.get_mut(rigidbody_handle.handle()).unwrap();
     rigidbody.set_position(
       rigidbody.position().lerp_slerp(
-        &Isometry3::new(Vector3::new(dest.x,dest.y,dest.z), Vector3::y()),
-        0.1
+        &Isometry3::new(Vector3::new(dest.x, dest.y, dest.z), Vector3::y()),
+        0.1,
       ),
       false,
     );
-    // println!("dist: {:?}", rigidbody.position().translation.vector.metric_distance(&Vector3::new(dest.x,dest.y,dest.z)));
-    if rigidbody.position().translation.vector.metric_distance(&Vector3::new(dest.x,dest.y,dest.z)) < 0.1 {
-      commands.remove_one::<NaviagateTo>(entity);
+    // println!("dist: {:?}",
+    // rigidbody.position().translation.vector.metric_distance(&Vector3::new(dest.x,
+    // dest.y,dest.z)));
+    if rigidbody
+      .position()
+      .translation
+      .vector
+      .metric_distance(&Vector3::new(dest.x, dest.y, dest.z))
+      < 0.1
+    {
+      commands.remove_one::<NavigateTo>(entity);
     }
+  }
+}
+
+pub struct MovementPlugin;
+
+impl Plugin for MovementPlugin {
+  fn build(&self, app: &mut AppBuilder) {
+    app
+      .add_system(player.system())
+      .add_system(navigate.system())
+      .register_type::<NavigateTo>();
   }
 }

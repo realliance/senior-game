@@ -85,7 +85,7 @@ pub struct PlayerEntity;
 
 #[derive(Clone, Debug, Reflect, Default)]
 #[reflect(Component)]
-pub struct NaviagateTo{
+pub struct NavigateTo {
   pub x: f32,
   pub y: f32,
   pub z: f32,
