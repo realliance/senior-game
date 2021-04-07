@@ -15,7 +15,6 @@ pub fn player(
 ) {
   for (entity, _) in query.iter() {
     if input_map.is_action_active("INTERACT") {
-      println!("camera found");
       if let Some(result) = pick_state.top(Group::default()) {
         let (_, intersection) = result;
         let pos = *intersection.position();
@@ -30,7 +29,7 @@ pub fn player(
             z: pos.z,
           },
         );
-        println!("{:?}", intersection.position());
+        // println!("{:?}", intersection.position());
       }
     }
   }
@@ -39,10 +38,27 @@ pub fn player(
 pub fn camera(
   input_map: Res<Kurinji>,
   time: Res<Time>,
-  mut query: Query<(Entity, &PerspectiveProjection, &Transform)>,
+  mut query: Query<(&PerspectiveProjection, &mut Transform)>,
 ) {
-  for (entity, _, _) in query.iter() {
+  for (_, mut transform) in query.iter_mut() {
     // println!("camera found");
+    let mut direction = Vec3::zero();
+    if input_map.is_action_active("CAMERA_FORWARD") {
+      direction.x += 1.;
+    }
+    if input_map.is_action_active("CAMERA_BACK") {
+      direction.x -= 1.;
+    }
+    if input_map.is_action_active("CAMERA_LEFT") {
+      direction.z -= 1.;
+    }
+    if input_map.is_action_active("CAMERA_RIGHT") {
+      direction.z += 1.;
+    }
+    const SPEED: f32 = 15.;
+    if direction != Vec3::zero() {
+      transform.translation += direction.normalize() * time.delta_seconds() * SPEED;
+    }
   }
 }
 
