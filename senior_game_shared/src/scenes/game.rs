@@ -53,9 +53,6 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
     scene_world
       .insert(camera, (CreatePickSource::default(),))
       .expect("Adding PickingSource failed in scene creation");
-    scene_world
-      .insert(camera, (Build4xCamera::default(),))
-      .expect("Failed to add 4x camera");
 
     scene_world.spawn(LightBundle {
       transform: Transform::from_translation(Vec3::new(0.0, 25.0, 0.0)),

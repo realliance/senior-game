@@ -23,7 +23,6 @@ pub fn main() {
     .register_type::<RigidbodyType>()
     .register_type::<LoadAsset>()
     .register_type::<ShapeType>()
-    .register_type::<Build4xCamera>()
     .register_type::<CreateAssetCollider>()
     .register_type::<CreatePickSource>()
     .register_type::<CreatePickMesh>()

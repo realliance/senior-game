@@ -3,13 +3,13 @@ use bevy_mod_picking::*;
 use kurinji::{KurinjiPlugin, *};
 use senior_game_shared::components::input::*;
 
-pub fn input_setup(commands: &mut Commands, asset_server: Res<AssetServer>) {
+fn input_setup(commands: &mut Commands, asset_server: Res<AssetServer>) {
   let binding_handle: Handle<RawBinding> = asset_server.load("input_map.ron");
   commands.insert_resource(binding_handle);
   asset_server.watch_for_changes().unwrap();
 }
 
-pub fn load_input_binding(
+fn load_input_binding(
   ev_asset: Res<Events<AssetEvent<RawBinding>>>,
   mut evr_asset: Local<EventReader<AssetEvent<RawBinding>>>,
   mut assets: ResMut<Assets<RawBinding>>,
@@ -28,7 +28,8 @@ pub struct InputPlugin;
 
 impl Plugin for InputPlugin {
   fn build(&self, app: &mut AppBuilder) {
-    app.add_plugin(KurinjiPlugin)
+    app
+    .add_plugin(KurinjiPlugin)
     .add_plugin(PickingPlugin)
     // .add_plugin(DebugPickingPlugin)
     .add_startup_system(input_setup.system())

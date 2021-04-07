@@ -1,5 +1,15 @@
 (
+  KeyboardKeys: {
+    W: "CAMERA_FORWARD",
+    A: "CAMERA_LEFT",
+    S: "CAMERA_BACK",
+    D: "CAMERA_RIGHT",
+    Up: "CAMERA_FORWARD",
+    Left: "CAMERA_LEFT",
+    Down: "CAMERA_BACK",
+    Right: "CAMERA_RIGHT"
+  },
   MouseButtons: {
-    Left: "MOVE"
+    Left: "INTERACT"
   }
 )

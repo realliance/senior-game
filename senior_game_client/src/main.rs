@@ -13,7 +13,6 @@ use bevy_rapier3d::physics::RapierPhysicsPlugin;
 #[cfg(debug_assertions)]
 use bevy_rapier3d::render::RapierRenderPlugin;
 use senior_game_shared::components::assets::*;
-use senior_game_shared::components::game::*;
 use senior_game_shared::net::NetworkListenerState;
 // use senior_game_shared::systems::dev::dev_print_camera_location;
 use senior_game_shared::systems::game::GameSystemsPlugin;
@@ -74,8 +73,9 @@ fn main() {
     .init_resource::<NetworkListenerState>()
     .init_resource::<ClientState>()
     .add_plugin(GameSystemsPlugin)
-    .add_plugin(MovementPlugin)
+    // Kurinji consumers must register under InputPlugin
     .add_plugin(InputPlugin)
+    .add_plugin(MovementPlugin)
     .init_resource::<NetworkListenerState>()
     .register_type::<CreateCollider>()
     .register_type::<CreatePhysics>()
@@ -86,7 +86,7 @@ fn main() {
     .add_system(load_sound_system.system())
     .register_type::<Build4xCamera>()
     .register_type::<CreateAssetCollider>()
-    .register_type::<PlayerEntity>()
+
     .add_startup_system(manual_load_scene.system())
     .add_startup_system(manual_start_server_connection.system())
     .add_system(load_scene_system.system())

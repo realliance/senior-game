@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy::render::camera::PerspectiveProjection;
 use bevy_mod_picking::*;
 use bevy_rapier3d::na::{Isometry3, Vector3};
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
@@ -13,7 +14,8 @@ pub fn player(
   commands: &mut Commands,
 ) {
   for (entity, _) in query.iter() {
-    if input_map.is_action_active("MOVE") {
+    if input_map.is_action_active("INTERACT") {
+      println!("camera found");
       if let Some(result) = pick_state.top(Group::default()) {
         let (_, intersection) = result;
         let pos = *intersection.position();
@@ -28,9 +30,19 @@ pub fn player(
             z: pos.z,
           },
         );
-        // println!("{:?}", intersection.position());
+        println!("{:?}", intersection.position());
       }
     }
+  }
+}
+
+pub fn camera(
+  input_map: Res<Kurinji>,
+  time: Res<Time>,
+  mut query: Query<(Entity, &PerspectiveProjection, &Transform)>,
+) {
+  for (entity, _, _) in query.iter() {
+    // println!("camera found");
   }
 }
 
@@ -70,6 +82,8 @@ impl Plugin for MovementPlugin {
     app
       .add_system(player.system())
       .add_system(navigate.system())
-      .register_type::<NavigateTo>();
+      .add_system(camera.system())
+      .register_type::<NavigateTo>()
+      .register_type::<PlayerEntity>();
   }
 }
