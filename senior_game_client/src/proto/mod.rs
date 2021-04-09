@@ -26,8 +26,6 @@ pub struct InQueue(Arc<Mutex<ClientDuplexSender<MMQClientUpdate>>>);
 #[derive(Default)]
 pub struct ServerMessages(Arc<AtomicBool>, Arc<Mutex<VecDeque<MMQServerUpdate>>>);
 
-pub struct RpcPing(Timer);
-
 pub struct EnterQueue;
 pub struct CancelQueue;
 pub struct ConfirmMatch;
@@ -117,50 +115,46 @@ fn enter_queue(
 }
 
 fn get_queue_updates(
-  time: Res<Time>,
   commands: &mut Commands,
-  mut timer: ResMut<RpcPing>,
   query: Query<&ServerMessages>,
   mut finding_match_state: ResMut<FindingMatchUiState>,
   mut match_found_state: ResMut<MatchFoundUiState>,
 ) {
-  if timer.0.tick(time.delta_seconds()).just_finished() {
-    for arc in query.iter() {
-      let mut lock = arc.1.lock().unwrap();
+  for arc in query.iter() {
+    let mut lock = arc.1.lock().unwrap();
 
-      for msg in lock.iter() {
-        info!(target: "get_queue_updates", "Status: {:?}; Queue State: {:?}; Est: {}", msg.status, msg.queue_state, msg.est_queue_time);
-        match msg.queue_state {
-          MatchingState::STATE_CONFIRMING => {
-            match_found_state.visible = true;
-            finding_match_state.visible = false;
-            match_found_state.accepted = false;
-          },
-          MatchingState::STATE_INGAME => {
-            match_found_state.visible = false;
-            finding_match_state.visible = false;
-            match_found_state.accepted = true;
-            commands.spawn((GetMatchInformation,));
-          },
-          MatchingState::STATE_CONFIRMED => {
-            match_found_state.accepted = true;
-            match_found_state.visible = true;
-            finding_match_state.visible = false;
-          },
-          MatchingState::STATE_LOOKING => {
-            match_found_state.visible = false;
-            finding_match_state.visible = true;
-            match_found_state.accepted = false;
-          },
-          _ => (),
-        }
+    for msg in lock.iter() {
+      info!(target: "get_queue_updates", "Status: {:?}; Queue State: {:?}; Est: {}", msg.status, msg.queue_state, msg.est_queue_time);
+      match msg.queue_state {
+        MatchingState::STATE_CONFIRMING => {
+          match_found_state.visible = true;
+          finding_match_state.visible = false;
+          match_found_state.accepted = false;
+        },
+        MatchingState::STATE_INGAME => {
+          match_found_state.visible = false;
+          finding_match_state.visible = false;
+          match_found_state.accepted = true;
+          commands.spawn((GetMatchInformation,));
+        },
+        MatchingState::STATE_CONFIRMED => {
+          match_found_state.accepted = true;
+          match_found_state.visible = true;
+          finding_match_state.visible = false;
+        },
+        MatchingState::STATE_LOOKING => {
+          match_found_state.visible = false;
+          finding_match_state.visible = true;
+          match_found_state.accepted = false;
+        },
+        _ => (),
       }
+    }
 
-      lock.clear();
+    lock.clear();
 
-      if arc.0.load(Ordering::Acquire) {
-        commands.spawn((CancelQueue,));
-      }
+    if arc.0.load(Ordering::Acquire) {
+      commands.spawn((CancelQueue,));
     }
   }
 }
@@ -259,7 +253,6 @@ impl Plugin for MatchmakingPlugin {
 
     app
       .add_resource(MatchMakingClient::new(ch))
-      .add_resource(RpcPing(Timer::from_seconds(1.0, true)))
       .add_system(enter_queue.system())
       .add_system(cancel_queue.system())
       .add_system(handle_confirm_match.system())
