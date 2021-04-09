@@ -2,16 +2,19 @@ use bevy::prelude::*;
 use chrono::Utc;
 
 use std::sync::{Arc, Mutex};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::collections::VecDeque;
 use std::thread;
 
 use grpcio::{ChannelBuilder, EnvBuilder, ClientDuplexSender, ClientDuplexReceiver, WriteFlags};
 use futures::SinkExt;
-use futures::StreamExt;
+use futures_lite::StreamExt;
+use futures::task::Poll;
 use futures::executor;
 use matchmaking_grpc::{MatchMakingClient};
-use matchmaking::{MMQClientUpdate, MMQServerUpdate, MMQClientUpdate_QueueOperation};
-use crate::ui::FindingMatchUiState;
+use matchmaking::{MMQClientUpdate, MMQServerUpdate, ConfirmRequest, Status, MatchParametersRequest, MMQClientUpdate_QueueOperation, MatchingState, MatchParameters_MatchStatus};
+use crate::ui::{FindingMatchUiState, MatchFoundUiState};
+use std::net::SocketAddr;
 
 pub mod matchmaking;
 pub mod matchmaking_grpc;
@@ -19,38 +22,60 @@ pub mod matchmaking_grpc;
 pub struct InQueue(Arc<Mutex<ClientDuplexSender<MMQClientUpdate>>>);
 
 #[derive(Default)]
-pub struct ServerMessages(Arc<Mutex<bool>>, Arc<Mutex<VecDeque<MMQServerUpdate>>>);
+pub struct ServerMessages(Arc<AtomicBool>, Arc<Mutex<VecDeque<MMQServerUpdate>>>);
 
 pub struct RPCPing(Timer);
 
 pub struct EnterQueue;
 pub struct CancelQueue;
+pub struct ConfirmMatch;
+struct GetMatchInformation;
+pub struct ConnectToMatch(SocketAddr);
 
 fn handle_incoming_server_stream(mut rec: ClientDuplexReceiver<MMQServerUpdate>, messages_com: &ServerMessages) {
   let should_end = messages_com.0.clone();
   let message_list = messages_com.1.clone();
+  println!("{}", Arc::strong_count(&messages_com.0));
+
   thread::spawn(move || {
     loop {
-      if *should_end.lock().unwrap() {
+      if should_end.load(Ordering::Relaxed) {
         break;
       }
 
-      match executor::block_on(rec.next()) {
-        Some(msg) => {
-          match msg {
-            Ok(server_update) =>  {
-              info!(target: "handle_incoming_server_stream", "{:?}", server_update);
-              message_list.lock().unwrap().push_back(server_update)
-            },
-            Err(err) => error!(target: "handle_incoming_server_stream", "{}", err)
-          }
-        },
-        None => break
+      let fut = async {
+        let waker = futures::task::noop_waker_ref();
+        let mut cx = std::task::Context::from_waker(waker);
+        let poll = rec.poll_next(&mut cx);
+
+        match poll {
+          Poll::Pending => return false,
+          Poll::Ready(None) => return true,
+          Poll::Ready(Some(msg)) => {
+            match msg {
+              Ok(server_update) =>  {
+                info!(target: "handle_incoming_server_stream", "Status: {:?}; Queue State: {:?}; Est: {}", server_update.status, server_update.queue_state, server_update.est_queue_time);
+                message_list.lock().unwrap().push_back(server_update);
+                return false;
+              },
+              Err(err) => {
+                error!(target: "handle_incoming_server_stream", "{}", err);
+                return true;
+              }
+            }
+          },
+        }
+      };
+
+      if executor::block_on(fut) {
+        break;
       }
     }
     info!(target: "handle_incoming_server_stream", "Server Stream Handle Ending");
 
-    // Implement Unexpected RPC Failure (Remove from Queue State)
+    // Set to terminate connection in case due to RPC failure (and not explicit stream closing)
+    should_end.store(true, Ordering::Relaxed);
+
     return
   });
 }
@@ -94,44 +119,123 @@ fn enter_queue(
 
 fn get_queue_updates(
   time: Res<Time>,
+  commands: &mut Commands,
   mut timer: ResMut<RPCPing>,
-  query: Query<&ServerMessages>
+  query: Query<&ServerMessages>,
+  mut finding_match_state: ResMut<FindingMatchUiState>,
+  mut match_found_state: ResMut<MatchFoundUiState>,
 ) {
   if timer.0.tick(time.delta_seconds()).just_finished() {
     for arc in query.iter() {
       let mut lock = arc.1.lock().unwrap();
 
       for msg in lock.iter() {
-        info!(target: "get_queue_updates", "{:?}", msg);
+        info!(target: "get_queue_updates", "Status: {:?}; Queue State: {:?}; Est: {}", msg.status, msg.queue_state, msg.est_queue_time);
+        match msg.queue_state {
+          MatchingState::STATE_CONFIRMING => {
+            match_found_state.visible = true;
+            finding_match_state.visible = false;
+          },
+          MatchingState::STATE_INGAME => {
+            match_found_state.visible = false;
+            finding_match_state.visible = false;
+            commands.spawn((GetMatchInformation,));
+          },
+          MatchingState::STATE_CONFIRMED => {
+            match_found_state.accepted = true;
+          },
+          MatchingState::STATE_LOOKING => {
+            match_found_state.visible = false;
+            finding_match_state.visible = true;
+          }
+          _ => (),
+        }
       }
 
       lock.clear();
+
+      if arc.0.load(Ordering::Acquire) {
+        commands.spawn((CancelQueue,));
+      }
     }
   }
 }
 
 fn cancel_queue(
   query: Query<(Entity, &CancelQueue)>,
-  mut queue: Query<(Entity, &mut InQueue)>,
+  mut queue: Query<(Entity, &mut InQueue, &ServerMessages)>,
   commands: &mut Commands,
   mut finding_match_state: ResMut<FindingMatchUiState>,
+  mut match_found_state: ResMut<MatchFoundUiState>,
 ) {
   for (ent, _) in query.iter() {
-    if let Some((queue_ent, mut in_queue)) = queue.iter_mut().next() {
+    if let Some((queue_ent, mut in_queue, msg)) = queue.iter_mut().next() {
       let mut update = MMQClientUpdate::new();
       update.set_requestedOperation(MMQClientUpdate_QueueOperation::OP_EXIT);
       let mut_borrow = Arc::get_mut(&mut in_queue.0);
       let sender = mut_borrow.unwrap().get_mut().unwrap();
       match executor::block_on(sender.send((update, WriteFlags::default()))) {
         Ok(_) => {
-          finding_match_state.visible = false;
           executor::block_on(sender.close()).ok();
-          commands.despawn(queue_ent);
-          commands.despawn(ent);
+
+          msg.0.store(true, Ordering::Relaxed);
         },
         Err(err) => error!(target: "cancel_queue", "Failed to cancel queue: {}", err)
       }
+
+      msg.0.store(true, Ordering::Relaxed);
+
+      finding_match_state.visible = false;
+      match_found_state.visible = false;
+  
+      commands.despawn(queue_ent);
+      commands.despawn(ent);
     }
+  }
+}
+
+fn handle_get_match_information(
+  query: Query<(Entity, &GetMatchInformation)>,
+  commands: &mut Commands,
+  mm_client: Res<MatchMakingClient>,
+) {
+  for (ent, _) in query.iter() {
+    let get_match = MatchParametersRequest::default();
+    match mm_client.get_match_parameters(&get_match) {
+      Ok(m) => match m.status {
+          MatchParameters_MatchStatus::OK => {
+            if let Ok(socket) = format!("{}:{}", m.ip, m.port).parse() {
+              info!(target: "handle_get_match_information", "{}", socket);
+              commands.spawn((ConnectToMatch(socket),));
+            } else {
+              error!(target: "handle_get_match_information", "Failed to parse address");
+            }
+          },
+          MatchParameters_MatchStatus::ERR_NONEXISTENT => error!(target: "handle_get_match_information", "No Match Found")
+        },
+      Err(err) => error!(target: "handle_get_match_information", "Failed to get match: {}", err)
+    }
+
+    commands.despawn(ent);
+  }
+}
+
+fn handle_confirm_match(
+  query: Query<(Entity, &ConfirmMatch)>,
+  commands: &mut Commands,
+  mm_client: Res<MatchMakingClient>,
+) {
+  for (ent, _) in query.iter() {
+    let confirm = ConfirmRequest::default();
+    match mm_client.confirm_match(&confirm) {
+      Ok(res) => match res.status {
+        Status::STATUS_OK => info!(target: "handle_confirm_match", "Match Confirmed"),
+        Status::STATUS_ERR => error!(target: "handle_confirm_match", "Match Confirmation Errored"),
+      },
+      Err(err) => error!(target: "handle_confirm_match", "Failed to confirm match: {}", err)
+    }
+
+    commands.despawn(ent);
   }
 }
 
@@ -147,6 +251,8 @@ impl Plugin for MatchmakingPlugin {
       .add_resource(RPCPing(Timer::from_seconds(1.0, true)))
       .add_system(enter_queue.system())
       .add_system(cancel_queue.system())
+      .add_system(handle_confirm_match.system())
+      .add_system(handle_get_match_information.system())
       .add_system(get_queue_updates.system());
   }
 }

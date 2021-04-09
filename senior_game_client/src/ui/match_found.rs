@@ -4,8 +4,11 @@ use bevy_egui::{egui, EguiContext};
 use crate::ui::MatchFoundUiState;
 use crate::ui::FindingMatchUiState;
 
+use crate::proto::ConfirmMatch;
+
 pub fn match_found_ui(
     windows: Res<Windows>,
+    commands: &mut Commands,
     mut match_found_state: ResMut<MatchFoundUiState>,
     mut finding_match_state: ResMut<FindingMatchUiState>,
     mut egui_ctx: ResMut<EguiContext>,
@@ -55,7 +58,7 @@ pub fn match_found_ui(
             if ui.add(egui::Button::new("Accept")
             .text_style(bevy_egui::egui::TextStyle::Heading))
             .clicked() {
-                //Accept match
+              commands.spawn((ConfirmMatch,));
             }
 
             if ui.add(egui::Button::new("Decline")

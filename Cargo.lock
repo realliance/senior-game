@@ -4147,6 +4147,7 @@ dependencies = [
  "bevy_rapier3d",
  "chrono",
  "futures 0.3.13",
+ "futures-lite",
  "grpcio",
  "kurinji",
  "mockito",
