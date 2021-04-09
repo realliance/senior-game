@@ -41,7 +41,7 @@ pub fn camera(
   time: Res<Time>,
   mut query: Query<(&CameraRig, &mut Transform)>,
 ) {
-  for (mut rig, mut transform) in query.iter_mut() {
+  for (rig, mut transform) in query.iter_mut() {
     let mut direction = Vec3::zero();
     if input_map.is_action_active("CAMERA_FORWARD") {
       direction.x += 1.;
@@ -65,10 +65,11 @@ pub fn camera(
 pub fn camera_edges(
   mouse: Res<MousePos>,
   windows: Res<Windows>,
+  time: Res<Time>,
   mut query: Query<(&mut CameraRig, &mut Transform)>,
 ) {
   if let Some(window) = windows.get_primary() {
-    for (mut rig, mut transform) in query.iter_mut() {
+    for (rig, mut transform) in query.iter_mut() {
       let width = window.width();
       let height = window.height();
       if mouse.x < (width * rig.active_edge)
@@ -76,21 +77,11 @@ pub fn camera_edges(
         || mouse.y < (height * rig.active_edge)
         || mouse.y > (height - (height * rig.active_edge))
       {
-        let mut x = (mouse.x - (width / 2.)) / (width / 2.);
-        let mut y = (mouse.y - (height / 2.)) / (height / 2.);
-        if x < 0. {
-          x += 1. - rig.active_edge * 2.;
-        } else {
-          x -= 1. - rig.active_edge * 2.;
-        }
-        x /= rig.active_edge * 2.;
-        if y < 0. {
-          y += 1. - rig.active_edge * 2.;
-        } else {
-          y -= 1. - rig.active_edge * 2.;
-        }
-        y /= rig.active_edge * 2.;
-        println!("({:?}, {:?})", x, y);
+        let x = (mouse.x / (width / 2.)) - 1.;
+        let y = (mouse.y / (height / 2.)) - 1.;
+        let direction = Vec3::new(y, 0., x);
+        transform.translation +=
+          direction * time.delta_seconds() * rig.move_sensitivity * rig.zoom_mod;
       }
     }
   }

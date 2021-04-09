@@ -58,7 +58,7 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
       .insert(
         camera,
         (CameraRig {
-          move_sensitivity: 48.,
+          move_sensitivity: 67.,
           zoom_sensitivity: 7.,
           active_edge: 0.1,
           min_zoom: 1.,
