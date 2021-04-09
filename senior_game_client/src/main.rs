@@ -57,6 +57,7 @@ fn main() {
 
   App::build()
     .add_resource(Msaa::default())
+    .add_resource(WindowDescriptor::default())
     .add_plugins(DefaultPlugins)
     .add_plugins(FlaggedPlugins)
     .add_plugin(RapierPhysicsPlugin)

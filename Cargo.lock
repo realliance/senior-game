@@ -784,6 +784,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_mouse_tracking_plugin"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "67b95b12805282afa73e9c060f57559ccee41adbc68c85b84693870a78e2ba15"
+dependencies = [
+ "bevy",
+]
+
+[[package]]
 name = "bevy_pbr"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4290,6 +4299,7 @@ dependencies = [
  "bevy_asset_ron",
  "bevy_egui 0.3.0",
  "bevy_mod_picking",
+ "bevy_mouse_tracking_plugin",
  "bevy_prototype_networking_laminar",
  "bevy_rapier3d",
  "kurinji",

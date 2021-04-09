@@ -54,6 +54,21 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
       .insert(camera, (CreatePickSource::default(),))
       .expect("Adding PickingSource failed in scene creation");
 
+    scene_world
+      .insert(
+        camera,
+        (CameraRig {
+          move_sensitivity: 48.,
+          zoom_sensitivity: 7.,
+          active_edge: 0.1,
+          min_zoom: 1.,
+          max_zoom: 16.,
+          zoom_lvl: 1.,
+          zoom_mod: 1.,
+        },),
+      )
+      .expect("Adding CameraRig failed in scene creation");
+
     scene_world.spawn(LightBundle {
       transform: Transform::from_translation(Vec3::new(0.0, 25.0, 0.0)),
       ..Default::default()

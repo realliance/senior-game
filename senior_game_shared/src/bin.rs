@@ -28,6 +28,7 @@ pub fn main() {
     .register_type::<CreatePickMesh>()
     .register_type::<NavigateTo>()
     .register_type::<PlayerEntity>()
+    .register_type::<CameraRig>()
     .add_startup_system(build_scenes.system())
     .add_system(exit_system.system())
     .run();

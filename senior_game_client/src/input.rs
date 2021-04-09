@@ -1,9 +1,14 @@
 use bevy::prelude::*;
 use bevy_mod_picking::*;
+use bevy_mouse_tracking_plugin::MousePosPlugin;
 use kurinji::{KurinjiPlugin, *};
 use senior_game_shared::components::input::*;
 
-fn input_setup(commands: &mut Commands, asset_server: Res<AssetServer>) {
+fn input_setup(
+  commands: &mut Commands,
+  asset_server: Res<AssetServer>,
+  win_desc: Res<WindowDescriptor>,
+) {
   let binding_handle: Handle<RawBinding> = asset_server.load("input_map.ron");
   commands.insert_resource(binding_handle);
   asset_server.watch_for_changes().unwrap();
@@ -29,6 +34,7 @@ pub struct InputPlugin;
 impl Plugin for InputPlugin {
   fn build(&self, app: &mut AppBuilder) {
     app
+    .add_plugin(MousePosPlugin::None)
     .add_plugin(KurinjiPlugin)
     .add_plugin(PickingPlugin)
     // .add_plugin(DebugPickingPlugin)
