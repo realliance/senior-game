@@ -20,11 +20,13 @@ use crate::http::HttpSystemPlugin;
 use crate::net::{handle_network_events, server_connection_system, StartServerConnection};
 use crate::state::ClientState;
 use crate::ui::UiSystemPlugin;
+use crate::proto::MatchmakingPlugin;
 
 mod http;
 mod net;
 mod state;
 mod ui;
+mod proto;
 
 #[cfg(test)]
 mod tests;
@@ -52,6 +54,7 @@ fn main() {
     .add_resource(Msaa::default())
     .add_plugins(DefaultPlugins)
     .add_plugins(FlaggedPlugins)
+    .add_plugin(MatchmakingPlugin)
     .add_plugin(RapierPhysicsPlugin)
     .add_plugin(NetworkingPlugin)
     .add_plugin(EguiPlugin)

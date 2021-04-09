@@ -66,7 +66,7 @@ impl Default for BackgroundUiState {
 
 impl Default for QueueUiState {
   fn default() -> Self {
-    QueueUiState { visible: false }
+    QueueUiState { visible: true }
   }
 }
 
@@ -82,7 +82,7 @@ impl Default for FindingMatchUiState {
 impl Default for MatchFoundUiState {
   fn default() -> Self {
     MatchFoundUiState {
-      visible: true,
+      visible: false,
       accepted: false,
     }
   }

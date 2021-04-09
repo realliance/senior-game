@@ -1,14 +1,16 @@
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContext};
-use chrono:: Utc;
 
 use crate::ui::QueueUiState;
 use crate::ui::FindingMatchUiState;
+use crate::proto::EnterQueue;
+use crate::proto::CancelQueue;
 
 pub fn queue_ui(
   windows: Res<Windows>,
+  commands: &mut Commands,
   queue_state: ResMut<QueueUiState>,
-  mut finding_match_state: ResMut<FindingMatchUiState>,
+  finding_match_state: Res<FindingMatchUiState>,
   mut egui_ctx: ResMut<EguiContext>,
 ) {
   if !queue_state.visible {
@@ -51,8 +53,7 @@ pub fn queue_ui(
             if ui.add(egui::Button::new("Find Match")
             .text_style(bevy_egui::egui::TextStyle::Heading))
             .clicked() {
-              finding_match_state.visible = true;
-              finding_match_state.start_time = Utc::now();
+              commands.spawn((EnterQueue,));
             }
           }
 
@@ -60,12 +61,10 @@ pub fn queue_ui(
             if ui.add(egui::Button::new("Cancel")
             .text_style(bevy_egui::egui::TextStyle::Heading))
             .clicked() {
-              finding_match_state.visible = false;
+              commands.spawn((CancelQueue,));
             }
           }
-
         });
-
       });
     });
 }
