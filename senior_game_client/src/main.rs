@@ -18,15 +18,15 @@ use senior_game_shared::systems::loadsound::*;
 
 use crate::http::HttpSystemPlugin;
 use crate::net::{handle_network_events, server_connection_system, StartServerConnection};
+use crate::proto::MatchmakingPlugin;
 use crate::state::ClientState;
 use crate::ui::UiSystemPlugin;
-use crate::proto::MatchmakingPlugin;
 
 mod http;
 mod net;
+mod proto;
 mod state;
 mod ui;
-mod proto;
 
 #[cfg(test)]
 mod tests;

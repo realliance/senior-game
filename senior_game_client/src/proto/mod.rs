@@ -1,20 +1,22 @@
-use bevy::prelude::*;
-use chrono::Utc;
-
-use std::sync::{Arc, Mutex};
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::collections::VecDeque;
+use std::net::SocketAddr;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
 use std::thread;
 
-use grpcio::{ChannelBuilder, EnvBuilder, ClientDuplexSender, ClientDuplexReceiver, WriteFlags};
-use futures::SinkExt;
-use futures_lite::StreamExt;
+use bevy::prelude::*;
+use chrono::Utc;
 use futures::task::Poll;
-use futures::executor;
-use matchmaking_grpc::{MatchMakingClient};
-use matchmaking::{MMQClientUpdate, MMQServerUpdate, ConfirmRequest, Status, MatchParametersRequest, MMQClientUpdate_QueueOperation, MatchingState, MatchParameters_MatchStatus};
+use futures::{executor, SinkExt};
+use futures_lite::StreamExt;
+use grpcio::{ChannelBuilder, ClientDuplexReceiver, ClientDuplexSender, EnvBuilder, WriteFlags};
+use matchmaking::{
+  ConfirmRequest, MMQClientUpdate, MMQClientUpdate_QueueOperation, MMQServerUpdate, MatchParametersRequest,
+  MatchParameters_MatchStatus, MatchingState, Status,
+};
+use matchmaking_grpc::MatchMakingClient;
+
 use crate::ui::{FindingMatchUiState, MatchFoundUiState};
-use std::net::SocketAddr;
 
 pub mod matchmaking;
 pub mod matchmaking_grpc;
@@ -24,7 +26,7 @@ pub struct InQueue(Arc<Mutex<ClientDuplexSender<MMQClientUpdate>>>);
 #[derive(Default)]
 pub struct ServerMessages(Arc<AtomicBool>, Arc<Mutex<VecDeque<MMQServerUpdate>>>);
 
-pub struct RPCPing(Timer);
+pub struct RpcPing(Timer);
 
 pub struct EnterQueue;
 pub struct CancelQueue;
@@ -49,20 +51,18 @@ fn handle_incoming_server_stream(mut rec: ClientDuplexReceiver<MMQServerUpdate>,
         let poll = rec.poll_next(&mut cx);
 
         match poll {
-          Poll::Pending => return false,
-          Poll::Ready(None) => return true,
-          Poll::Ready(Some(msg)) => {
-            match msg {
-              Ok(server_update) =>  {
-                info!(target: "handle_incoming_server_stream", "Status: {:?}; Queue State: {:?}; Est: {}", server_update.status, server_update.queue_state, server_update.est_queue_time);
-                message_list.lock().unwrap().push_back(server_update);
-                return false;
-              },
-              Err(err) => {
-                error!(target: "handle_incoming_server_stream", "{}", err);
-                return true;
-              }
-            }
+          Poll::Pending => false,
+          Poll::Ready(None) => true,
+          Poll::Ready(Some(msg)) => match msg {
+            Ok(server_update) => {
+              info!(target: "handle_incoming_server_stream", "Status: {:?}; Queue State: {:?}; Est: {}", server_update.status, server_update.queue_state, server_update.est_queue_time);
+              message_list.lock().unwrap().push_back(server_update);
+              false
+            },
+            Err(err) => {
+              error!(target: "handle_incoming_server_stream", "{}", err);
+              true
+            },
           },
         }
       };
@@ -73,10 +73,9 @@ fn handle_incoming_server_stream(mut rec: ClientDuplexReceiver<MMQServerUpdate>,
     }
     info!(target: "handle_incoming_server_stream", "Server Stream Handle Ending");
 
-    // Set to terminate connection in case due to RPC failure (and not explicit stream closing)
+    // Set to terminate connection in case due to RPC failure (and not explicit
+    // stream closing)
     should_end.store(true, Ordering::Relaxed);
-
-    return
   });
 }
 
@@ -107,10 +106,10 @@ fn enter_queue(
             finding_match_state.start_time = Utc::now();
             info!(target: "enter_queue", "Queue Started");
           },
-          Err(err) => error!(target: "enter_queue", "Failed to enter queue: {}", err)
+          Err(err) => error!(target: "enter_queue", "Failed to enter queue: {}", err),
         }
       },
-      Err(err) => error!(target: "enter_queue", "Failed to enter queue: {}", err)
+      Err(err) => error!(target: "enter_queue", "Failed to enter queue: {}", err),
     }
 
     commands.despawn(ent);
@@ -120,7 +119,7 @@ fn enter_queue(
 fn get_queue_updates(
   time: Res<Time>,
   commands: &mut Commands,
-  mut timer: ResMut<RPCPing>,
+  mut timer: ResMut<RpcPing>,
   query: Query<&ServerMessages>,
   mut finding_match_state: ResMut<FindingMatchUiState>,
   mut match_found_state: ResMut<MatchFoundUiState>,
@@ -152,7 +151,7 @@ fn get_queue_updates(
             match_found_state.visible = false;
             finding_match_state.visible = true;
             match_found_state.accepted = false;
-          }
+          },
           _ => (),
         }
       }
@@ -185,14 +184,14 @@ fn cancel_queue(
 
           msg.0.store(true, Ordering::Relaxed);
         },
-        Err(err) => error!(target: "cancel_queue", "Failed to cancel queue: {}", err)
+        Err(err) => error!(target: "cancel_queue", "Failed to cancel queue: {}", err),
       }
 
       msg.0.store(true, Ordering::Relaxed);
 
       finding_match_state.visible = false;
       match_found_state.visible = false;
-  
+
       commands.despawn(queue_ent);
       commands.despawn(ent);
     }
@@ -208,17 +207,19 @@ fn handle_get_match_information(
     let get_match = MatchParametersRequest::default();
     match mm_client.get_match_parameters(&get_match) {
       Ok(m) => match m.status {
-          MatchParameters_MatchStatus::OK => {
-            if let Ok(socket) = format!("{}:{}", m.ip, m.port).parse() {
-              info!(target: "handle_get_match_information", "{}", socket);
-              commands.spawn((ConnectToMatch(socket),));
-            } else {
-              error!(target: "handle_get_match_information", "Failed to parse address");
-            }
-          },
-          MatchParameters_MatchStatus::ERR_NONEXISTENT => error!(target: "handle_get_match_information", "No Match Found")
+        MatchParameters_MatchStatus::OK => {
+          if let Ok(socket) = format!("{}:{}", m.ip, m.port).parse() {
+            info!(target: "handle_get_match_information", "{}", socket);
+            commands.spawn((ConnectToMatch(socket),));
+          } else {
+            error!(target: "handle_get_match_information", "Failed to parse address");
+          }
         },
-      Err(err) => error!(target: "handle_get_match_information", "Failed to get match: {}", err)
+        MatchParameters_MatchStatus::ERR_NONEXISTENT => {
+          error!(target: "handle_get_match_information", "No Match Found")
+        },
+      },
+      Err(err) => error!(target: "handle_get_match_information", "Failed to get match: {}", err),
     }
 
     commands.despawn(ent);
@@ -237,7 +238,7 @@ fn handle_confirm_match(
         Status::STATUS_OK => info!(target: "handle_confirm_match", "Match Confirmed"),
         Status::STATUS_ERR => error!(target: "handle_confirm_match", "Match Confirmation Errored"),
       },
-      Err(err) => error!(target: "handle_confirm_match", "Failed to confirm match: {}", err)
+      Err(err) => error!(target: "handle_confirm_match", "Failed to confirm match: {}", err),
     }
 
     commands.despawn(ent);
@@ -249,11 +250,16 @@ pub struct MatchmakingPlugin;
 impl Plugin for MatchmakingPlugin {
   fn build(&self, app: &mut AppBuilder) {
     let env = Arc::new(EnvBuilder::new().build());
+
+    #[cfg(debug_assertions)]
     let ch = ChannelBuilder::new(env).connect(format!("localhost:{}", 4000).as_str());
+
+    #[cfg(not(debug_assertions))]
+    let ch = ChannelBuilder::new(env).connect(format!("matchmaking.senior.realliance.net:{}", 4000).as_str());
 
     app
       .add_resource(MatchMakingClient::new(ch))
-      .add_resource(RPCPing(Timer::from_seconds(1.0, true)))
+      .add_resource(RpcPing(Timer::from_seconds(1.0, true)))
       .add_system(enter_queue.system())
       .add_system(cancel_queue.system())
       .add_system(handle_confirm_match.system())

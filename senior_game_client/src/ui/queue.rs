@@ -1,10 +1,8 @@
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContext};
 
-use crate::ui::QueueUiState;
-use crate::ui::FindingMatchUiState;
-use crate::proto::EnterQueue;
-use crate::proto::CancelQueue;
+use crate::proto::{CancelQueue, EnterQueue};
+use crate::ui::{FindingMatchUiState, QueueUiState};
 
 pub fn queue_ui(
   windows: Res<Windows>,
@@ -44,25 +42,20 @@ pub fn queue_ui(
       max: egui::pos2(width / 4.25, height / 1.1),
     })
     .show(ctx, |ui| {
-
       ui.with_layout(egui::Layout::centered_and_justified(egui::Direction::TopDown), |ui| {
-
         ui.horizontal(|ui| {
-
-          if finding_match_state.visible == false {
-            if ui.add(egui::Button::new("Find Match")
-            .text_style(bevy_egui::egui::TextStyle::Heading))
-            .clicked() {
+          if !finding_match_state.visible {
+            if ui
+              .add(egui::Button::new("Find Match").text_style(bevy_egui::egui::TextStyle::Heading))
+              .clicked()
+            {
               commands.spawn((EnterQueue,));
             }
-          }
-
-          else {
-            if ui.add(egui::Button::new("Cancel")
-            .text_style(bevy_egui::egui::TextStyle::Heading))
-            .clicked() {
-              commands.spawn((CancelQueue,));
-            }
+          } else if ui
+            .add(egui::Button::new("Cancel").text_style(bevy_egui::egui::TextStyle::Heading))
+            .clicked()
+          {
+            commands.spawn((CancelQueue,));
           }
         });
       });

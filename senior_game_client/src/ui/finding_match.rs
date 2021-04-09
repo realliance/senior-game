@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContext};
-use chrono::{Utc};
+use chrono::Utc;
 
 use crate::ui::FindingMatchUiState;
 
@@ -40,7 +40,6 @@ pub fn finding_match_ui(
       max: egui::pos2(width / 4.25, height / 3.1),
     })
     .show(ctx, |ui| {
-
       ui.spacing_mut().item_spacing = egui::vec2(10.0, 15.0);
 
       ui.with_layout(egui::Layout::centered_and_justified(egui::Direction::TopDown), |ui| {
@@ -49,16 +48,16 @@ pub fn finding_match_ui(
           ui.separator();
         });
 
+        let time_elapsed = Utc::now() - finding_match_state.start_time;
 
-      let time_elapsed = Utc::now() - finding_match_state.start_time;
-
-      ui.add(egui::Label::new(format!(
-        "{:2}:{:02}",
-        time_elapsed.num_minutes(),
-        time_elapsed.num_seconds() % 60
-      ))
-      .text_style(bevy_egui::egui::TextStyle::Heading));
-
+        ui.add(
+          egui::Label::new(format!(
+            "{:2}:{:02}",
+            time_elapsed.num_minutes(),
+            time_elapsed.num_seconds() % 60
+          ))
+          .text_style(bevy_egui::egui::TextStyle::Heading),
+        );
+      });
     });
-  });
 }

@@ -4,8 +4,7 @@ use serde_json::json;
 
 use crate::http::{login_route, HttpRequest, HttpResponse, LoginRequestTag, WebRequestVerb};
 use crate::state::ClientState;
-use crate::ui::LoginUiState;
-use crate::ui::QueueUiState;
+use crate::ui::{LoginUiState, QueueUiState};
 
 pub fn format_status_error(status: u16) -> String {
   format!("An unknown error has occured with status {}", status)

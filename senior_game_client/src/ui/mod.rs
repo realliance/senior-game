@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 pub mod background;
-pub mod login;
-pub mod setup;
-pub mod queue;
 pub mod finding_match;
+pub mod login;
 pub mod match_found;
+pub mod queue;
+pub mod setup;
 
 use chrono::{DateTime, Utc};
 
@@ -37,13 +37,12 @@ pub struct QueueUiState {
 
 pub struct FindingMatchUiState {
   pub visible: bool,
-  pub start_time: DateTime::<Utc>
+  pub start_time: DateTime<Utc>,
 }
 
 pub struct MatchFoundUiState {
-
   pub visible: bool,
-  pub accepted: bool
+  pub accepted: bool,
 }
 
 impl Default for LoginUiState {
@@ -74,7 +73,7 @@ impl Default for FindingMatchUiState {
   fn default() -> Self {
     FindingMatchUiState {
       visible: false,
-      start_time: Utc::now()
+      start_time: Utc::now(),
     }
   }
 }
