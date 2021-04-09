@@ -4,6 +4,7 @@ name = "senior_game_client"
 version = "0.1.0"
 authors = ["Christopher Miller <cmiller548@gmail.com>", "Alice Hartley <alicehartleyhartley@gmail.com>", "Connor Catlett <ccatlett2000@gmail.com>", "Eddie Torres <edilbertotorres1999@gmail.com>"]
 edition = "2018"
+build = "build.rs"
 
 [dependencies]
 senior_game_shared = { path = "../senior_game_shared" }

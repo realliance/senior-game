@@ -26,13 +26,20 @@ pub fn handle_login_response(
       let response_code = response.status.unwrap().as_u16();
       match response_code {
         200 => {
-          client_state.username = login_state.username.clone();
-          client_state.token = response.get_value("token").unwrap().to_string();
-          //login_state.visible = false;
-          //queue_state.visible = true;
+          if let Some(token) = response.get_value("token") {
+            client_state.username = login_state.username.clone();
+            client_state.token = token.to_string();
+            login_state.visible = false;
+          } else {
+            login_state.set_error(unknown_error());
+          }
         },
         400 => {
-          login_state.set_error(response.get_value("error").unwrap().to_string());
+          if let Some(error) = response.get_value("error") {
+            login_state.set_error(error.to_string());
+          } else {
+            login_state.set_error(format_status_error(400));
+          }
         },
         x => {
           login_state.set_error(format_status_error(x));
