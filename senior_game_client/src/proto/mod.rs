@@ -135,18 +135,23 @@ fn get_queue_updates(
           MatchingState::STATE_CONFIRMING => {
             match_found_state.visible = true;
             finding_match_state.visible = false;
+            match_found_state.accepted = false;
           },
           MatchingState::STATE_INGAME => {
             match_found_state.visible = false;
             finding_match_state.visible = false;
+            match_found_state.accepted = true;
             commands.spawn((GetMatchInformation,));
           },
           MatchingState::STATE_CONFIRMED => {
             match_found_state.accepted = true;
+            match_found_state.visible = true;
+            finding_match_state.visible = false;
           },
           MatchingState::STATE_LOOKING => {
             match_found_state.visible = false;
             finding_match_state.visible = true;
+            match_found_state.accepted = false;
           }
           _ => (),
         }
