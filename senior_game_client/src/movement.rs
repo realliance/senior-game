@@ -36,11 +36,7 @@ pub fn player(
   }
 }
 
-pub fn camera(
-  input_map: Res<Kurinji>,
-  time: Res<Time>,
-  mut query: Query<(&CameraRig, &mut Transform)>,
-) {
+pub fn camera(input_map: Res<Kurinji>, time: Res<Time>, mut query: Query<(&CameraRig, &mut Transform)>) {
   for (rig, mut transform) in query.iter_mut() {
     let mut direction = Vec3::zero();
     if input_map.is_action_active("CAMERA_FORWARD") {
@@ -56,8 +52,7 @@ pub fn camera(
       direction.z += 1.;
     }
     if direction != Vec3::zero() {
-      transform.translation +=
-        direction.normalize() * time.delta_seconds() * rig.move_sensitivity * rig.zoom_mod;
+      transform.translation += direction.normalize() * time.delta_seconds() * rig.move_sensitivity * rig.zoom_mod;
     }
   }
 }
@@ -80,8 +75,7 @@ pub fn camera_edges(
         let x = (mouse.x / (width / 2.)) - 1.;
         let y = (mouse.y / (height / 2.)) - 1.;
         let direction = Vec3::new(y, 0., x);
-        transform.translation +=
-          direction * time.delta_seconds() * rig.move_sensitivity * rig.zoom_mod;
+        transform.translation += direction * time.delta_seconds() * rig.move_sensitivity * rig.zoom_mod;
       }
     }
   }
@@ -117,10 +111,9 @@ pub fn navigate(
   for (entity, rigidbody_handle, dest) in query.iter() {
     let rigidbody = rigidbody_set.get_mut(rigidbody_handle.handle()).unwrap();
     rigidbody.set_position(
-      rigidbody.position().lerp_slerp(
-        &Isometry3::new(Vector3::new(dest.x, dest.y, dest.z), Vector3::y()),
-        0.1,
-      ),
+      rigidbody
+        .position()
+        .lerp_slerp(&Isometry3::new(Vector3::new(dest.x, dest.y, dest.z), Vector3::y()), 0.1),
       false,
     );
     // println!("dist: {:?}",
