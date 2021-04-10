@@ -7,7 +7,6 @@ use std::option::Option::Some;
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
-use bevy_mod_picking::*;
 use bevy_prototype_networking_laminar::NetworkingPlugin;
 use bevy_rapier3d::physics::RapierPhysicsPlugin;
 #[cfg(debug_assertions)]
@@ -65,12 +64,7 @@ fn main() {
     .add_plugin(EguiPlugin)
     .add_plugin(UiSystemPlugin)
     .add_plugin(HttpSystemPlugin)
-    .add_plugin(PickingPlugin)
-    .add_plugin(InteractablePickingPlugin)
     .add_plugin(GameSystemsPlugin)
-    .add_plugin(PickingPlugin)
-    .add_plugin(DebugPickingPlugin)
-    // .add_plugin(DebugPickingPlugin)
     .init_resource::<NetworkListenerState>()
     .init_resource::<ClientState>()
     .add_plugin(GameSystemsPlugin)
@@ -85,7 +79,6 @@ fn main() {
     .register_type::<ShapeType>()
     .add_startup_system(load_login_sound.system())
     .add_system(load_sound_system.system())
-    .register_type::<Build4xCamera>()
     .register_type::<CreateAssetCollider>()
 
     .add_startup_system(manual_load_scene.system())

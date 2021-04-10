@@ -87,6 +87,3 @@ pub struct LoadSound {
   pub path: String,
   pub watch: bool,
 }
-#[derive(Clone, Debug, Reflect, Default)]
-#[reflect(Component)]
-pub struct Build4xCamera;
