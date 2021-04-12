@@ -6,7 +6,6 @@ use bevy::prelude::{BuildChildren, *};
 use bevy::render::mesh::{Indices, VertexAttributeValues};
 use bevy::scene::{DynamicScene, SceneSpawner};
 use bevy_mod_picking::*;
-use bevy_4x_camera::CameraRigBundle;
 use bevy_rapier3d::na::Point3;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
 use bevy_rapier3d::rapier::geometry::ColliderBuilder;
@@ -163,9 +162,9 @@ pub fn load_asset(
   scenes: Res<Assets<Scene>>,
 ) {
   for (entity, global_trans, mut asset) in query.iter_mut() {
-    info!(target: "load_asset", "Load Asset Triggered: {}", &asset.path);
 
     if !asset.loading {
+      info!(target: "load_asset", "Load Asset Triggered: {}", &asset.path);
       let handle: Handle<Scene> = asset_server.load(Path::new(&asset.path));
       asset.loading = true;
       asset.handle_id = handle.id;
@@ -191,17 +190,5 @@ pub fn load_asset(
         commands.remove_one::<LoadAsset>(entity);
       }
     }
-  }
-}
-
-pub fn load_4x_camera(mut query: Query<(Entity, &Build4xCamera)>, commands: &mut Commands) {
-  for (entity, _) in query.iter_mut() {
-    info!(target: "load_4x_camera", "Load 4xCamera Triggered");
-
-    let parent = commands.spawn(CameraRigBundle::default()).current_entity().unwrap();
-
-    commands.push_children(parent, &[entity]);
-
-    commands.remove_one::<Build4xCamera>(entity);
   }
 }

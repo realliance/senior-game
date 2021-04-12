@@ -145,7 +145,6 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
         collider_shape: ShapeType::Cube,
       }],
     },
-    BuildSourceModel::default(),
     LoadAsset {
       path: "models/cube.gltf".to_string(),
       ..Default::default()

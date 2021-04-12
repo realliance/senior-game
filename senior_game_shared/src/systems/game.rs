@@ -5,8 +5,8 @@ use crate::components::game::*;
 
 pub fn load_source_model(commands: &mut Commands, query: Query<(Entity, &BuildSourceModel, &ManaSource)>) {
   for (entity, _, mana_source) in query.iter() {
-    info!(target: "load_source_model", "Load Source Model Triggered");
     if let Some(path) = mana_source.source_type().get_path() {
+      info!(target: "load_source_model", "Load Source Model Triggered");
       let ent = commands
         .spawn((
           LoadAsset {
