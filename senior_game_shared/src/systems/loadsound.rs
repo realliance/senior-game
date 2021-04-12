@@ -26,7 +26,7 @@ pub fn load_sound_system(
   }
 }
 
-pub fn load_sound(query: Query<(Entity, &AssetChild)>, asset_server: ResMut<AssetServer>, audio: ResMut<Audio>) {
+pub fn load_sound(query: Query<(Entity, &LoadSound)>, asset_server: ResMut<AssetServer>, audio: ResMut<Audio>) {
   for (_entity, asset) in query.iter() {
     info!(target: "load_asset", "Load Asset Triggered");
     audio.play(asset_server.load(Path::new(&asset.path)));
