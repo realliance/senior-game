@@ -24,7 +24,7 @@ repos:
         args: [--branch, main]
       - id: trailing-whitespace
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.26.0
+    rev: v1.26.1
     hooks:
       - id: yamllint
         name: Check YAML style with yamllint
