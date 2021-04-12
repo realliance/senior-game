@@ -93,6 +93,7 @@ fn main() {
     .add_startup_system(manual_load_scene.system())
     .add_startup_system(load_login_sound.system())
     .add_system(load_sound_system.system())
+    .register_type::<CreateAssetCollider>()
     .add_system(load_scene_system.system())
     .add_system(server_connection_system.system())
     .add_system(handle_network_events.system())
