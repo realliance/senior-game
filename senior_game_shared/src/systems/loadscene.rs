@@ -162,7 +162,6 @@ pub fn load_asset(
   scenes: Res<Assets<Scene>>,
 ) {
   for (entity, global_trans, mut asset) in query.iter_mut() {
-
     if !asset.loading {
       info!(target: "load_asset", "Load Asset Triggered: {}", &asset.path);
       let handle: Handle<Scene> = asset_server.load(Path::new(&asset.path));

@@ -6,14 +6,11 @@ use std::option::Option::Some;
 
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::*;
-use bevy_4x_camera::FourXCameraPlugin;
 use bevy_egui::EguiPlugin;
-use bevy_mod_picking::*;
 use bevy_prototype_networking_laminar::NetworkingPlugin;
 use bevy_rapier3d::physics::RapierPhysicsPlugin;
 #[cfg(debug_assertions)]
 use bevy_rapier3d::render::RapierRenderPlugin;
-use kurinji::KurinjiPlugin;
 use senior_game_shared::components::assets::*;
 use senior_game_shared::components::input::*;
 use senior_game_shared::net::NetworkListenerState;
