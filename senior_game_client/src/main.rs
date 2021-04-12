@@ -80,7 +80,7 @@ fn main() {
     .register_type::<ShapeType>()
     .register_type::<CreatePickMesh>()
     .register_type::<CreatePickSource>()
-    .add_startup_system(manual_load_scene.system())
+    //.add_startup_system(manual_load_scene.system())
     .add_startup_system(load_login_sound.system())
     .add_system(load_sound_system.system())
     .register_type::<CreateAssetCollider>()
