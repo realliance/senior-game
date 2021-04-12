@@ -29,7 +29,7 @@ pub struct BackgroundUiState {
 impl Default for LoginUiState {
   fn default() -> Self {
     LoginUiState {
-      visible: true,
+      visible: false,
       username: String::default(),
       password: String::default(),
       has_error: false,

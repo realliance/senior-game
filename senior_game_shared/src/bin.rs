@@ -5,6 +5,7 @@ use bevy::app::AppExit;
 use bevy::prelude::*;
 use bevy::reflect::TypeRegistry;
 use senior_game_shared::components::assets::*;
+use senior_game_shared::components::game::*;
 use senior_game_shared::components::input::*;
 use senior_game_shared::systems::game::GameSystemsPlugin;
 
@@ -22,11 +23,12 @@ pub fn main() {
     .register_type::<RigidbodyType>()
     .register_type::<LoadAsset>()
     .register_type::<ShapeType>()
-    .register_type::<Build4xCamera>()
     .register_type::<CreateAssetCollider>()
     .register_type::<CreatePickSource>()
     .register_type::<CreatePickMesh>()
-    .register_type::<CubeFollow>()
+    .register_type::<NavigateTo>()
+    .register_type::<PlayerEntity>()
+    .register_type::<CameraRig>()
     .add_startup_system(build_scenes.system())
     .add_system(exit_system.system())
     .run();

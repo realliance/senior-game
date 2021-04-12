@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 #[cfg(not(debug_assertions))]
 use std::borrow::Cow::Owned;
 use std::collections::HashMap;

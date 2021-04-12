@@ -78,3 +78,27 @@ impl ManaSource {
     self.source_type = source_type;
   }
 }
+
+#[derive(Clone, Debug, Reflect, Default)]
+#[reflect(Component)]
+pub struct PlayerEntity;
+
+#[derive(Clone, Debug, Reflect, Default)]
+#[reflect(Component)]
+pub struct NavigateTo {
+  pub x: f32,
+  pub y: f32,
+  pub z: f32,
+}
+
+#[derive(Clone, Debug, Reflect, Default)]
+#[reflect(Component)]
+pub struct CameraRig {
+  pub move_sensitivity: f32,
+  pub zoom_sensitivity: f32,
+  pub active_edge: f32, // represented as percentage of screen space, 0.0-1.0
+  pub zoom_lvl: f32,
+  pub min_zoom: f32,
+  pub max_zoom: f32,
+  pub zoom_mod: f32,
+}

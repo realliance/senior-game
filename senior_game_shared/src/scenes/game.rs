@@ -31,6 +31,7 @@ fn build_rock(world: &mut World, id: u8, capacity: u32, source_type: SourceType,
       path: "models/rockbase.gltf".to_string(),
       ..Default::default()
     },
+    CreatePickMesh::default(),
   ));
 }
 
@@ -51,9 +52,21 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
     scene_world
       .insert(camera, (CreatePickSource::default(),))
       .expect("Adding PickingSource failed in scene creation");
+
     scene_world
-      .insert(camera, (Build4xCamera::default(),))
-      .expect("Failed to add 4x camera");
+      .insert(
+        camera,
+        (CameraRig {
+          move_sensitivity: 67.,
+          zoom_sensitivity: 7.,
+          active_edge: 0.1,
+          min_zoom: 1.,
+          max_zoom: 16.,
+          zoom_lvl: 1.,
+          zoom_mod: 1.,
+        },),
+      )
+      .expect("Adding CameraRig failed in scene creation");
 
     scene_world.spawn(LightBundle {
       transform: Transform::from_translation(Vec3::new(0.0, 25.0, 0.0)),
@@ -118,6 +131,27 @@ pub fn build(target: Destination, type_registry: &Res<TypeRegistry>) -> String {
     SourceType::Green,
     Transform::from_translation(Vec3::new(0.0, ROCK_Y, 0.0)),
   );
+
+  scene_world.spawn((
+    Transform::default(),
+    GlobalTransform::default(),
+    CreatePhysics {
+      rigidbody_transform: Transform::from_translation(Vec3::new(0.0, 0.5, 0.0)),
+      rigidbody_type: RigidbodyType::Static,
+      colliders: vec![CreateCollider {
+        collider_transform_position: Vec3::new(0.0, 0.0, 0.0),
+        collider_transform_rotation: Transform::identity().rotation,
+        collider_shape_size: Vec3::new(1.0, 1.0, 1.0),
+        collider_shape: ShapeType::Cube,
+      }],
+    },
+    BuildSourceModel::default(),
+    LoadAsset {
+      path: "models/cube.gltf".to_string(),
+      ..Default::default()
+    },
+    PlayerEntity::default(),
+  ));
 
   let scene = DynamicScene::from_world(&scene_world, &type_registry);
 

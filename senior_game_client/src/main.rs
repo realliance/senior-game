@@ -17,18 +17,21 @@ use kurinji::KurinjiPlugin;
 use senior_game_shared::components::assets::*;
 use senior_game_shared::components::input::*;
 use senior_game_shared::net::NetworkListenerState;
+// use senior_game_shared::systems::dev::dev_print_camera_location;
 use senior_game_shared::systems::game::GameSystemsPlugin;
 use senior_game_shared::systems::loadscene::*;
 use senior_game_shared::systems::loadsound::*;
 
 use crate::http::HttpSystemPlugin;
-use crate::input::{input_handler, input_setup, load_input_binding};
+use crate::input::InputPlugin;
+use crate::movement::MovementPlugin;
 use crate::net::{handle_network_events, server_connection_system, StartServerConnection};
 use crate::state::ClientState;
 use crate::ui::UiSystemPlugin;
 
 mod http;
 mod input;
+mod movement;
 mod net;
 mod state;
 mod ui;
@@ -57,6 +60,7 @@ fn main() {
 
   App::build()
     .add_resource(Msaa::default())
+    .add_resource(WindowDescriptor::default())
     .add_plugins(DefaultPlugins)
     .add_plugins(FlaggedPlugins)
     .add_plugin(RapierPhysicsPlugin)
@@ -71,8 +75,13 @@ fn main() {
     .add_plugin(EguiPlugin)
     .add_plugin(UiSystemPlugin)
     .add_plugin(HttpSystemPlugin)
+    .add_plugin(GameSystemsPlugin)
     .init_resource::<NetworkListenerState>()
     .init_resource::<ClientState>()
+    .add_plugin(GameSystemsPlugin)
+    // Kurinji consumers must register under InputPlugin
+    .add_plugin(InputPlugin)
+    .add_plugin(MovementPlugin)
     .register_type::<CreateCollider>()
     .register_type::<CreatePhysics>()
     .register_type::<RigidbodyType>()
@@ -80,25 +89,21 @@ fn main() {
     .register_type::<ShapeType>()
     .register_type::<Build4xCamera>()
     .register_type::<CreateAssetCollider>()
-    .register_type::<CreatePickSource>()
-    .register_type::<CreatePickMesh>()
     .register_type::<CubeFollow>()
     .add_startup_system(manual_load_scene.system())
-    .add_startup_system(manual_start_server_connection.system())
-    .add_startup_system(input_setup.system())
     .add_startup_system(load_login_sound.system())
     .add_system(load_sound_system.system())
     .add_system(load_scene_system.system())
     .add_system(server_connection_system.system())
     .add_system(handle_network_events.system())
-    .add_system(load_4x_camera.system())
     .add_system(load_asset_physics.system())
-    .add_system(load_input_binding.system())
-    .add_system(input_handler.system())
+
+
+    // .add_system(dev_print_camera_location.system())
     .add_system_to_stage(stage::POST_UPDATE, load_asset.system())
     .add_system_to_stage(stage::POST_UPDATE, load_physics.system())
     .add_system_to_stage(stage::POST_UPDATE, load_pick_source.system())
-    //.add_system_to_stage(stage::POST_UPDATE, load_pick_mesh.system())
+    .add_system_to_stage(stage::POST_UPDATE, load_pick_mesh.system())
     .run();
 }
 
