@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 #[cfg(not(debug_assertions))]
 use std::borrow::Cow::Owned;
 use std::collections::HashMap;
@@ -49,7 +50,7 @@ pub fn main() {
     .register_type::<CreatePhysics>()
     .register_type::<CreateCollider>()
     .register_type::<RigidbodyType>()
-    .register_type::<AssetChild>()
+    .register_type::<LoadAsset>()
     .register_type::<ShapeType>()
     .add_startup_system(start_server.system())
     .add_startup_system(load_game_scene.system())
@@ -68,7 +69,7 @@ fn start_server(mut net: ResMut<NetworkResource>) {
 
 fn load_game_scene(commands: &mut Commands) {
   commands.spawn(()).with(LoadScene {
-    path: "scenes/physics_test.scn".to_string(),
+    path: "scenes/platform.scn".to_string(),
     watch: false,
   });
 

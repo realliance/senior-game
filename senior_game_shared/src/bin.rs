@@ -5,6 +5,9 @@ use bevy::app::AppExit;
 use bevy::prelude::*;
 use bevy::reflect::TypeRegistry;
 use senior_game_shared::components::assets::*;
+use senior_game_shared::components::game::*;
+use senior_game_shared::components::input::*;
+use senior_game_shared::systems::game::GameSystemsPlugin;
 
 use crate::scenes::destination_helper::Destination;
 use crate::scenes::*;
@@ -14,11 +17,18 @@ mod scenes;
 pub fn main() {
   App::build()
     .add_plugins(DefaultPlugins)
+    .add_plugin(GameSystemsPlugin)
     .register_type::<CreatePhysics>()
     .register_type::<CreateCollider>()
     .register_type::<RigidbodyType>()
-    .register_type::<AssetChild>()
+    .register_type::<LoadAsset>()
     .register_type::<ShapeType>()
+    .register_type::<CreateAssetCollider>()
+    .register_type::<CreatePickSource>()
+    .register_type::<CreatePickMesh>()
+    .register_type::<NavigateTo>()
+    .register_type::<PlayerEntity>()
+    .register_type::<CameraRig>()
     .add_startup_system(build_scenes.system())
     .add_system(exit_system.system())
     .run();
@@ -33,6 +43,7 @@ fn build_scenes(type_registry: Res<TypeRegistry>) {
   const SCENES: &[(Destination, &str, fn(Destination, &Res<TypeRegistry>) -> String)] = &[
     (Destination::Both, "physics_test.scn", physics_test::build),
     (Destination::Both, "platform.scn", platform::build),
+    (Destination::Both, "game.scn", game::build),
   ];
 
   let client_prefix = Path::new("../senior_game_client/assets/scenes");
