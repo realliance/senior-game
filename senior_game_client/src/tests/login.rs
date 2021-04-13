@@ -7,7 +7,7 @@ use super::run_system;
 use crate::http::{HttpResponse, LoginRequestTag};
 use crate::state::ClientState;
 use crate::ui::login::{format_status_error, handle_login_response, unknown_error};
-use crate::ui::LoginUiState;
+use crate::ui::{LoginUiState, QueueUiState};
 
 #[derive(Serialize, Deserialize, Clone)]
 struct ErrorObject {
@@ -36,16 +36,15 @@ fn test_successful_login() {
 
   resources.insert(ClientState::default());
   resources.insert(LoginUiState::default());
+  resources.insert(QueueUiState::default());
 
   world.spawn((response, LoginRequestTag));
 
   run_system(&mut world, &mut resources, handle_login_response.system());
 
   let client_state = resources.get::<ClientState>().unwrap();
-  let login_ui_state = resources.get::<LoginUiState>().unwrap();
 
   assert_eq!(client_state.token, "1234".to_string());
-  assert_eq!(login_ui_state.visible, false);
 }
 
 #[test]
@@ -61,6 +60,7 @@ fn test_successful_login_malformed_response() {
 
   resources.insert(ClientState::default());
   resources.insert(LoginUiState::default());
+  resources.insert(QueueUiState::default());
 
   world.spawn((response, LoginRequestTag));
 
@@ -89,6 +89,7 @@ fn test_invalid_password() {
 
   resources.insert(ClientState::default());
   resources.insert(LoginUiState::default());
+  resources.insert(QueueUiState::default());
 
   world.spawn((response, LoginRequestTag));
 
@@ -116,6 +117,7 @@ fn test_unknown_error_with_status() {
 
   resources.insert(ClientState::default());
   resources.insert(LoginUiState::default());
+  resources.insert(QueueUiState::default());
 
   world.spawn((response, LoginRequestTag));
 
@@ -143,6 +145,7 @@ fn test_unknown_error_with_known_status() {
 
   resources.insert(ClientState::default());
   resources.insert(LoginUiState::default());
+  resources.insert(QueueUiState::default());
 
   world.spawn((response, LoginRequestTag));
 
@@ -170,6 +173,7 @@ fn test_unknown_error() {
 
   resources.insert(ClientState::default());
   resources.insert(LoginUiState::default());
+  resources.insert(QueueUiState::default());
 
   world.spawn((response, LoginRequestTag));
 

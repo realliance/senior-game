@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+enum Status {
+    STATUS_OK = 0;
+    STATUS_ERR = 1;
+}
+
+enum MatchingState {
+    STATE_LOOKING = 0;
+    STATE_CONFIRMING = 1;
+    STATE_INGAME = 2;
+    STATE_IDLE = 3;
+    STATE_CONFIRMED = 4;
+}
+
+message MMQClientUpdate {
+    enum QueueOperation {
+        OP_JOIN = 0;
+        OP_EXIT = 1;
+    }
+
+    QueueOperation requestedOperation = 1;
+}
+
+message MMQServerUpdate {
+    enum QueueUpdate {
+        STATUS_QUEUE_UPDATE = 0; //Server updated queue parameters
+        STATUS_STATEUPDATE = 1; // Server updated client state
+    }
+
+    QueueUpdate status = 1;
+    uint32 est_queue_time = 2;
+    MatchingState queue_state = 3;
+}
+
+message ConfirmRequest {
+}
+
+message ConfirmResponse {
+    Status status = 1;
+}
+
+message MatchParametersRequest {
+}
+
+message MatchParameters {
+    enum MatchStatus {
+        OK = 0;
+        ERR_NONEXISTENT = 1;
+    }
+
+    MatchStatus status = 1;
+    string ip = 2;
+    uint32 port = 3;
+}
+
+service MatchMaking {
+    rpc Queue(stream MMQClientUpdate) returns (stream MMQServerUpdate);
+    rpc ConfirmMatch(ConfirmRequest) returns (ConfirmResponse);
+    rpc GetMatchParameters(MatchParametersRequest) returns (MatchParameters);
+}

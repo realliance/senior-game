@@ -22,6 +22,7 @@ use crate::http::HttpSystemPlugin;
 use crate::input::InputPlugin;
 use crate::movement::MovementPlugin;
 use crate::net::{handle_network_events, server_connection_system, StartServerConnection};
+use crate::proto::MatchmakingPlugin;
 use crate::state::ClientState;
 use crate::ui::UiSystemPlugin;
 
@@ -29,6 +30,7 @@ mod http;
 mod input;
 mod movement;
 mod net;
+mod proto;
 mod state;
 mod ui;
 
@@ -59,6 +61,7 @@ fn main() {
     .add_resource(WindowDescriptor::default())
     .add_plugins(DefaultPlugins)
     .add_plugins(FlaggedPlugins)
+    .add_plugin(MatchmakingPlugin)
     .add_plugin(RapierPhysicsPlugin)
     .add_plugin(NetworkingPlugin)
     .init_resource::<NetworkListenerState>()
