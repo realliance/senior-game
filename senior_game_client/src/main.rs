@@ -13,16 +13,22 @@ use bevy_rapier3d::physics::RapierPhysicsPlugin;
 use bevy_rapier3d::render::RapierRenderPlugin;
 use senior_game_shared::components::assets::*;
 use senior_game_shared::net::NetworkListenerState;
+// use senior_game_shared::systems::dev::dev_print_camera_location;
+use senior_game_shared::systems::game::GameSystemsPlugin;
 use senior_game_shared::systems::loadscene::*;
 use senior_game_shared::systems::loadsound::*;
 
 use crate::http::HttpSystemPlugin;
+use crate::input::InputPlugin;
+use crate::movement::MovementPlugin;
 use crate::net::{handle_network_events, server_connection_system, StartServerConnection};
 use crate::proto::MatchmakingPlugin;
 use crate::state::ClientState;
 use crate::ui::UiSystemPlugin;
 
 mod http;
+mod input;
+mod movement;
 mod net;
 mod proto;
 mod state;
@@ -52,28 +58,43 @@ fn main() {
 
   App::build()
     .add_resource(Msaa::default())
+    .add_resource(WindowDescriptor::default())
     .add_plugins(DefaultPlugins)
     .add_plugins(FlaggedPlugins)
     .add_plugin(MatchmakingPlugin)
     .add_plugin(RapierPhysicsPlugin)
     .add_plugin(NetworkingPlugin)
+    .init_resource::<NetworkListenerState>()
     .add_plugin(EguiPlugin)
     .add_plugin(UiSystemPlugin)
     .add_plugin(HttpSystemPlugin)
+    .add_plugin(GameSystemsPlugin)
     .init_resource::<NetworkListenerState>()
     .init_resource::<ClientState>()
+    .add_plugin(GameSystemsPlugin)
+    // Kurinji consumers must register under InputPlugin
+    .add_plugin(InputPlugin)
+    .add_plugin(MovementPlugin)
     .register_type::<CreateCollider>()
     .register_type::<CreatePhysics>()
     .register_type::<RigidbodyType>()
-    .register_type::<AssetChild>()
+    .register_type::<LoadAsset>()
     .register_type::<ShapeType>()
+    //.add_startup_system(manual_load_scene.system())
     .add_startup_system(load_login_sound.system())
     .add_system(load_sound_system.system())
+    .register_type::<CreateAssetCollider>()
     .add_system(load_scene_system.system())
     .add_system(server_connection_system.system())
     .add_system(handle_network_events.system())
+    .add_system(load_asset_physics.system())
+
+
+    // .add_system(dev_print_camera_location.system())
     .add_system_to_stage(stage::POST_UPDATE, load_asset.system())
     .add_system_to_stage(stage::POST_UPDATE, load_physics.system())
+    .add_system_to_stage(stage::POST_UPDATE, load_pick_source.system())
+    .add_system_to_stage(stage::POST_UPDATE, load_pick_mesh.system())
     .run();
 }
 
@@ -108,7 +129,7 @@ fn manual_start_server_connection(commands: &mut Commands) {
 #[allow(dead_code)]
 fn manual_load_scene(commands: &mut Commands) {
   commands.spawn(()).with(LoadScene {
-    path: "scenes/physics_test.scn".to_string(),
+    path: "scenes/game.scn".to_string(),
     watch: false,
   });
 
