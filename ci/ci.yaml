@@ -55,8 +55,8 @@ resources:
     icon: docker
     check_every: 1h
     source:
-      repository: docker.io/rustlang/rust
-      tag: nightly-buster
+      repository: docker.io/instrumentisto/rust
+      tag: nightly-buster-2021-03-24
   - name: python
     type: registry-image
     icon: docker
