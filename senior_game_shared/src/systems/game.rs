@@ -6,11 +6,16 @@ use crate::components::game::*;
 pub fn load_source_model(commands: &mut Commands, query: Query<(Entity, &BuildSourceModel, &ManaSource)>) {
   for (entity, _, mana_source) in query.iter() {
     if let Some(path) = mana_source.source_type().get_path() {
+      info!(target: "load_source_model", "Load Source Model Triggered");
       let ent = commands
-        .spawn((LoadAsset {
-          path: path.to_string(),
-          ..Default::default()
-        },))
+        .spawn((
+          LoadAsset {
+            path: path.to_string(),
+            mesh_index: 0,
+            ..Default::default()
+          },
+          GlobalTransform::default(),
+        ))
         .current_entity()
         .unwrap();
 
