@@ -12,7 +12,6 @@ use bevy_rapier3d::physics::RapierPhysicsPlugin;
 #[cfg(debug_assertions)]
 use bevy_rapier3d::render::RapierRenderPlugin;
 use senior_game_shared::components::assets::*;
-use senior_game_shared::components::input::*;
 use senior_game_shared::net::NetworkListenerState;
 // use senior_game_shared::systems::dev::dev_print_camera_location;
 use senior_game_shared::systems::game::GameSystemsPlugin;
@@ -78,8 +77,6 @@ fn main() {
     .register_type::<RigidbodyType>()
     .register_type::<LoadAsset>()
     .register_type::<ShapeType>()
-    .register_type::<CreatePickMesh>()
-    .register_type::<CreatePickSource>()
     //.add_startup_system(manual_load_scene.system())
     .add_startup_system(load_login_sound.system())
     .add_system(load_sound_system.system())
