@@ -14,7 +14,7 @@ RUN --mount=type=cache,target=/build/cargo \
     cargo install --locked --root install \
     --path senior_game_server --target x86_64-unknown-linux-gnu
 
-FROM gcr.io/distroless/cc-debian10@sha256:5b477f148457a90597954c7d167f9f69f75b3f5706225047cd4cbd969ce7a653
+FROM gcr.io/distroless/cc-debian10@sha256:f8203eb3a375ddf03523497419fb9354d26fe2d1620b3ed5d522430c74297327
 ARG RELEASE
 WORKDIR /app
 ENV RELEASE $RELEASE
