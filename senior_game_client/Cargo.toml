@@ -7,21 +7,21 @@ edition = "2018"
 
 [dependencies]
 senior_game_shared = { path = "../senior_game_shared" }
-bevy = "0.4.0"
-bevy_rapier3d = "0.8.0"
+bevy = "0.5.0"
+bevy_rapier3d = "0.11.0"
 bevy_prototype_networking_laminar = { git = "https://github.com/Hugheth/bevy_prototype_networking_laminar", branch = "bevy-0.4" }
-bevy_asset_ron = "0.1.0"
-bevy-inspector-egui = "0.3.0"
-bevy_egui = "0.3.0"
+bevy_asset_ron = "0.2.0"
+bevy-inspector-egui = "0.6.1"
+bevy_egui = "0.8.0"
 kurinji = "1.0.5"
 bevy_4x_camera = "0.1.2"
-bevy_mod_picking = "0.3.7"
+bevy_mod_picking = "0.4.0"
 bevy_mouse_tracking_plugin = "0.1.1"
-serde = "1.0.124"
-sentry = "0.22.0"
+serde = "1.0.130"
+sentry = "0.23.0"
 reqwest = { version = "0.11", features = ["json", "blocking"] }
-serde_json = "1.0.64"
-url = "2.2.1"
+serde_json = "1.0.72"
+url = "2.2.2"
 
 [dev-dependencies]
-mockito = "0.29.0"
+mockito = "0.30.0"
